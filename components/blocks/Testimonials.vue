@@ -3,10 +3,10 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
       <div class="mx-auto max-w-2xl text-center mb-12 sm:mb-16">
         <slot name="heading">
-          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900">{{ heading }}</h2>
+          <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-white">{{ heading }}</h2>
         </slot>
         <slot name="subheading">
-          <p v-if="subheading" class="mt-4 text-base text-gray-600">{{ subheading }}</p>
+          <p v-if="subheading" class="mt-4 text-base text-gray-300">{{ subheading }}</p>
         </slot>
       </div>
 
@@ -24,18 +24,18 @@
           :style="{ transform: `translateX(${translateX}px)` }"
         >
           <template v-for="(t, i) in loopedTestimonials" :key="i">
-            <article class="w-80 shrink-0 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <article class="w-80 shrink-0 rounded-xl border border-white/10 bg-white/5 p-6 shadow-sm">
               <div class="flex items-center gap-3 mb-4">
-                <div class="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-600">
+                <div class="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-semibold text-gray-300">
                   {{ getInitials(t.author) }}
                 </div>
                 <div>
-                  <p class="text-sm font-medium text-gray-900">{{ t.author }}</p>
-                  <p v-if="t.role" class="text-xs text-gray-500">{{ t.role }}</p>
+                  <p class="text-sm font-medium text-white">{{ t.author }}</p>
+                  <p v-if="t.role" class="text-xs text-gray-400">{{ t.role }}</p>
                 </div>
               </div>
-              <p class="text-sm text-gray-700 leading-relaxed">“{{ t.content }}”</p>
-              <div v-if="t.rating" class="mt-3 flex items-center gap-1 text-yellow-500">
+              <p class="text-sm text-gray-300 leading-relaxed">"{{ t.content }}"</p>
+              <div v-if="t.rating" class="mt-3 flex items-center gap-1 text-yellow-400">
                 <span v-for="n in Math.round(t.rating)" :key="n">★</span>
               </div>
             </article>
@@ -43,8 +43,8 @@
         </div>
 
         <!-- Gradient edges -->
-        <div class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[rgba(255,255,255,1)] to-[rgba(255,255,255,0)]" />
-        <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[rgba(255,255,255,1)] to-[rgba(255,255,255,0)]" />
+        <div class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black to-transparent" />
+        <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black to-transparent" />
       </div>
 
       <div v-if="showControls" class="mt-8 flex items-center justify-center gap-3">
@@ -82,7 +82,7 @@ const props = withDefaults(defineProps<{
   speed: 0.5,
   pauseOnHover: true,
   duplicate: 2,
-  backgroundClass: 'bg-white',
+  backgroundClass: 'bg-black',
   borderClass: '',
   showControls: true
 })

@@ -5,20 +5,20 @@
         <!-- Text content -->
         <div :class="['space-y-6', textAlignClass]">
           <slot name="eyebrow">
-            <p v-if="eyebrow" class="text-xs font-semibold tracking-wider uppercase text-blue-700">
+            <p v-if="eyebrow" class="text-xs font-semibold tracking-wider uppercase text-blue-400">
               {{ eyebrow }}
             </p>
           </slot>
 
           <slot name="title">
-            <h1 :class="['font-semibold tracking-tight text-gray-900', titleSizeClass]">
+            <h1 :class="['font-semibold tracking-tight text-white', titleSizeClass]">
               {{ title }}
             </h1>
           </slot>
 
           <slot name="subtitle">
-            <p v-if="subtitle" class="text-base text-gray-600 leading-relaxed">
-              {{ subtitle }}
+            <p class="text-base text-gray-300 leading-relaxed min-h-[3rem]">
+              <span class="animated-text">{{ currentSubtitle }}</span>
             </p>
           </slot>
 
@@ -39,14 +39,19 @@
           <slot name="additional" />
         </div>
 
-        <!-- Media/image -->
-        <div v-if="imageSrc || $slots.media" class="relative w-full">
+        <!-- Media/3D Cube -->
+        <div class="relative w-full flex items-center justify-center py-16">
           <slot name="media">
-            <img
-              :src="imageSrc"
-              :alt="imageAlt"
-              class="w-120 h-auto object-cover rounded-xl shadow-sm"
-            />
+            <div class="spinner-container">
+              <div class="spinner">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
           </slot>
         </div>
       </div>
@@ -55,6 +60,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+
 interface Action {
   label: string
   to?: string | Record<string, any>
@@ -66,6 +73,7 @@ const props = withDefaults(defineProps<{
   eyebrow?: string
   title?: string
   subtitle?: string
+  subtitles?: string[]
   actions?: Action[]
   imageSrc?: string
   imageAlt?: string
@@ -76,19 +84,43 @@ const props = withDefaults(defineProps<{
   backgroundClass?: string
   borderClass?: string
 }>(), {
-  eyebrow: 'Ranepa Help',
-  title: 'Помощь студентам РАНХиГС',
-  subtitle: 'Консультации, сопровождение и поддержка по учебным вопросам. Быстро, понятно и по делу.',
+  eyebrow: 'Reshala',
+  title: 'Помощь студентам',
+  subtitle: 'Консультации, сопровождение и поддержка по учебным вопросам.',
+  subtitles: () => ([
+    'Консультации, сопровождение и поддержка по учебным вопросам.',
+    'Мы с тобой всегда, на каждом этапе обучения.',
+    'Твой успех — наша главная цель и мотивация.',
+    'Решаем любые учебные задачи быстро и качественно.'
+  ]),
   actions: () => ([
-    { label: 'Начать', to: '/order', variant: 'primary', size: 'lg' },
-    { label: 'Узнать больше', to: '/about', variant: 'outline', size: 'lg' }
+    { label: 'Заказать', to: '/order', variant: 'primary', size: 'lg' }
   ]),
   imageSrc: '',
   imageAlt: 'Иллюстрация',
   alignment: 'left',
   size: 'lg',
-  backgroundClass: 'bg-white',
+  backgroundClass: 'bg-black',
   borderClass: ''
+})
+
+const currentSubtitle = ref(props.subtitles[0])
+const currentIndex = ref(0)
+let intervalId: ReturnType<typeof setInterval> | null = null
+
+const rotateSubtitles = () => {
+  currentIndex.value = (currentIndex.value + 1) % props.subtitles.length
+  currentSubtitle.value = props.subtitles[currentIndex.value]
+}
+
+onMounted(() => {
+  intervalId = setInterval(rotateSubtitles, 4000) // Change every 4 seconds
+})
+
+onBeforeUnmount(() => {
+  if (intervalId) {
+    clearInterval(intervalId)
+  }
 })
 
 const hasActions = computed(() => Array.isArray(props.actions) && props.actions.length > 0)
@@ -114,5 +146,83 @@ const titleSizeClass = computed(() => {
   }
 })
 </script>
+
+<style scoped>
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes spinner-y0fdc1 {
+  0% {
+    transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+  }
+
+  50% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
+  }
+
+  100% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+  }
+}
+
+.animated-text {
+  display: inline-block;
+  animation: fadeInOut 4s ease-in-out infinite;
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.spinner {
+  width: 200px;
+  height: 200px;
+  animation: spinner-y0fdc1 2s infinite ease;
+  transform-style: preserve-3d;
+}
+
+.spinner > div {
+  background-color: rgba(0, 77, 255, 0.2);
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  border: 2px solid #004dff;
+}
+
+.spinner div:nth-of-type(1) {
+  transform: translateZ(-100px) rotateY(180deg);
+}
+
+.spinner div:nth-of-type(2) {
+  transform: rotateY(-270deg) translateX(50%);
+  transform-origin: top right;
+}
+
+.spinner div:nth-of-type(3) {
+  transform: rotateY(270deg) translateX(-50%);
+  transform-origin: center left;
+}
+
+.spinner div:nth-of-type(4) {
+  transform: rotateX(90deg) translateY(-50%);
+  transform-origin: top center;
+}
+
+.spinner div:nth-of-type(5) {
+  transform: rotateX(-90deg) translateY(50%);
+  transform-origin: bottom center;
+}
+
+.spinner div:nth-of-type(6) {
+  transform: translateZ(100px);
+}
+</style>
 
 

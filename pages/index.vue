@@ -1,37 +1,53 @@
 <template>
   <div>
-    <HeaderMain
-    logo-src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcS1T41KgKPnlmbfjkCu73ImwULFtBJONRBm6z-dqlgGXYVI2KokGYfoYX4bLUmK48C7Y&usqp=CAU"
-    logo-alt="Ranepa Help"
-    />
+    <HeaderMain />
 
 
 
     <Hero
-    eyebrow="Ranepa Help"
-    title="Помощь студентам РАНХиГС"
-    subtitle="Консультации, сопровождение и поддержка по учебным вопросам."
-    :actions="[
-    { label: 'Начать', to: '/order', variant: 'primary', size: 'lg' },
-    { label: 'Узнать больше', to: '/about', variant: 'outline', size: 'lg' }
+    eyebrow="Reshala"
+    title="Помощь студентам"
+    :subtitles="[
+      'Консультации, сопровождение и поддержка по учебным вопросам.',
+      'Мы с тобой всегда, на каждом этапе обучения.',
+      'Твой успех — наша главная цель и мотивация.',
+      'Решаем любые учебные задачи быстро и качественно.'
     ]"
-    image-src="/girl.png"
-    image-alt="Студенты РАНХиГС"
     alignment="left"
-    size="lg"/>
+    size="lg"
+  >
+    <template #actions>
+      <a 
+        href="/order" 
+        class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl hover:shadow-2xl hover:shadow-blue-500/30 hover:scale-105 transition-all duration-300"
+      >
+        Заказать
+      </a>
+    </template>
+  </Hero>
 
     <Features
+    id="about"
     heading="Почему выбирают нас"
-    subheading="Коротко о наших преимуществах."
+    subheading="Узнайте о наших преимуществах и особенностях работы."
     :items="[
-      { icon: '🎯', title: 'Фокус', description: 'Работаем на результат.' },
-      { icon: '⚡', title: 'Быстро', description: 'Оперативно и чётко.' },
-      { icon: '🛡️', title: 'Надёжно', description: 'Конфиденциально.' }
+      { 
+        title: 'Опытные эксперты', 
+        description: 'Работаем с профессионалами, которые знают все тонкости учебного процесса и помогут вам достичь успеха в учёбе.'
+      },
+      { 
+        title: 'Современные методы', 
+        description: 'Используем передовые подходы к обучению и консультированию, адаптированные под актуальные требования.'
+      },
+      { 
+        title: 'Поддержка 24/7', 
+        description: 'Всегда на связи для решения ваших вопросов и оказания своевременной помощи в учебном процессе.'
+      }
     ]"
-    :columns="3"
   />
 
-  <Testimonialsr
+  <Testimonials
+  id="reviews"
   heading="Отзывы студентов"
   subheading="Нам доверяют."
   :testimonials="[
@@ -47,17 +63,7 @@
 
 
 
-    <LayoutFooterMain
-  :logo-src="'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcS1T41KgKPnlmbfjkCu73ImwULFtBJONRBm6z-dqlgGXYVI2KokGYfoYX4bLUmK48C7Y&usqp=CAU'"
-  logo-alt="Ranepa Help"
-  :nav-sections="[
-    { title: 'Компания', items: [{ label: 'О нас', href: '/about' }] },
-    { title: 'Поддержка', items: [{ label: 'FAQ', href: '/faq' }] }
-  ]"
-  address="Москва, пр-т Вернадского, 82"
-  phone="+7 (999) 123-45-67"
-  email="hello@ranepa.help"
-/>
+    <LayoutFooterMain />
   </div>
 </template>
 
@@ -70,7 +76,7 @@ import Features from '~/components/blocks/Features.vue';
 import Testimonials from '~/components/blocks/Testimonials.vue';
 
 definePageMeta({
-  title: "Ranepa Help - Modal Demo",
+  title: "Reshala - Помощь студентам",
 });
 
 function onCta() {
