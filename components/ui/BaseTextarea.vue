@@ -1,6 +1,6 @@
 <template>
     <div class="w-full">
-      <label v-if="label" :for="id" class="block text-sm font-medium text-gray-700 mb-1">
+      <label v-if="label" :for="id" class="block text-sm font-medium text-white mb-1">
         {{ label }}
         <span v-if="required" class="text-red-500">*</span>
       </label>
@@ -15,7 +15,7 @@
         :required="required"
         :rows="rows"
         :class="[
-          'w-full border focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors px-3',
+          'w-full border text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors px-3',
           roundedClasses,
           errorMessage ? 'border-red-300' : 'border-gray-300',
           disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white',

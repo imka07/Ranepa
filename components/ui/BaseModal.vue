@@ -1,13 +1,16 @@
 <template>
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="modelValue" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeModal">
+        <div v-if="modelValue" class="fixed inset-0 z-[9999] overflow-y-auto" @click.self="closeModal">
           <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
             <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50" @click.self="closeOnBackdropClick && closeModal()"></div>
             
             <div 
               :class="[
-                'relative bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg sm:w-full',
+                'relative rounded-lg shadow-xl transform transition-all sm:max-w-lg sm:w-full',
+                theme === 'dark' 
+                  ? 'bg-slate-900 text-gray-100 border border-white/10' 
+                  : 'bg-white text-gray-900',
                 size === 'sm' ? 'sm:max-w-sm' : 
                 size === 'md' ? 'sm:max-w-md' : 
                 size === 'lg' ? 'sm:max-w-lg' : 
@@ -34,7 +37,7 @@
                 
                 <div v-if="title || $slots.header" class="mb-4">
                   <slot name="header">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900">{{ title }}</h3>
+                    <h3 :class="['text-lg font-medium leading-6', theme === 'dark' ? 'text-gray-100' : 'text-gray-900']">{{ title }}</h3>
                   </slot>
                 </div>
                 
@@ -43,7 +46,7 @@
                 </div>
               </div>
               
-              <div v-if="$slots.footer" class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
+              <div v-if="$slots.footer" :class="['px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg', theme === 'dark' ? 'border-t border-white/10' : 'bg-gray-50']">
                 <slot name="footer"></slot>
               </div>
             </div>
@@ -89,6 +92,12 @@
     className: {
       type: String,
       default: ''
+    },
+    /** Visual theme */
+    theme: {
+      type: String,
+      default: 'light',
+      validator: (value: string) => ['light', 'dark'].includes(value)
     }
   });
   

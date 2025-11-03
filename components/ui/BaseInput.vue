@@ -1,6 +1,6 @@
 <template>
     <div :class="[className]">
-      <label v-if="label" :for="id" class="block text-sm font-medium text-gray-700 mb-1">
+      <label v-if="label" :for="id" class="block text-sm font-medium text-white mb-1">
         {{ label }}
         <span v-if="required" class="text-red-500">*</span>
       </label>
@@ -23,7 +23,7 @@
           :disabled="disabled"
           :required="required"
           :class="[
-            'w-full border focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors',
+            'w-full border text-left text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors',
             prependIcon ? 'pl-10' : 'pl-3',
             appendIcon ? 'pr-10' : 'pr-3',
             sizeClasses,

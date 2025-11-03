@@ -18,7 +18,9 @@
 
           <slot name="subtitle">
             <p class="text-base text-gray-300 leading-relaxed min-h-[3rem]">
-              <span class="animated-text">{{ currentSubtitle }}</span>
+              <Transition name="fade" mode="out-in">
+                <span class="inline-block" :key="currentIndex">{{ currentSubtitle }}</span>
+              </Transition>
             </p>
           </slot>
 
@@ -108,9 +110,20 @@ const currentSubtitle = ref(props.subtitles[0])
 const currentIndex = ref(0)
 let intervalId: ReturnType<typeof setInterval> | null = null
 
+const getNextIndex = (): number => {
+  const total = props.subtitles.length
+  if (total <= 1) return 0
+  let next = Math.floor(Math.random() * total)
+  if (next === currentIndex.value) {
+    next = (next + 1) % total
+  }
+  return next
+}
+
 const rotateSubtitles = () => {
-  currentIndex.value = (currentIndex.value + 1) % props.subtitles.length
-  currentSubtitle.value = props.subtitles[currentIndex.value]
+  const nextIdx = getNextIndex()
+  currentIndex.value = nextIdx
+  currentSubtitle.value = props.subtitles[nextIdx]
 }
 
 onMounted(() => {
@@ -148,11 +161,15 @@ const titleSizeClass = computed(() => {
 </script>
 
 <style scoped>
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(10px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
+/* Smooth fade transition for subtitle */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
 }
 
 @keyframes spinner-y0fdc1 {
@@ -167,11 +184,6 @@ const titleSizeClass = computed(() => {
   100% {
     transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
   }
-}
-
-.animated-text {
-  display: inline-block;
-  animation: fadeInOut 4s ease-in-out infinite;
 }
 
 .spinner-container {

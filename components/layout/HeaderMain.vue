@@ -1,5 +1,5 @@
 <template>
- <header :class="['w-full', backgroundClass, borderClass]">
+ <header :class="['w-full sticky top-0 z-50 backdrop-blur bg-black/80', backgroundClass, borderClass]">
    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
      <div :class="['flex items-center justify-between gap-8', heightClass]">
        <!-- Left: Logo -->
