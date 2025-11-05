@@ -1,8 +1,27 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+// nuxt.config.ts
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss'],
+  
+  // Конфигурация для Nitro (серверная часть)
+  nitro: {
+    preset: 'netlify'
+  },
+  
+  // Конфигурация runtime для переменных окружения
+  runtimeConfig: {
+    // Приватные ключи, доступные только на сервере
+    telegramBotToken: '', // будет переопределено через process.env
+    telegramChatId: '',   // будет переопределено через process.env
+    
+    // Публичные ключи, которые также будут доступны на клиенте
+    public: {
+      // Здесь можно добавить публичные переменные, если нужны
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://your-site.netlify.app'
+    }
+  },
+  
   app: {
     head: {
       title: 'Reshala',
