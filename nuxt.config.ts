@@ -5,9 +5,15 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss'],
   app: {
     head: {
+      title: 'Reshala',
+      titleTemplate: '',
       htmlAttrs: {
         style: 'scroll-behavior: smooth;'
-      }
+      },
+      meta: [
+        { name: 'application-name', content: 'Reshala' },
+        { property: 'og:site_name', content: 'Reshala' }
+      ]
     }
   }
 })
