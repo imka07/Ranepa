@@ -3,59 +3,58 @@
     <HeaderMain />
 
     <!-- Hero -->
-    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20 px-4">
-      <div class="max-w-6xl mx-auto text-center">
-        <h1 class="text-5xl font-bold text-white mb-6">Отзывы студентов</h1>
-        <p class="text-gray-400 text-xl">Прочитайте, что думают о нас наши клиенты</p>
+    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl font-bold text-white mb-4">Отзывы студентов</h1>
+        <p class="text-gray-400">Прочитайте, что думают о нас наши клиенты</p>
       </div>
     </div>
 
     <!-- Reviews Grid -->
-    <div class="bg-slate-900 py-16 px-4">
-      <div class="max-w-6xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="bg-slate-900 py-12 px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div
             v-for="review in reviews"
             :key="review.id"
-            class="bg-slate-800 border border-white/10 rounded-lg p-6 hover:border-white/20 transition"
+            class="bg-slate-800 border border-white/10 rounded-lg p-5 hover:border-white/20 transition"
           >
             <!-- Rating -->
-            <div class="flex gap-1 mb-4">
+            <div class="flex gap-1 mb-3">
               <Icon
                 v-for="i in 5"
                 :key="i"
                 :name="i <= review.rating ? 'mdi:star' : 'mdi:star-outline'"
-                class="w-5 h-5 text-yellow-400"
+                class="w-4 h-4 text-yellow-400"
               />
             </div>
 
             <!-- Text -->
-            <p class="text-white mb-4 leading-relaxed">{{ review.content }}</p>
+            <p class="text-white mb-4 text-sm leading-relaxed">"{{ review.content }}"</p>
 
             <!-- Author -->
-            <div class="border-t border-white/10 pt-4">
-              <p class="font-semibold text-white">{{ review.author }}</p>
-              <p class="text-sm text-gray-400">{{ review.role }}</p>
-              <p class="text-xs text-gray-500 mt-2">{{ formatDate(review.date) }}</p>
+            <div class="border-t border-white/10 pt-3">
+              <p class="font-semibold text-white text-sm">{{ review.author }}</p>
+              <p class="text-xs text-gray-400">{{ review.role }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Add Review -->
-    <div class="bg-slate-800 border-t border-white/10 py-16 px-4">
+    <!-- Add Review Section -->
+    <div class="bg-slate-800/50 border-t border-white/10 py-12 px-4">
       <div class="max-w-2xl mx-auto">
-        <h2 class="text-3xl font-bold text-white mb-8 text-center">Оставить отзыв</h2>
+        <h2 class="text-2xl font-bold text-white mb-8 text-center">Оставить свой отзыв</h2>
 
-        <div class="bg-slate-900 border border-white/10 rounded-lg p-8 space-y-4">
+        <div class="bg-slate-900 border border-white/10 rounded-lg p-6 space-y-4">
           <div>
             <label class="block text-sm font-medium text-white mb-2">Имя</label>
             <input
               v-model="form.name"
               type="text"
               placeholder="Ваше имя"
-              class="w-full px-4 py-2 bg-slate-800 text-white border border-white/10 rounded-md focus:border-blue-500 focus:outline-none placeholder-gray-400"
+              class="w-full px-4 py-2 bg-slate-800/50 text-white border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none placeholder-gray-500 text-sm"
             />
           </div>
 
@@ -63,7 +62,7 @@
             <label class="block text-sm font-medium text-white mb-2">Статус</label>
             <select
               v-model="form.role"
-              class="w-full px-4 py-2 bg-slate-800 text-white border border-white/10 rounded-md focus:border-blue-500 focus:outline-none"
+              class="w-full px-4 py-2 bg-slate-800/50 text-white border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none text-sm"
             >
               <option value="Бакалавриат">Бакалавриат</option>
               <option value="Магистратура">Магистратура</option>
@@ -79,6 +78,7 @@
                 v-for="i in 5"
                 :key="i"
                 @click="form.rating = i"
+                type="button"
                 class="transition"
               >
                 <Icon
@@ -93,16 +93,16 @@
             <label class="block text-sm font-medium text-white mb-2">Отзыв</label>
             <textarea
               v-model="form.content"
-              placeholder="Поделитесь вашим опытом..."
-              rows="5"
-              class="w-full px-4 py-2 bg-slate-800 text-white border border-white/10 rounded-md focus:border-blue-500 focus:outline-none placeholder-gray-400 resize-none"
+              placeholder="Поделитесь своим опытом..."
+              rows="4"
+              class="w-full px-4 py-2 bg-slate-800/50 text-white border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none placeholder-gray-500 text-sm resize-none"
             />
           </div>
 
           <button
             @click="submitReview"
             :disabled="!canSubmit || isSubmitting"
-            class="w-full px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-500 disabled:opacity-50 transition font-medium"
+            class="w-full px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-500 disabled:opacity-50 transition font-medium text-sm"
           >
             <span v-if="isSubmitting">Отправка...</span>
             <span v-else>Отправить отзыв</span>
@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive } from 'vue'
 import HeaderMain from '~/components/layout/HeaderMain.vue'
 import LayoutFooterMain from '~/components/layout/LayoutFooterMain.vue'
 
@@ -124,50 +124,44 @@ const reviews = ref<any[]>([
   {
     id: 1,
     author: 'Анна Петрова',
-    role: 'Бакалавриат, 3 курс',
+    role: 'Бакалавриат',
     rating: 5,
-    content: 'Отличный сервис! Помогли с курсовой работой, качество на высоте. Менеджер был всегда на связи и отвечал на все вопросы.',
-    date: '2026-01-10'
+    content: 'Отличный сервис! Помогли с курсовой, качество на высоте.'
   },
   {
     id: 2,
     author: 'Сергей Иванов',
     role: 'Магистратура',
     rating: 5,
-    content: 'Реферат выполнили быстро и качественно. Все сделано в соответствии с требованиями. Спасибо за оперативность!',
-    date: '2026-01-08'
+    content: 'Реферат выполнили быстро и качественно.'
   },
   {
     id: 3,
     author: 'Мария Сидорова',
-    role: 'Бакалавриат, 4 курс',
+    role: 'Бакалавриат',
     rating: 5,
-    content: 'Заказала дипломную работу. Команда профессионалов сделала мне качественный диплом. Очень доволена результатом!',
-    date: '2026-01-05'
+    content: 'Заказала диплом, качественный результат.'
   },
   {
     id: 4,
     author: 'Илья Смирнов',
-    role: 'Специалитет, 5 курс',
+    role: 'Специалитет',
     rating: 5,
-    content: 'Первый раз заказывал помощь. Был скептичен, но результат превзошёл мои ожидания. Благодарю команду!',
-    date: '2026-01-01'
+    content: 'Превосходная работа, рекомендую!'
   },
   {
     id: 5,
     author: 'Елена Новикова',
-    role: 'Бакалавриат',
+    role: 'Магистратура',
     rating: 5,
-    content: 'Быстрое решение задач по математике. Все примеры разобраны пошагово. Легко разобраться в материале.',
-    date: '2025-12-28'
+    content: 'Быстрое решение основного вопроса.'
   },
   {
     id: 6,
     author: 'Дмитрий Кузнецов',
-    role: 'Магистратура, 2 курс',
+    role: 'Магистратура',
     rating: 5,
-    content: 'Профессиональный подход к каждому заказу. Менеджер помог разобраться со всеми нюансами. Рекомендую!',
-    date: '2025-12-25'
+    content: 'Профессиональный подход. Нибы поеди к требованиям.'
   }
 ])
 
@@ -184,20 +178,11 @@ const canSubmit = computed(() => {
   return form.name && form.content && form.rating > 0
 })
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('ru-RU', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
 const submitReview = async () => {
   if (!canSubmit.value) return
 
   isSubmitting.value = true
   
-  // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 1000))
 
   const newReview = {
@@ -208,12 +193,10 @@ const submitReview = async () => {
 
   reviews.value.unshift(newReview)
   
-  // Save to localStorage
   if (process.client) {
     localStorage.setItem('reviews', JSON.stringify(reviews.value))
   }
 
-  // Reset form
   form.name = ''
   form.content = ''
   form.rating = 5
@@ -222,7 +205,6 @@ const submitReview = async () => {
 }
 
 onMounted(() => {
-  // Load reviews from localStorage if they exist
   if (process.client) {
     const stored = localStorage.getItem('reviews')
     if (stored) {
