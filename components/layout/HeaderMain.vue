@@ -1,6 +1,6 @@
 <template>
   <header class="bg-slate-800/80 backdrop-blur border-b border-white/10 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
       <!-- Logo -->
       <NuxtLink to="/" class="flex items-center gap-2 group">
         <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center group-hover:shadow-lg group-hover:shadow-blue-500/30 transition">
@@ -12,6 +12,12 @@
       <!-- Navigation -->
       <nav class="hidden md:flex items-center gap-8">
         <NuxtLink
+          to="/"
+          class="text-gray-300 hover:text-white transition text-sm font-medium"
+        >
+          🏠 Главная
+        </NuxtLink>
+        <NuxtLink
           to="/#about"
           class="text-gray-300 hover:text-white transition text-sm font-medium"
         >
@@ -22,12 +28,6 @@
           class="text-gray-300 hover:text-white transition text-sm font-medium"
         >
           Отзывы
-        </NuxtLink>
-        <NuxtLink
-          to="/reviews"
-          class="text-gray-300 hover:text-white transition text-sm font-medium"
-        >
-          Все отзывы
         </NuxtLink>
       </nav>
 
