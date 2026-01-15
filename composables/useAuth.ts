@@ -2,6 +2,15 @@ export const useAuth = () => {
   const user = ref<{ id: string; name: string; email: string; phone: string } | null>(null)
   const isAuthenticated = ref(false)
 
+  // Test user credentials
+  const testUser = {
+    id: '1',
+    name: 'Test User',
+    email: 'test@mail.com',
+    phone: '+7 900 000-00-00'
+  }
+  const testPassword = 'password123'
+
   // Загружаем пользователя из localStorage при инициализации
   const initUser = () => {
     if (process.client) {
@@ -25,21 +34,37 @@ export const useAuth = () => {
     isAuthenticated.value = true
     if (process.client) {
       localStorage.setItem('user', JSON.stringify(newUser))
-      localStorage.setItem('password', password) // Не делай так в продакшене!
+      localStorage.setItem('password', password)
     }
   }
 
   // Вход
   const login = (email: string, password: string) => {
+    // Проверка тестовых учетных данных
+    if (email === testUser.email && password === testPassword) {
+      user.value = testUser
+      isAuthenticated.value = true
+      if (process.client) {
+        localStorage.setItem('user', JSON.stringify(testUser))
+        localStorage.setItem('password', testPassword)
+      }
+      return true
+    }
+
+    // Проверка сохраненных пользователей
     if (process.client) {
       const stored = localStorage.getItem('user')
       const storedPassword = localStorage.getItem('password')
       if (stored && storedPassword === password) {
-        user.value = JSON.parse(stored)
-        isAuthenticated.value = true
-        return true
+        const storedUser = JSON.parse(stored)
+        if (storedUser.email === email) {
+          user.value = storedUser
+          isAuthenticated.value = true
+          return true
+        }
       }
     }
+
     return false
   }
 
