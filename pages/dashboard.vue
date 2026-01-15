@@ -7,12 +7,20 @@
           <h1 class="text-2xl font-bold text-white">{{ user?.name || 'Личный кабинет' }}</h1>
           <p class="text-gray-400 text-sm">{{ user?.email }}</p>
         </div>
-        <button
-          @click="handleLogout"
-          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition font-medium text-sm"
-        >
-          Выход
-        </button>
+        <div class="flex gap-3">
+          <NuxtLink
+            to="/"
+            class="px-4 py-2 text-gray-200 border border-white/20 rounded-lg hover:border-white/40 hover:bg-white/5 transition font-medium text-sm"
+          >
+            ← Главная
+          </NuxtLink>
+          <button
+            @click="handleLogout"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition font-medium text-sm"
+          >
+            Выход
+          </button>
+        </div>
       </div>
     </div>
 
