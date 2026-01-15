@@ -1,94 +1,73 @@
 <template>
- <header :class="['w-full sticky top-0 z-50 backdrop-blur bg-black/80', backgroundClass, borderClass]">
-   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-     <div :class="['flex items-center justify-between gap-8', heightClass]">
-       <!-- Left: Logo -->
-       <div class="min-w-0 flex-shrink-0">
-         <slot name="logo">
-           <NuxtLink :to="logoHref" class="inline-flex items-center gap-2">
-             <img v-if="logoSrc" :src="logoSrc" :alt="logoAlt" class="h-8 w-auto" />
-             <span v-else :class="['text-2xl font-light tracking-wide', logoTextClass]">Reshala</span>
-           </NuxtLink>
-         </slot>
-       </div>
+  <header class="bg-slate-800/80 backdrop-blur border-b border-white/10 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <!-- Logo -->
+      <NuxtLink to="/" class="flex items-center gap-2 group">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center group-hover:shadow-lg group-hover:shadow-blue-500/30 transition">
+          <span class="text-white font-bold text-lg">R</span>
+        </div>
+        <span class="text-white font-bold text-xl hidden sm:inline">Reshala</span>
+      </NuxtLink>
 
-       <!-- Right: Navigation -->
-       <nav class="flex-1 hidden md:flex items-center justify-end">
-         <slot name="nav">
-           <ul class="flex items-center gap-8">
-             <li v-for="item in navItems" :key="item.href">
-               <NuxtLink
-                 :to="item.href"
-                 :class="[
-                   'text-sm font-normal transition-all duration-200',
-                   linkClass,
-                   route.path === item.href 
-                     ? linkActiveClass 
-                     : 'hover:text-white/80'
-                 ]"
-               >
-                 {{ item.label }}
-               </NuxtLink>
-             </li>
-           </ul>
-         </slot>
-       </nav>
-     </div>
-   </div>
- </header>
+      <!-- Navigation -->
+      <nav class="hidden md:flex items-center gap-8">
+        <NuxtLink
+          to="/#about"
+          class="text-gray-300 hover:text-white transition text-sm font-medium"
+        >
+          О нас
+        </NuxtLink>
+        <NuxtLink
+          to="/#reviews"
+          class="text-gray-300 hover:text-white transition text-sm font-medium"
+        >
+          Отзывы
+        </NuxtLink>
+        <NuxtLink
+          to="/reviews"
+          class="text-gray-300 hover:text-white transition text-sm font-medium"
+        >
+          Все отзывы
+        </NuxtLink>
+      </nav>
+
+      <!-- Auth Buttons -->
+      <div class="flex items-center gap-3">
+        <NuxtLink
+          v-if="!isAuthenticated"
+          to="/auth"
+          class="px-4 py-2 text-white text-sm font-medium rounded-md border border-white/20 hover:border-white/40 hover:bg-white/5 transition"
+        >
+          Вход
+        </NuxtLink>
+        <NuxtLink
+          v-if="!isAuthenticated"
+          to="/auth"
+          class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition"
+        >
+          Регистрация
+        </NuxtLink>
+        <NuxtLink
+          v-if="isAuthenticated"
+          to="/dashboard"
+          class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition flex items-center gap-2"
+        >
+          <span>👤</span>
+          <span class="hidden sm:inline">{{ user?.name || 'Кабинет' }}</span>
+        </NuxtLink>
+      </div>
+    </div>
+  </header>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#imports'
 
-interface NavItem {
-  label: string
-  href: string
-}
-
-const props = withDefaults(defineProps<{
-  logoSrc?: string
-  logoAlt?: string
-  logoHref?: string
-  navItems?: NavItem[]
-  ctaText?: string
-  /** Props to pass directly to BaseButton (e.g., to, variant, size, loading) */
-  ctaProps?: Record<string, any>
-  backgroundClass?: string
-  borderClass?: string
-  linkClass?: string
-  linkActiveClass?: string
-  logoTextClass?: string
-  buttonClass?: string
-  heightClass?: string
-}>(), {
-  logoSrc: undefined,
-  logoAlt: 'Логотип',
-  logoHref: '/',
-  navItems: () => ([
-    { label: 'Главная', href: '/' },
-    { label: 'О нас', href: '/#about' },
-    { label: 'Отзывы', href: '/#reviews' }
-  ]),
-  ctaText: 'Заказать',
-  ctaProps: () => ({}),
-  backgroundClass: 'bg-black',
-  borderClass: 'border-b border-white/10',
-  linkClass: 'text-white/60',
-  linkActiveClass: 'text-white border border-white/30 rounded-full px-5 py-2',
-  logoTextClass: 'text-white',
-  buttonClass: '',
-  heightClass: 'h-20'
-})
-
-const emit = defineEmits<{ (e: 'cta'): void }>()
-
-const route = useRoute()
-
-const currentPath = computed(() => route.path)
-
-function onCta() {
-  emit('cta')
-}
+const { user, isAuthenticated } = useAuth()
 </script>
+
+<style scoped>
+a {
+  text-decoration: none;
+}
+</style>
