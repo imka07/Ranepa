@@ -24,7 +24,7 @@
           :style="{ transform: `translateX(${translateX}px)` }"
         >
           <template v-for="(t, i) in loopedTestimonials" :key="i">
-            <article class="w-80 shrink-0 rounded-xl border border-white/10 bg-white/5 p-6 shadow-sm">
+            <article class="w-80 shrink-0 rounded-xl border border-white/10 bg-white/5 p-6 shadow-sm flex flex-col">
               <div class="flex items-center gap-3 mb-4">
                 <div class="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-semibold text-gray-300">
                   {{ getInitials(t.author) }}
@@ -34,7 +34,9 @@
                   <p v-if="t.role" class="text-xs text-gray-400">{{ t.role }}</p>
                 </div>
               </div>
-              <p class="text-sm text-gray-300 leading-relaxed">"{{ t.content }}"</p>
+              <p class="text-sm text-gray-300 leading-relaxed mb-auto">
+                "{{ t.content }}"
+              </p>
               <div v-if="t.rating" class="mt-3 flex items-center gap-1 text-yellow-400">
                 <span v-for="n in Math.round(t.rating)" :key="n">★</span>
               </div>
@@ -47,9 +49,18 @@
         <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black to-transparent" />
       </div>
 
-      <div v-if="showControls" class="mt-8 flex items-center justify-center gap-3">
-        <UiBaseButton size="sm" variant="outline" @click="step(-1)">Назад</UiBaseButton>
-        <UiBaseButton size="sm" variant="outline" @click="step(1)">Вперёд</UiBaseButton>
+      <!-- Controls and Review Button -->
+      <div class="mt-8 flex items-center justify-center gap-3 flex-wrap">
+        <div class="flex gap-3">
+          <UiBaseButton v-if="showControls" size="sm" variant="outline" @click="step(-1)">Назад</UiBaseButton>
+          <UiBaseButton v-if="showControls" size="sm" variant="outline" @click="step(1)">Вперёд</UiBaseButton>
+        </div>
+        <NuxtLink
+          to="/reviews"
+          class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition"
+        >
+          📝 Оставить отзыв
+        </NuxtLink>
       </div>
     </div>
   </section>
@@ -148,5 +159,3 @@ watch(() => props.speed, () => {
   }
 })
 </script>
-
-
