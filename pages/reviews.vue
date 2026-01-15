@@ -36,7 +36,7 @@
                     : 'bg-slate-700/50 text-gray-300 border-white/10 hover:border-white/20'
                 ]"
               >
-                Решено
+                ✅ Решено
               </button>
               <button
                 @click="form.role = 'Не решено'"
@@ -47,25 +47,33 @@
                     : 'bg-slate-700/50 text-gray-300 border-white/10 hover:border-white/20'
                 ]"
               >
-                Не решено
+                ❌ Не решено
               </button>
             </div>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-white mb-3">Оценка</label>
-            <div class="flex gap-2">
+            <div class="flex gap-3">
               <button
                 v-for="i in 5"
                 :key="i"
                 @click="form.rating = i"
                 type="button"
-                class="transition"
+                class="transition hover:scale-110"
               >
-                <Icon
-                  :name="i <= form.rating ? 'mdi:star' : 'mdi:star-outline'"
-                  class="w-6 h-6 text-yellow-400 hover:text-yellow-300 cursor-pointer"
-                />
+                <span
+                  v-if="i <= form.rating"
+                  class="text-3xl text-yellow-400 cursor-pointer"
+                >
+                  ★
+                </span>
+                <span
+                  v-else
+                  class="text-3xl text-gray-500 cursor-pointer hover:text-yellow-300"
+                >
+                  ☆
+                </span>
               </button>
             </div>
           </div>
@@ -108,7 +116,7 @@ import HeaderMain from '~/components/layout/HeaderMain.vue'
 const form = reactive({
   name: '',
   role: '',
-  rating: 5,
+  rating: 0,
   content: ''
 })
 
@@ -138,7 +146,7 @@ const submitReview = async () => {
   // Очистим форму
   form.name = ''
   form.content = ''
-  form.rating = 5
+  form.rating = 0
   form.role = ''
 
   isSubmitting.value = false
