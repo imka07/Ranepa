@@ -118,7 +118,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
 import HeaderMain from '~/components/layout/HeaderMain.vue'
-import LayoutFooterMain from '~/components/layout/LayoutFooterMain.vue'
 
 const reviews = ref<any[]>([
   {

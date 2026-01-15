@@ -76,11 +76,11 @@
             <label class="block text-sm font-medium text-white mb-2">
               Тип работы<span class="text-red-500">*</span>
             </label>
-            <select
-              v-model="form.workType"
-              class="form-select w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition"
-              required
-            >
+              <select
+                v-model="form.workType"
+                class="w-full px-2 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition appearance-none"
+                required
+              >
               <option value="" disabled>Выберите тип работы</option>
               <option value="essay">Реферат</option>
               <option value="coursework">Курсовая работа</option>
