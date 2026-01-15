@@ -78,7 +78,7 @@
             </label>
             <select
               v-model="form.workType"
-              class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition"
+              class="form-select w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition"
               required
             >
               <option value="" disabled>Выберите тип работы</option>
@@ -94,18 +94,30 @@
 
           <!-- Предмет и Тема в одной строке -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <UiBaseInput
-              v-model="form.subject"
-              label="Предмет"
-              placeholder="Например: История"
-              required
-            />
-            <UiBaseInput
-              v-model="form.theme"
-              label="Тема"
-              placeholder="Например: Французская революция"
-              required
-            />
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">
+                Предмет<span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="form.subject"
+                type="text"
+                placeholder="Например: История"
+                class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">
+                Тема<span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="form.theme"
+                type="text"
+                placeholder="Например: Черкессы"
+                class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+                required
+              />
+            </div>
           </div>
 
           <!-- Срок выполнения и Объём (страницы) -->
@@ -117,25 +129,30 @@
               <input
                 v-model="form.deadline"
                 type="date"
-                class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition"
+                class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-100"
                 :min="today"
                 required
               />
             </div>
-            <UiBaseInput
-              v-model="form.volume"
-              label="Объём (страницы)"
-              placeholder="Например: 10"
-              type="number"
-              :min="1"
-              required
-            />
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">
+                Объём (страницы)<span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="form.volume"
+                type="number"
+                placeholder="Например: 10"
+                min="1"
+                class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+                required
+              />
+            </div>
           </div>
         </div>
 
         <!-- Требования / методичка -->
         <div class="border-b border-white/10 pb-6">
-          <label class="block text-sm font-medium text-gray-300 mb-2">Требования / методичка</label>
+          <label class="block text-sm font-medium text-white mb-2">Требования / методичка</label>
           <UiFileUploader @select="onFileSelect" @remove="onFileRemove" />
           <p v-if="form.file" class="text-xs text-gray-400 mt-2">
             📎 {{ form.file.name }} ({{ formatFileSize(form.file.size) }})
@@ -144,11 +161,12 @@
 
         <!-- Комментарий / дополнительные требования -->
         <div class="border-b border-white/10 pb-6">
-          <UiBaseTextarea
+          <label class="block text-sm font-medium text-white mb-2">Дополнительные требования</label>
+          <textarea
             v-model="form.comment"
-            label="Дополнительные требования"
             placeholder="Опишите дополнительные требования, особенности работы, стиль цитирования и т.д."
-            :rows="4"
+            rows="4"
+            class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400 resize-none"
           />
         </div>
 
@@ -157,10 +175,14 @@
           <h3 class="text-sm font-semibold text-white mb-4">Контактные данные</h3>
 
           <div class="mb-4">
-            <UiBaseInput
+            <label class="block text-sm font-medium text-white mb-2">
+              Ваше имя<span class="text-red-500">*</span>
+            </label>
+            <input
               v-model="form.name"
-              label="Ваше имя"
+              type="text"
               placeholder="Иван"
+              class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
               required
             />
           </div>
@@ -198,30 +220,40 @@
           </div>
 
           <div v-if="form.contactType === 'phone'" class="mb-4">
-            <UiBaseInput
+            <label class="block text-sm font-medium text-white mb-2">
+              Телефон<span class="text-red-500">*</span>
+            </label>
+            <input
               v-model="form.phone"
-              label="Телефон"
-              placeholder="+7 900 000-00-00"
               type="tel"
+              placeholder="+7 900 000-00-00"
+              class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
               required
             />
           </div>
 
           <div v-if="form.contactType === 'telegram'" class="mb-4">
-            <UiBaseInput
+            <label class="block text-sm font-medium text-white mb-2">
+              Telegram<span class="text-red-500">*</span>
+            </label>
+            <input
               v-model="form.telegram"
-              label="Telegram"
+              type="text"
               placeholder="@username"
+              class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
               required
             />
           </div>
 
-          <UiBaseInput
-            v-model="form.email"
-            label="Email (опционально)"
-            placeholder="example@mail.com"
-            type="email"
-          />
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-2">Email (опционально)</label>
+            <input
+              v-model="form.email"
+              type="email"
+              placeholder="example@mail.com"
+              class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+            />
+          </div>
         </div>
       </div>
 
@@ -273,8 +305,6 @@ import Hero from '~/components/blocks/Hero.vue'
 import Features from '~/components/blocks/Features.vue'
 import Testimonials from '~/components/blocks/Testimonials.vue'
 import UiBaseModal from '~/components/ui/BaseModal.vue'
-import UiBaseInput from '~/components/ui/BaseInput.vue'
-import UiBaseTextarea from '~/components/ui/BaseTextarea.vue'
 import UiFileUploader from '~/components/ui/FileUploader.vue'
 import UiBaseAlert from '~/components/ui/BaseAlert.vue'
 import { computed, reactive, ref } from 'vue'
@@ -493,3 +523,54 @@ const submitOrder = async () => {
   }
 }
 </script>
+
+<style scoped>
+/* Единые стили для всех форм */
+.form-input,
+.form-select {
+  @apply bg-slate-800 text-white border border-white/10 rounded-md px-4 py-2 transition;
+}
+
+.form-input:focus,
+.form-select:focus {
+  @apply border-blue-500 outline-none;
+}
+
+/* Placeholder стили */
+.form-input::placeholder {
+  @apply text-gray-400;
+}
+
+/* Стили для date picker иконки календаря - белая */
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.1);
+  cursor: pointer;
+}
+
+input[type='date']::placeholder {
+  @apply text-gray-400;
+}
+
+/* Стили для number input спинов */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  @apply appearance-none;
+}
+
+input[type='number'] {
+  @apply appearance-none;
+}
+
+/* Textarea стили */
+textarea {
+  @apply bg-slate-800 text-white border border-white/10 rounded-md px-4 py-2 transition resize-none;
+}
+
+textarea:focus {
+  @apply border-blue-500 outline-none;
+}
+
+textarea::placeholder {
+  @apply text-gray-400;
+}
+</style>
