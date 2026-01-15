@@ -15,9 +15,9 @@
       size="lg"
     >
       <template #actions>
-        <button 
+        <button
           type="button"
-          @click="isOrderOpen = true"
+          @click="openOrderModal"
           class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl hover:shadow-2xl hover:shadow-blue-500/30 hover:scale-105 transition-all duration-300"
         >
           Заказать
@@ -30,17 +30,20 @@
       heading="Почему выбирают нас"
       subheading="Узнайте о наших преимуществах и особенностях работы."
       :items="[
-        { 
-          title: 'Опытные эксперты', 
-          description: 'Работаем с профессионалами, которые знают все тонкости учебного процесса и помогут вам достичь успеха в учёбе.'
+        {
+          title: 'Опытные эксперты',
+          description:
+            'Работаем с профессионалами, которые знают все тонкости учебного процесса и помогут вам достичь успеха в учёбе.'
         },
-        { 
-          title: 'Современные методы', 
-          description: 'Используем передовые подходы к обучению и консультированию, адаптированные под актуальные требования.'
+        {
+          title: 'Современные методы',
+          description:
+            'Используем передовые подходы к обучению и консультированию, адаптированные под актуальные требования.'
         },
-        { 
-          title: 'Поддержка 24/7', 
-          description: 'Всегда на связи для решения ваших вопросов и оказания своевременной помощи в учебном процессе.'
+        {
+          title: 'Поддержка 24/7',
+          description:
+            'Всегда на связи для решения ваших вопросов и оказания своевременной помощи в учебном процессе.'
         }
       ]"
     />
@@ -62,76 +65,162 @@
     <LayoutFooterMain />
 
     <!-- Order Modal -->
-    <UiBaseModal
-      v-model="isOrderOpen"
-      title="Оформление заявки"
-      size="xl"
-      theme="dark"
-    >
+    <UiBaseModal v-model="isOrderOpen" title="Оформление заявки" size="2xl" theme="dark">
       <div class="space-y-6 mt-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <UiBaseInput
-            v-model="form.name"
-            label="Ваше имя"
-            placeholder="Иван"
-            required
-          />
+        <!-- Информация о работе -->
+        <div class="border-b border-white/10 pb-6">
+          <h3 class="text-sm font-semibold text-white mb-4">Информация о работе</h3>
 
-          <div>
-            <label class="block text-sm font-medium text-white mb-1">Способ связи<span class="text-red-500">*</span></label>
+          <!-- Тип работы -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-white mb-2">
+              Тип работы<span class="text-red-500">*</span>
+            </label>
+            <select
+              v-model="form.workType"
+              class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition"
+              required
+            >
+              <option value="" disabled>Выберите тип работы</option>
+              <option value="essay">Реферат</option>
+              <option value="coursework">Курсовая работа</option>
+              <option value="diploma">Дипломная работа</option>
+              <option value="abstract">Абстракт</option>
+              <option value="presentation">Презентация</option>
+              <option value="solution">Решение задач</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+
+          <!-- Предмет и Тема в одной строке -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <UiBaseInput
+              v-model="form.subject"
+              label="Предмет"
+              placeholder="Например: История"
+              required
+            />
+            <UiBaseInput
+              v-model="form.theme"
+              label="Тема"
+              placeholder="Например: Французская революция"
+              required
+            />
+          </div>
+
+          <!-- Срок выполнения и Объём (страницы) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-white mb-2">
+                Срок выполнения<span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="form.deadline"
+                type="date"
+                class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition"
+                :min="today"
+                required
+              />
+            </div>
+            <UiBaseInput
+              v-model="form.volume"
+              label="Объём (страницы)"
+              placeholder="Например: 10"
+              type="number"
+              :min="1"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Требования / методичка -->
+        <div class="border-b border-white/10 pb-6">
+          <label class="block text-sm font-medium text-gray-300 mb-2">Требования / методичка</label>
+          <UiFileUploader @select="onFileSelect" @remove="onFileRemove" />
+          <p v-if="form.file" class="text-xs text-gray-400 mt-2">
+            📎 {{ form.file.name }} ({{ formatFileSize(form.file.size) }})
+          </p>
+        </div>
+
+        <!-- Комментарий / дополнительные требования -->
+        <div class="border-b border-white/10 pb-6">
+          <UiBaseTextarea
+            v-model="form.comment"
+            label="Дополнительные требования"
+            placeholder="Опишите дополнительные требования, особенности работы, стиль цитирования и т.д."
+            :rows="4"
+          />
+        </div>
+
+        <!-- Контактные данные клиента -->
+        <div>
+          <h3 class="text-sm font-semibold text-white mb-4">Контактные данные</h3>
+
+          <div class="mb-4">
+            <UiBaseInput
+              v-model="form.name"
+              label="Ваше имя"
+              placeholder="Иван"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-white mb-2">
+              Способ связи<span class="text-red-500">*</span>
+            </label>
             <div class="flex gap-2 justify-center">
               <button
                 type="button"
                 :class="[
-                  'px-4 py-2 rounded-md text-sm font-medium transition',
-                  form.contactType === 'phone' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-gray-200 hover:bg-slate-700 border border-white/10'
+                  'flex-1 px-4 py-2 rounded-md text-sm font-medium transition',
+                  form.contactType === 'phone'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-800 text-gray-200 hover:bg-slate-700 border border-white/10'
                 ]"
                 @click="form.contactType = 'phone'"
               >
-                Телефон
+                📱 Телефон
               </button>
               <button
                 type="button"
                 :class="[
-                  'px-4 py-2 rounded-md text-sm font-medium transition',
-                  form.contactType === 'telegram' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-gray-200 hover:bg-slate-700 border border-white/10'
+                  'flex-1 px-4 py-2 rounded-md text-sm font-medium transition',
+                  form.contactType === 'telegram'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-800 text-gray-200 hover:bg-slate-700 border border-white/10'
                 ]"
                 @click="form.contactType = 'telegram'"
               >
-                Telegram
+                ✈️ Telegram
               </button>
             </div>
           </div>
 
-          <UiBaseInput
-            v-if="form.contactType === 'phone'"
-            v-model="form.phone"
-            label="Телефон"
-            placeholder="+7 900 000-00-00"
-            required
-          />
-          
-          <UiBaseInput
-            v-if="form.contactType === 'telegram'"
-            v-model="form.telegram"
-            label="Telegram"
-            placeholder="@username"
-            required
-          />
-        </div>
+          <div v-if="form.contactType === 'phone'" class="mb-4">
+            <UiBaseInput
+              v-model="form.phone"
+              label="Телефон"
+              placeholder="+7 900 000-00-00"
+              type="tel"
+              required
+            />
+          </div>
 
-        <UiBaseTextarea
-          v-model="form.comment"
-          label="Комментарий"
-          placeholder="Опишите задачу, сроки и требования"
-          :rows="5"
-        />
+          <div v-if="form.contactType === 'telegram'" class="mb-4">
+            <UiBaseInput
+              v-model="form.telegram"
+              label="Telegram"
+              placeholder="@username"
+              required
+            />
+          </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Материалы</label>
-          <UiFileUploader 
-            @select="onFileSelect" 
-            @remove="onFileRemove"
+          <UiBaseInput
+            v-model="form.email"
+            label="Email (опционально)"
+            placeholder="example@mail.com"
+            type="email"
           />
         </div>
       </div>
@@ -141,11 +230,12 @@
           <button
             type="button"
             class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-gray-100 bg-slate-800 rounded-md hover:bg-slate-700 transition border border-white/10"
-            @click="isOrderOpen = false"
+            @click="closeOrderModal"
             :disabled="isLoading"
           >
             Отмена
           </button>
+
           <button
             type="button"
             class="inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-500 disabled:opacity-50 transition"
@@ -179,62 +269,77 @@
 
 <script setup lang="ts">
 import HeaderMain from '~/components/layout/HeaderMain.vue'
-import { navigateTo } from '#imports'
-import Hero from '~/components/blocks/Hero.vue';
-import Features from '~/components/blocks/Features.vue';
-import Testimonials from '~/components/blocks/Testimonials.vue';
+import Hero from '~/components/blocks/Hero.vue'
+import Features from '~/components/blocks/Features.vue'
+import Testimonials from '~/components/blocks/Testimonials.vue'
 import UiBaseModal from '~/components/ui/BaseModal.vue'
 import UiBaseInput from '~/components/ui/BaseInput.vue'
 import UiBaseTextarea from '~/components/ui/BaseTextarea.vue'
 import UiFileUploader from '~/components/ui/FileUploader.vue'
 import UiBaseAlert from '~/components/ui/BaseAlert.vue'
-import { ref, computed } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
-// Типы для формы
+type ContactType = 'phone' | 'telegram'
+type WorkType = 'essay' | 'coursework' | 'diploma' | 'abstract' | 'presentation' | 'solution' | 'other' | ''
+
 interface FormData {
+  workType: WorkType
+  subject: string
+  theme: string
+  deadline: string
+  volume: string
+  file: File | null
+  comment: string
   name: string
+  contactType: ContactType
   phone: string
   telegram: string
-  contactType: 'phone' | 'telegram'
-  comment: string
-  file: File | null
+  email: string
 }
 
 interface TelegramFormData {
+  workType: WorkType
+  subject: string
+  theme: string
+  deadline: string
+  volume: string
+  file: { name: string; size: number; type: string } | null
+  fileData?: string
+  comment: string
   name: string
+  contactType: ContactType
   phone: string
   telegram: string
-  contactType: 'phone' | 'telegram'
-  comment: string
-  file: {
-    name: string
-    size: number
-    type: string
-  } | null
-  fileData?: string
+  email: string
 }
 
-definePageMeta({
-  title: "Reshala - Помощь студентам",
-});
+useHead({
+  title: 'Reshala - Помощь студентам'
+})
+
+// Получаем сегодняшнюю дату в формате YYYY-MM-DD для минимума в date input
+const today = ref(new Date().toISOString().split('T')[0])
 
 // Состояние формы
 const form = reactive<FormData>({
+  workType: '',
+  subject: '',
+  theme: '',
+  deadline: '',
+  volume: '',
+  file: null,
+  comment: '',
   name: '',
+  contactType: 'phone',
   phone: '',
   telegram: '',
-  contactType: 'phone',
-  comment: '',
-  file: null
+  email: ''
 })
 
-// Состояние модалки
+// UI состояния
 const isOrderOpen = ref(false)
-
-// Состояние загрузки
 const isLoading = ref(false)
 
-// Состояние уведомления
 const alert = reactive({
   show: false,
   type: 'success' as 'success' | 'error',
@@ -242,140 +347,149 @@ const alert = reactive({
   message: ''
 })
 
-// Вычисляемое свойство для проверки возможности отправки
+let alertTimer: ReturnType<typeof setTimeout> | null = null
+
+// Проверка: все обязательные поля заполнены
 const canSubmit = computed(() => {
-  return form.name && 
-    (form.contactType === 'phone' ? form.phone : form.telegram)
+  const contact = form.contactType === 'phone' ? form.phone : form.telegram
+  return Boolean(
+    form.workType &&
+    form.subject &&
+    form.theme &&
+    form.deadline &&
+    form.volume &&
+    form.name &&
+    contact
+  )
 })
 
-// Обработчик выбора файла
+const openOrderModal = () => {
+  isOrderOpen.value = true
+}
+
+const closeOrderModal = () => {
+  isOrderOpen.value = false
+}
+
 const onFileSelect = (selectedFile: File) => {
   form.file = selectedFile
 }
 
-// Обработчик удаления файла
 const onFileRemove = () => {
   form.file = null
 }
 
-// Функция показа уведомления
+const closeAlert = () => {
+  alert.show = false
+  if (alertTimer) {
+    clearTimeout(alertTimer)
+    alertTimer = null
+  }
+}
+
 const showAlert = (type: 'success' | 'error', title: string, message: string) => {
+  closeAlert()
+
   alert.type = type
   alert.title = title
   alert.message = message
   alert.show = true
-  
-  // Автоматически скрыть через 5 секунд
-  setTimeout(() => {
+
+  alertTimer = setTimeout(() => {
     closeAlert()
   }, 5000)
 }
 
-// Функция закрытия уведомления
-const closeAlert = () => {
-  alert.show = false
+// Форматирование размера файла в читаемый вид
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
 }
 
-// Функция для чтения файла как base64
 const readFileAsBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
+
     reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        // Убираем префикс data:application/...;base64,
-        const base64 = reader.result
-        const base64Data = base64.split(',')[1]
-        if (base64Data) {
-          resolve(base64Data)
-        } else {
-          reject(new Error('Failed to read file as base64'))
-        }
-      } else {
-        reject(new Error('FileReader result is not a string'))
-      }
+      const result = reader.result
+      if (typeof result !== 'string') return reject(new Error('FileReader result is not a string'))
+
+      const base64Data = result.split(',')[1]
+      if (!base64Data) return reject(new Error('Failed to read file as base64'))
+
+      resolve(base64Data)
     }
-    reader.onerror = () => {
-      reject(new Error('Failed to read file'))
-    }
+
+    reader.onerror = () => reject(new Error('Failed to read file'))
     reader.readAsDataURL(file)
   })
 }
 
-// Обработчик отправки формы
+const resetForm = () => {
+  form.workType = ''
+  form.subject = ''
+  form.theme = ''
+  form.deadline = ''
+  form.volume = ''
+  form.file = null
+  form.comment = ''
+  form.name = ''
+  form.contactType = 'phone'
+  form.phone = ''
+  form.telegram = ''
+  form.email = ''
+}
+
 const submitOrder = async () => {
   if (isLoading.value) return
-  
   isLoading.value = true
 
   try {
-    // Подготовка данных для отправки
-    const formData: TelegramFormData = {
+    const payload: TelegramFormData = {
+      workType: form.workType,
+      subject: form.subject,
+      theme: form.theme,
+      deadline: form.deadline,
+      volume: form.volume,
+      file: form.file
+        ? { name: form.file.name, size: form.file.size, type: form.file.type }
+        : null,
+      comment: form.comment,
       name: form.name,
+      contactType: form.contactType,
       phone: form.phone,
       telegram: form.telegram,
-      contactType: form.contactType,
-      comment: form.comment,
-      file: form.file ? {
-        name: form.file.name,
-        size: form.file.size,
-        type: form.file.type
-      } : null
+      email: form.email
     }
 
-    // Если есть файл, добавляем его данные
     if (form.file) {
-      // Читаем файл как base64
-      const fileData = await readFileAsBase64(form.file)
-      formData.fileData = fileData
+      payload.fileData = await readFileAsBase64(form.file)
     }
 
-    const { data, error } = await useFetch('/api/send-telegram', {
+    const { error } = await useFetch('/api/send-telegram', {
       method: 'POST',
-      body: formData
+      body: payload
     })
 
     if (error.value) {
       throw error.value
     }
 
-    // Показываем уведомление об успехе
-    showAlert(
-      'success', 
-      'Успешно!', 
-      'Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.'
-    )
-    
-    // Закрываем модалку
-    isOrderOpen.value = false
-    
-    // Сбрасываем форму
+    showAlert('success', 'Успешно!', 'Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.')
+    closeOrderModal()
     resetForm()
-    
-  } catch (error: any) {
-    console.error('Ошибка отправки заявки:', error)
-    
-    // Показываем уведомление об ошибке
+  } catch (err) {
+    console.error('Ошибка отправки заявки:', err)
     showAlert(
-      'error', 
-      'Ошибка!', 
+      'error',
+      'Ошибка!',
       'Не удалось отправить заявку. Пожалуйста, попробуйте еще раз или свяжитесь с нами другим способом.'
     )
   } finally {
     isLoading.value = false
   }
-}
-
-// Сброс формы
-const resetForm = () => {
-  form.name = ''
-  form.phone = ''
-  form.telegram = ''
-  form.contactType = 'phone'
-  form.comment = ''
-  form.file = null
-}
-
-function onCta() {
-  navigateTo('/order')
 }
 </script>
