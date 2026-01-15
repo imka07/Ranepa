@@ -84,12 +84,12 @@ export const useOrders = () => {
     }
   }
 
-  // Получаем одно заказ по ID
+  // Получаем один заказ по ID
   const getOrder = (orderId: string) => {
     return orders.value.find(o => o.id === orderId)
   }
 
-  // Пример: добавим тестовые данные при первом заруске
+  // Пример: добавим тестовые данные при первом запуске
   const addDemoData = () => {
     if (orders.value.length === 0 && process.client) {
       orders.value = [
@@ -97,7 +97,7 @@ export const useOrders = () => {
           id: 'order-001',
           workType: 'essay',
           subject: 'История',
-          theme: 'Пренравлютельная Октябрьская революция',
+          theme: 'Великая Октябрьская революция',
           deadline: '2026-02-15',
           volume: '10',
           status: 'in-progress',
@@ -112,19 +112,19 @@ export const useOrders = () => {
             {
               id: 'msg-2',
               sender: 'manager',
-              text: 'Приняя ваш заказ. Начинаю работу. Эксперт работает на ускоренном режиме.',
+              text: 'Принял ваш заказ. Начинаю работу. Эксперт работает на ускоренном режиме.',
               timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
             },
             {
               id: 'msg-3',
               sender: 'user',
-              text: 'Как прогресс? Моно?',
+              text: 'Как прогресс? Можно обновление?',
               timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
             },
             {
               id: 'msg-4',
               sender: 'manager',
-              text: 'Ныне активно пишем! Осталось 3-4 страницы. Сборка на находимся в стадии временных трат.',
+              text: 'Сейчас активно пишем! Осталось 3-4 страницы. Закончим в течение суток.',
               timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
             }
           ]
@@ -148,13 +148,13 @@ export const useOrders = () => {
             {
               id: 'msg-6',
               sender: 'user',
-              text: 'Можно травы у третьего тома?',
+              text: 'Можно исправления в третьем разделе?',
               timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString()
             },
             {
               id: 'msg-7',
               sender: 'manager',
-              text: 'Конечно! Отправляю травы дня черес 1-2 дня.',
+              text: 'Конечно! Отправляю исправления через 1-2 дня.',
               timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
             }
           ],
