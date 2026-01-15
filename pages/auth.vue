@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-900 flex items-center justify-center px-4 py-8">
-    <div class="w-full max-w-md">
+  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-8">
+    <div class="w-full max-w-sm">
       <!-- Logo -->
       <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-white mb-2">Reshala</h1>
@@ -8,10 +8,10 @@
       </div>
 
       <!-- Tabs -->
-      <div class="flex gap-2 mb-6 bg-slate-800 rounded-lg p-1">
+      <div class="flex gap-2 mb-6 bg-slate-800/50 rounded-lg p-1 border border-white/10">
         <button
           :class="[
-            'flex-1 px-4 py-2 rounded-md font-medium transition',
+            'flex-1 px-4 py-2.5 rounded-md font-medium transition text-sm',
             activeTab === 'login'
               ? 'bg-blue-600 text-white'
               : 'text-gray-400 hover:text-white'
@@ -22,7 +22,7 @@
         </button>
         <button
           :class="[
-            'flex-1 px-4 py-2 rounded-md font-medium transition',
+            'flex-1 px-4 py-2.5 rounded-md font-medium transition text-sm',
             activeTab === 'register'
               ? 'bg-blue-600 text-white'
               : 'text-gray-400 hover:text-white'
@@ -41,7 +41,7 @@
             v-model="loginForm.email"
             type="email"
             placeholder="example@mail.com"
-            class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+            class="w-full px-4 py-2.5 rounded-lg bg-slate-700/50 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-500"
           />
         </div>
 
@@ -51,34 +51,34 @@
             v-model="loginForm.password"
             type="password"
             placeholder="••••••••"
-            class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+            class="w-full px-4 py-2.5 rounded-lg bg-slate-700/50 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-500"
           />
         </div>
 
         <button
           @click="handleLogin"
           :disabled="isLoading || !loginForm.email || !loginForm.password"
-          class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 disabled:opacity-50 transition font-medium"
+          class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-500 disabled:opacity-50 transition font-medium text-sm"
         >
-          <span v-if="isLoading">Загрузка...</span>
+          <span v-if="isLoading">Загружка...</span>
           <span v-else>Войти</span>
         </button>
 
-        <p v-if="error" class="text-red-500 text-sm text-center">{{ error }}</p>
-        <p class="text-gray-400 text-sm text-center">
-          Тестовые данные: test@mail.com / password123
+        <p v-if="error" class="text-red-400 text-sm text-center bg-red-900/20 border border-red-900/30 rounded-lg p-3">{{ error }}</p>
+        <p class="text-gray-400 text-xs text-center">
+          🣋 Тестовые: test@mail.com / password123
         </p>
       </div>
 
       <!-- Register Form -->
-      <div v-if="activeTab === 'register'" class="space-y-4">
+      <div v-if="activeTab === 'register'" class="space-y-3">
         <div>
           <label class="block text-sm font-medium text-white mb-2">Имя</label>
           <input
             v-model="registerForm.name"
             type="text"
-            placeholder="Иван"
-            class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+            placeholder="Иван Иванов"
+            class="w-full px-4 py-2.5 rounded-lg bg-slate-700/50 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-500"
           />
         </div>
 
@@ -88,7 +88,7 @@
             v-model="registerForm.email"
             type="email"
             placeholder="example@mail.com"
-            class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+            class="w-full px-4 py-2.5 rounded-lg bg-slate-700/50 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-500"
           />
         </div>
 
@@ -98,7 +98,7 @@
             v-model="registerForm.phone"
             type="tel"
             placeholder="+7 900 000-00-00"
-            class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+            class="w-full px-4 py-2.5 rounded-lg bg-slate-700/50 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-500"
           />
         </div>
 
@@ -107,38 +107,45 @@
           <input
             v-model="registerForm.password"
             type="password"
-            placeholder="••••••••"
-            class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+            placeholder="Выберите прочный пароль"
+            class="w-full px-4 py-2.5 rounded-lg bg-slate-700/50 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-500"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-white mb-2">Подтверждение пароля</label>
+          <label class="block text-sm font-medium text-white mb-2">Подтвердите пароль</label>
           <input
             v-model="registerForm.confirmPassword"
             type="password"
-            placeholder="••••••••"
-            class="w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
+            placeholder="Тот же пароль"
+            class="w-full px-4 py-2.5 rounded-lg bg-slate-700/50 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-500"
           />
         </div>
 
         <button
           @click="handleRegister"
           :disabled="isLoading || !isFormValid"
-          class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 disabled:opacity-50 transition font-medium"
+          class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-500 disabled:opacity-50 transition font-medium text-sm"
         >
-          <span v-if="isLoading">Загрузка...</span>
+          <span v-if="isLoading">Загружка...</span>
           <span v-else>Зарегистрироваться</span>
         </button>
 
-        <p v-if="error" class="text-red-500 text-sm text-center">{{ error }}</p>
+        <p v-if="error" class="text-red-400 text-sm text-center bg-red-900/20 border border-red-900/30 rounded-lg p-3">{{ error }}</p>
+      </div>
+
+      <!-- Back Link -->
+      <div class="mt-6 text-center">
+        <NuxtLink to="/" class="text-gray-400 hover:text-white text-sm transition">
+          ← Вернуться на главную
+        </NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -167,7 +174,8 @@ const isFormValid = computed(() => {
     registerForm.email &&
     registerForm.phone &&
     registerForm.password &&
-    registerForm.password === registerForm.confirmPassword
+    registerForm.password === registerForm.confirmPassword &&
+    registerForm.password.length >= 6
   )
 })
 
@@ -180,7 +188,7 @@ const handleLogin = async () => {
     if (success) {
       await router.push('/dashboard')
     } else {
-      error.value = 'Неверный email или пароль'
+      error.value = 'Неверные данные для входа'
     }
   } catch (err) {
     error.value = 'Ошибка входа'
@@ -192,7 +200,7 @@ const handleLogin = async () => {
 const handleRegister = async () => {
   error.value = ''
   if (!isFormValid.value) {
-    error.value = 'Заполните все поля корректно'
+    error.value = 'Проверьте все поля. Пароль минимум 6 символов'
     return
   }
 
