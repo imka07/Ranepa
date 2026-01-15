@@ -36,7 +36,7 @@
                     : 'bg-slate-700/50 text-gray-300 border-white/10 hover:border-white/20'
                 ]"
               >
-                ✅ Решено
+                Решено
               </button>
               <button
                 @click="form.role = 'Не решено'"
@@ -47,7 +47,7 @@
                     : 'bg-slate-700/50 text-gray-300 border-white/10 hover:border-white/20'
                 ]"
               >
-                ❌ Не решено
+                Не решено
               </button>
             </div>
           </div>

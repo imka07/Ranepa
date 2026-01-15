@@ -15,7 +15,7 @@
           to="/"
           class="text-gray-300 hover:text-white transition text-sm font-medium"
         >
-          🏠 Главная
+          Главная
         </NuxtLink>
         <NuxtLink
           to="/#about"
