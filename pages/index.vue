@@ -126,12 +126,6 @@
               <label class="block text-sm font-medium mb-2">
                 Срок выполнения<span class="text-red-500">*</span>
               </label>
-                <span
-                  v-if="!form.deadline"
-                  class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none select-none"
-                >
-                  дд.мм.гггг
-                </span>
               <input
                 v-model="form.deadline"
                 type="date"
