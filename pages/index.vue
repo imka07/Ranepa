@@ -129,7 +129,7 @@
               <input
                 v-model="form.deadline"
                 type="date"
-                class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-100"
+                class="form-input form-date-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-100"
                 :min="today"
                 required
               />
@@ -202,7 +202,7 @@
                 ]"
                 @click="form.contactType = 'phone'"
               >
-                Телефон
+                📱 Телефон
               </button>
               <button
                 type="button"
@@ -214,7 +214,7 @@
                 ]"
                 @click="form.contactType = 'telegram'"
               >
-              Telegram
+                ✈️ Telegram
               </button>
             </div>
           </div>
@@ -529,6 +529,7 @@ const submitOrder = async () => {
 .form-input,
 .form-select {
   @apply bg-slate-800 text-white border border-white/10 rounded-md px-4 py-2 transition;
+  box-sizing: border-box;
 }
 
 .form-input:focus,
@@ -541,10 +542,26 @@ const submitOrder = async () => {
   @apply text-gray-400;
 }
 
+/* Date input специальные стили для мобильных */
+.form-date-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 16px; /* Предотвращает автоскалирование на мобильных */
+}
+
+.form-date-input::-webkit-outer-spin-button,
+.form-date-input::-webkit-inner-spin-button {
+  display: none;
+}
+
 /* Стили для date picker иконки календаря - белая */
 input[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(1) brightness(1.1);
   cursor: pointer;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-right: 0.25rem;
 }
 
 input[type='date']::placeholder {
@@ -559,11 +576,14 @@ input[type='number']::-webkit-inner-spin-button {
 
 input[type='number'] {
   @apply appearance-none;
+  font-size: 16px; /* Предотвращает автоскалирование на мобильных */
 }
 
 /* Textarea стили */
 textarea {
   @apply bg-slate-800 text-white border border-white/10 rounded-md px-4 py-2 transition resize-none;
+  box-sizing: border-box;
+  font-size: 16px; /* Предотвращает автоскалирование на мобильных */
 }
 
 textarea:focus {
@@ -572,5 +592,23 @@ textarea:focus {
 
 textarea::placeholder {
   @apply text-gray-400;
+}
+
+/* Мобильные стили */
+@media (max-width: 640px) {
+  .form-input,
+  .form-select {
+    font-size: 16px; /* Гарантирует 16px на мобильных для предотвращения масштабирования */
+    padding: 0.75rem 1rem; /* Немного больше padding для удобства */
+  }
+
+  .form-date-input {
+    padding: 0.75rem 1rem;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
 }
 </style>
