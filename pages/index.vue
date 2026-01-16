@@ -73,7 +73,7 @@
 
           <!-- Тип работы -->
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-400 mb-2">
+            <label class="block text-sm font-medium mb-2">
               Тип работы<span class="text-red-500">*</span>
             </label>
               <select
@@ -123,7 +123,7 @@
           <!-- Срок выполнения и Объём (страницы) -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-400 mb-2">
+              <label class="block text-sm font-medium mb-2">
                 Срок выполнения<span class="text-red-500">*</span>
               </label>
               <input
@@ -202,7 +202,7 @@
                 ]"
                 @click="form.contactType = 'phone'"
               >
-                📱 Телефон
+                Телефон
               </button>
               <button
                 type="button"
@@ -214,7 +214,7 @@
                 ]"
                 @click="form.contactType = 'telegram'"
               >
-                ✈️ Telegram
+              Telegram
               </button>
             </div>
           </div>
@@ -245,7 +245,7 @@
             />
           </div>
 
-          <div>
+          <!-- <div>
             <label class="block text-sm font-medium text-gray-400 mb-2">Email (опционально)</label>
             <input
               v-model="form.email"
@@ -253,7 +253,7 @@
               placeholder="example@mail.com"
               class="form-input w-full px-4 py-2 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition placeholder-gray-400"
             />
-          </div>
+          </div> -->
         </div>
       </div>
 
