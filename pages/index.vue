@@ -133,8 +133,19 @@
                   class="form-input form-date-input w-full px-4 py-2 pr-10 rounded-md bg-slate-800 text-white border border-white/10 focus:border-blue-500 focus:outline-none transition [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-100"
                   :min="today"
                   required
+                  @focus="isDeadlineFocused = true"
+                  @blur="isDeadlineFocused = false"
                 />
+
+                <span
+                  v-if="!form.deadline && !isDeadlineFocused"
+                  class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none sm:hidden"
+                >
+                  дд.мм.гггг
+                </span>
+
               </div>
+
             </div>
             <div>
               <label class="block text-sm font-medium text-white mb-2">
@@ -351,6 +362,9 @@ useHead({
 
 // Получаем сегодняшнюю дату в формате YYYY-MM-DD для минимума в date input
 const today = ref(new Date().toISOString().split('T')[0])
+
+const isDeadlineFocused = ref(false)
+
 
 // Состояние формы
 const form = reactive<FormData>({
