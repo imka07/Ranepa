@@ -87,7 +87,7 @@
               </div>
               <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-3 rounded-lg border border-purple-100/50">
                 <p class="text-xs text-slate-500 mb-1 font-medium">Сообщений</p>
-                <p class="text-slate-800 font-semibold">{{ order.messages.length }}</p>
+                <p class="text-slate-800 font-semibold">{{ order.messages?.length || 0 }}</p>
               </div>
             </div>
           </div>
@@ -252,13 +252,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Order, Message } from '~/composables/useOrders'
 
 const router = useRouter()
 const { user, logout } = useAuth()
 const { orders, addMessage } = useOrders()
 
 const activeTab = ref('orders')
-const selectedOrder = ref(null)
+const selectedOrder = ref<Order | null>(null)
 const messageText = ref('')
 const expandedFaq = ref<number | null>(null)
 
@@ -338,13 +339,15 @@ const getWorkTypeLabel = (type: string) => {
 }
 
 const sendMessage = () => {
-  if (!messageText.value.trim() || !selectedOrder.value) return
+  if (!messageText.value.trim() || !selectedOrder.value?.id) return
 
   addMessage(selectedOrder.value.id, 'user', messageText.value)
   messageText.value = ''
 
   setTimeout(() => {
-    addMessage(selectedOrder.value.id, 'manager', '✅ Сообщение получено!')
+    if (selectedOrder.value?.id) {
+      addMessage(selectedOrder.value.id, 'manager', '✅ Сообщение получено!')
+    }
   }, 2000)
 }
 
