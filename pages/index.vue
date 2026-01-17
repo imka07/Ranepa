@@ -340,24 +340,10 @@ interface FormData {
   email: string
 }
 
-interface TelegramFormData {
-  workType: WorkType
-  subject: string
-  theme: string
-  deadline: string
-  volume: string
-  file: { name: string; size: number; type: string } | null
-  fileData?: string
-  comment: string
-  name: string
-  contactType: ContactType
-  phone: string
-  telegram: string
-  email: string
-}
+
 
 useHead({
-  title: 'Reshala - Помощь студентам'
+  title: 'Reshala'
 })
 
 // Получаем сегодняшнюю дату в формате YYYY-MM-DD для минимума в date input
@@ -490,53 +476,7 @@ const resetForm = () => {
 }
 
 const submitOrder = async () => {
-  if (isLoading.value) return
-  isLoading.value = true
-
-  try {
-    const payload: TelegramFormData = {
-      workType: form.workType,
-      subject: form.subject,
-      theme: form.theme,
-      deadline: form.deadline,
-      volume: form.volume,
-      file: form.file
-        ? { name: form.file.name, size: form.file.size, type: form.file.type }
-        : null,
-      comment: form.comment,
-      name: form.name,
-      contactType: form.contactType,
-      phone: form.phone,
-      telegram: form.telegram,
-      email: form.email
-    }
-
-    if (form.file) {
-      payload.fileData = await readFileAsBase64(form.file)
-    }
-
-    const { error } = await useFetch('/api/send-telegram', {
-      method: 'POST',
-      body: payload
-    })
-
-    if (error.value) {
-      throw error.value
-    }
-
-    showAlert('success', 'Успешно!', 'Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.')
-    closeOrderModal()
-    resetForm()
-  } catch (err) {
-    console.error('Ошибка отправки заявки:', err)
-    showAlert(
-      'error',
-      'Ошибка!',
-      'Не удалось отправить заявку. Пожалуйста, попробуйте еще раз или свяжитесь с нами другим способом.'
-    )
-  } finally {
-    isLoading.value = false
-  }
+  
 }
 </script>
 

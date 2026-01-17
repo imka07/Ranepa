@@ -246,11 +246,11 @@ const messageText = ref('')
 const expandedFaq = ref<number | null>(null)
 
 const tabs = [
-  { id: 'orders', label: '📦 Заказы' },
-  { id: 'chat', label: '💬 Чат' },
-  { id: 'reviews', label: '⭐ Отзывы' },
-  { id: 'faq', label: '❓ FAQ' },
-  { id: 'settings', label: '⚙️ Настройки' }
+  { id: 'orders', label: 'Заказы' },
+  { id: 'chat', label: 'Чат' },
+  { id: 'reviews', label: 'Отзывы' },
+  { id: 'faq', label: 'FAQ' },
+  { id: 'settings', label: 'Настройки' }
 ]
 
 const faqItems = [

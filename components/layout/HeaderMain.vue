@@ -52,7 +52,12 @@
           to="/dashboard"
           class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 transition flex items-center gap-2"
         >
-          <span>👤</span>
+          <img
+            src="/public/icons/profile.svg"
+            alt="Profile"
+            width="24"
+            height="24"
+          />
           <span class="hidden sm:inline">{{ user?.name || 'Кабинет' }}</span>
         </NuxtLink>
       </div>

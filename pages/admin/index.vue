@@ -4,7 +4,7 @@
     <nav class="bg-slate-800/80 border-b border-white/10 sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-          <span class="text-blue-500">🔓</span> Admin Panel
+            Admin Panel
         </h1>
         <div class="flex items-center gap-4">
           <span class="text-gray-400 text-sm">{{ adminUser?.email }}</span>
@@ -112,11 +112,11 @@ const stats = ref(getStats())
 
 const tabs = ['orders', 'users', 'services', 'messages', 'content'] as const
 const tabLabels: Record<string, string> = {
-  orders: '📦 Заказы',
-  users: '👥 Пользователи',
-  services: '⚙️ Услуги',
-  messages: '💬 Сообщения',
-  content: '📝 Контент'
+  orders: 'Заказы',
+  users: 'Пользователи',
+  services: 'Услуги',
+  messages: 'Сообщения',
+  content: 'Контент'
 }
 
 const handleLogout = () => {
