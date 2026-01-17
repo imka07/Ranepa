@@ -65,9 +65,6 @@
         </button>
 
         <p v-if="error" class="text-red-600 text-sm text-center bg-red-100 border border-red-300 rounded-lg p-3 shadow-sm">{{ error }}</p>
-        <p class="text-slate-500 text-xs text-center">
-          🣋 Тестовые: test@mail.com / password123
-        </p>
       </div>
 
       <!-- Register Form -->
@@ -110,6 +107,7 @@
             placeholder="Выберите прочный пароль"
             class="w-full px-4 py-2.5 rounded-lg bg-white text-slate-800 border border-slate-300 focus:border-blue-500 focus:shadow-md focus:outline-none transition placeholder-slate-400 text-sm shadow-sm"
           />
+          <p class="text-xs text-slate-500 mt-1">Минимум 6 символов</p>
         </div>
 
         <div>
@@ -149,15 +147,15 @@ import { ref, computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const { register, login } = useAuth()
+const { register: registerUser, login: loginUser, isLoading: authIsLoading } = useAuth()
 
 const activeTab = ref<'login' | 'register'>('login')
-const isLoading = ref(false)
 const error = ref('')
+const isLoading = ref(false)
 
 const loginForm = reactive({
-  email: 'test@mail.com',
-  password: 'password123'
+  email: '',
+  password: ''
 })
 
 const registerForm = reactive({
@@ -184,14 +182,16 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    const success = login(loginForm.email, loginForm.password)
-    if (success) {
+    const result = await loginUser(loginForm.email, loginForm.password)
+    
+    if (result.success) {
       await router.push('/dashboard')
     } else {
-      error.value = 'Неверные данные для входа'
+      error.value = result.error || 'Ошибка входа'
     }
   } catch (err) {
     error.value = 'Ошибка входа'
+    console.error('Login error:', err)
   } finally {
     isLoading.value = false
   }
@@ -199,6 +199,7 @@ const handleLogin = async () => {
 
 const handleRegister = async () => {
   error.value = ''
+  
   if (!isFormValid.value) {
     error.value = 'Проверьте все поля. Пароль минимум 6 символов'
     return
@@ -207,15 +208,21 @@ const handleRegister = async () => {
   isLoading.value = true
 
   try {
-    register(
+    const result = await registerUser(
       registerForm.name,
       registerForm.email,
       registerForm.phone,
       registerForm.password
     )
-    await router.push('/dashboard')
+
+    if (result.success) {
+      await router.push('/dashboard')
+    } else {
+      error.value = result.error || 'Ошибка регистрации'
+    }
   } catch (err) {
     error.value = 'Ошибка регистрации'
+    console.error('Register error:', err)
   } finally {
     isLoading.value = false
   }
