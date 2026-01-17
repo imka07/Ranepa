@@ -35,7 +35,7 @@
           </span>
           
           <select
-            @change="updateOrderStatus(order.id, $event.target.value)"
+            @change="handleStatusChange(order.id, $event)"
             class="px-3 py-1 rounded-lg bg-white/20 text-white text-xs border border-blue-300 focus:border-white focus:outline-none cursor-pointer hover:bg-white/30 transition"
           >
             <option value="принят" class="bg-slate-900">Принят</option>
@@ -57,13 +57,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useAdminData } from '~/composables/useAdminData'
+import type { Order } from '~/composables/useAdminData'
 
 const { orders, updateOrderStatus: updateStatus, deleteOrder: deleteOrderFunc } = useAdminData()
 
-const updateOrderStatus = (orderId: string, newStatus: string) => {
-  updateStatus(orderId, newStatus as any)
+const handleStatusChange = (orderId: string, event: Event) => {
+  const target = event.target as HTMLSelectElement | null
+  if (target && target.value) {
+    updateStatus(orderId, target.value as Order['status'])
+  }
 }
 
 const deleteOrder = (orderId: string) => {
