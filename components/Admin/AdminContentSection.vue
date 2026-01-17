@@ -88,19 +88,42 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAdminData } from '~/composables/useAdminData'
+import type { ContentBlock } from '~/composables/useAdminData'
 
 const { contentBlocks, addContentBlock, updateContentBlock, deleteContentBlock: deleteFunc } = useAdminData()
 
 const showAddForm = ref(false)
-const newBlock = ref({ type: 'text', title: '', content: '', page: '', order: 1 })
+const newBlock = ref<Omit<ContentBlock, 'id'> & { type: 'text' | 'image' | 'banner' | 'section' }>({
+  type: 'text',
+  title: '',
+  content: '',
+  page: '',
+  order: 1,
+  isActive: true
+})
 
 const addNewBlock = () => {
   if (!newBlock.value.title || !newBlock.value.content || !newBlock.value.page) {
     alert('Пожалуйста, заполните все необходимые поля')
     return
   }
-  addContentBlock({ ...newBlock.value, isActive: true })
-  newBlock.value = { type: 'text', title: '', content: '', page: '', order: 1 }
+  const blockToAdd: Omit<ContentBlock, 'id'> = {
+    type: newBlock.value.type as 'section' | 'image' | 'text' | 'banner',
+    title: newBlock.value.title,
+    content: newBlock.value.content,
+    page: newBlock.value.page,
+    order: newBlock.value.order,
+    isActive: newBlock.value.isActive
+  }
+  addContentBlock(blockToAdd)
+  newBlock.value = {
+    type: 'text',
+    title: '',
+    content: '',
+    page: '',
+    order: 1,
+    isActive: true
+  }
   showAddForm.value = false
 }
 
