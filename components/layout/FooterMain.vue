@@ -7,24 +7,24 @@
           <slot name="brand">
             <NuxtLink :to="logoHref" class="inline-flex items-center gap-2">
               <img v-if="logoSrc" :src="logoSrc" :alt="logoAlt" class="h-12 w-auto mx-auto" />
-              <span v-else class="text-3xl font-light tracking-wide text-white">Reshala</span>
+              <span v-else class="text-3xl font-light tracking-wide text-slate-900">Reshala</span>
             </NuxtLink>
           </slot>
         </div>
 
         <!-- Motivational Quote -->
         <div class="max-w-3xl mx-auto space-y-6">
-          <p class="text-2xl sm:text-3xl lg:text-4xl font-light text-white leading-relaxed">
+          <p class="text-2xl sm:text-3xl lg:text-4xl font-light text-slate-900 leading-relaxed">
             {{ motivationalText }}
           </p>
-          <p class="text-lg text-gray-400 font-light">
+          <p class="text-lg text-slate-700 font-light">
             {{ subText }}
           </p>
         </div>
 
         <!-- Copyright -->
-        <div class="mt-12 pt-8 border-t border-white/10">
-          <p class="text-sm text-gray-500">© {{ currentYear }} {{ copyrightText }}</p>
+        <div class="mt-12 pt-8 border-t border-slate-200/50">
+          <p class="text-sm text-slate-600">© {{ currentYear }} {{ copyrightText }}</p>
         </div>
       </div>
     </div>
@@ -47,12 +47,10 @@ const props = withDefaults(defineProps<{
   logoHref: '/',
   motivationalText: 'Твой успех начинается здесь',
   subText: 'Мы помогаем студентам достигать их целей и раскрывать потенциал',
-  backgroundClass: 'bg-black',
-  borderClass: 'border-t border-white/10',
+  backgroundClass: 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50',
+  borderClass: 'border-t border-slate-200/50',
   copyrightText: 'Reshala'
 })
 
 const currentYear = new Date().getFullYear()
 </script>
-
-
