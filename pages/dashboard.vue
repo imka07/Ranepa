@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
     <!-- Header -->
-    <div class="bg-slate-800 border-b border-white/10 sticky top-0 z-50">
-      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+    <nav class="bg-slate-800/80 border-b border-white/10 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold text-white">{{ user?.name || 'Личный кабинет' }}</h1>
           <p class="text-gray-400 text-sm">{{ user?.email }}</p>
@@ -22,209 +22,211 @@
           </button>
         </div>
       </div>
-    </div>
+    </nav>
 
-    <!-- Navigation Tabs -->
-    <div class="bg-slate-800/50 border-b border-white/10 sticky top-16 z-40">
-      <div class="max-w-6xl mx-auto px-4">
-        <div class="flex gap-1 overflow-x-auto">
+    <!-- Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <!-- Navigation Tabs -->
+      <div class="bg-slate-800/50 border border-white/10 rounded-lg mb-8 overflow-hidden">
+        <div class="flex flex-wrap border-b border-white/10">
           <button
             v-for="tab in tabs"
             :key="tab.id"
-            :class="[
-              'px-3 py-3 font-medium transition border-b-2 whitespace-nowrap text-sm',
-              activeTab === tab.id
-                ? 'border-blue-600 text-white'
-                : 'border-transparent text-gray-400 hover:text-white'
-            ]"
             @click="activeTab = tab.id"
+            :class="[
+              'px-4 py-3 font-medium text-sm transition border-b-2 -mb-px',
+              activeTab === tab.id
+                ? 'text-blue-500 border-blue-500 bg-blue-500/10'
+                : 'text-gray-400 hover:text-white border-transparent'
+            ]"
           >
             {{ tab.label }}
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Content -->
-    <div class="max-w-6xl mx-auto px-4 py-8">
-      <!-- Orders History -->
-      <div v-if="activeTab === 'orders'" class="space-y-4">
-        <h2 class="text-xl font-bold text-white mb-6">История заказов</h2>
-        <div v-if="orders.length === 0" class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5">
-          <p class="text-gray-400 mb-4">У вас еще нет заказов</p>
-          <NuxtLink
-            to="/"
-            class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
-          >
-            Создать заказ
-          </NuxtLink>
-        </div>
-        <div v-for="order in orders" :key="order.id" class="bg-slate-800 border border-white/10 rounded-lg p-5 cursor-pointer hover:border-white/20 transition" @click="selectedOrder = order; activeTab = 'chat'">
-          <div class="flex items-start justify-between mb-4">
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold text-white">{{ order.subject }}: {{ order.theme }}</h3>
-              <p class="text-gray-400 text-sm">Заказ #{{ order.id }}</p>
-            </div>
-            <span :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-4', statusColor(order.status)]">
-              {{ statusLabel(order.status) }}
-            </span>
+      <!-- Content Area -->
+      <div class="bg-slate-800/50 border border-white/10 rounded-lg p-6">
+        <!-- Orders History -->
+        <div v-show="activeTab === 'orders'">
+          <h2 class="text-xl font-bold text-white mb-6">История заказов</h2>
+          <div v-if="orders.length === 0" class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5">
+            <p class="text-gray-400 mb-4">У вас еще нет заказов</p>
+            <NuxtLink
+              to="/"
+              class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
+            >
+              Создать заказ
+            </NuxtLink>
           </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400">
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Тип</p>
-              <p class="text-white">{{ getWorkTypeLabel(order.workType) }}</p>
+          <div v-for="order in orders" :key="order.id" class="bg-slate-800 border border-white/10 rounded-lg p-5 cursor-pointer hover:border-white/20 transition mb-4" @click="selectedOrder = order; activeTab = 'chat'">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-white">{{ order.subject }}: {{ order.theme }}</h3>
+                <p class="text-gray-400 text-sm">Заказ #{{ order.id }}</p>
+              </div>
+              <span :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-4', statusColor(order.status)]">
+                {{ statusLabel(order.status) }}
+              </span>
             </div>
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Объём</p>
-              <p class="text-white">{{ order.volume }} стр.</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Дедлайн</p>
-              <p class="text-white">{{ formatDate(order.deadline) }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Сообщений</p>
-              <p class="text-white">{{ order.messages.length }}</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400">
+              <div>
+                <p class="text-xs text-gray-500 mb-1">Тип</p>
+                <p class="text-white">{{ getWorkTypeLabel(order.workType) }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 mb-1">Объём</p>
+                <p class="text-white">{{ order.volume }} стр.</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 mb-1">Дедлайн</p>
+                <p class="text-white">{{ formatDate(order.deadline) }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 mb-1">Сообщений</p>
+                <p class="text-white">{{ order.messages.length }}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Chat -->
-      <div v-if="activeTab === 'chat'" class="space-y-4">
-        <div v-if="!selectedOrder" class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5 text-gray-400">
-          Выберите заказ для отправки сообщений
-        </div>
-        <div v-else class="bg-slate-800 border border-white/10 rounded-lg overflow-hidden flex flex-col h-[500px]">
-          <!-- Order Info -->
-          <div class="p-4 border-b border-white/10 bg-slate-700/50">
-            <h3 class="text-lg font-semibold text-white">{{ selectedOrder.subject }}: {{ selectedOrder.theme }}</h3>
-            <p class="text-gray-400 text-sm">Заказ #{{ selectedOrder.id }}</p>
+        <!-- Chat -->
+        <div v-show="activeTab === 'chat'">
+          <h2 class="text-xl font-bold text-white mb-6">Чат</h2>
+          <div v-if="!selectedOrder" class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5 text-gray-400">
+            Выберите заказ для отправки сообщений
           </div>
+          <div v-else class="bg-slate-800 border border-white/10 rounded-lg overflow-hidden flex flex-col h-[500px]">
+            <!-- Order Info -->
+            <div class="p-4 border-b border-white/10 bg-slate-700/50">
+              <h3 class="text-lg font-semibold text-white">{{ selectedOrder.subject }}: {{ selectedOrder.theme }}</h3>
+              <p class="text-gray-400 text-sm">Заказ #{{ selectedOrder.id }}</p>
+            </div>
 
-          <!-- Messages -->
-          <div class="flex-1 overflow-y-auto p-4 space-y-3">
+            <!-- Messages -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-3">
+              <div
+                v-for="msg in selectedOrder.messages"
+                :key="msg.id"
+                :class="['flex', msg.sender === 'user' ? 'justify-end' : 'justify-start']"
+              >
+                <div
+                  :class="[
+                    'max-w-xs px-4 py-2 rounded-lg text-sm',
+                    msg.sender === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-700 text-gray-100'
+                  ]"
+                >
+                  <p>{{ msg.text }}</p>
+                  <p :class="['text-xs mt-1', msg.sender === 'user' ? 'text-blue-100' : 'text-gray-400']">
+                    {{ formatTime(msg.timestamp) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input -->
+            <div class="p-4 border-t border-white/10 bg-slate-700/50">
+              <div class="flex gap-2">
+                <input
+                  v-model="messageText"
+                  type="text"
+                  placeholder="Напишите сообщение..."
+                  class="flex-1 px-3 py-2 bg-slate-800 text-white border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none placeholder-gray-500 text-sm"
+                  @keyup.enter="sendMessage"
+                />
+                <button
+                  @click="sendMessage"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
+                >
+                  Отправить
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div v-show="activeTab === 'reviews'">
+          <h2 class="text-xl font-bold text-white mb-6">Мои отзывы</h2>
+          <div class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5 text-gray-400">
+            <p class="mb-4">У вас еще нет отзывов</p>
+            <NuxtLink
+              to="/reviews"
+              class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
+            >
+              Оставить отзыв
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div v-show="activeTab === 'faq'">
+          <h2 class="text-xl font-bold text-white mb-6">Часто задаваемые вопросы</h2>
+          <div class="space-y-2">
             <div
-              v-for="msg in selectedOrder.messages"
-              :key="msg.id"
-              :class="['flex', msg.sender === 'user' ? 'justify-end' : 'justify-start']"
+              v-for="(item, idx) in faqItems"
+              :key="idx"
+              class="bg-slate-800 border border-white/10 rounded-lg overflow-hidden"
             >
-              <div
-                :class="[
-                  'max-w-xs px-4 py-2 rounded-lg text-sm',
-                  msg.sender === 'user'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-700 text-gray-100'
-                ]"
-              >
-                <p>{{ msg.text }}</p>
-                <p :class="['text-xs mt-1', msg.sender === 'user' ? 'text-blue-100' : 'text-gray-400']">
-                  {{ formatTime(msg.timestamp) }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Input -->
-          <div class="p-4 border-t border-white/10 bg-slate-700/50">
-            <div class="flex gap-2">
-              <input
-                v-model="messageText"
-                type="text"
-                placeholder="Напишите сообщение..."
-                class="flex-1 px-3 py-2 bg-slate-800 text-white border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none placeholder-gray-500 text-sm"
-                @keyup.enter="sendMessage"
-              />
               <button
-                @click="sendMessage"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
+                @click="expandedFaq = expandedFaq === idx ? null : idx"
+                class="w-full px-4 py-4 flex items-center justify-between hover:bg-slate-700/50 transition"
               >
-                Отправить
+                <span class="text-white font-medium text-sm text-left">{{ item.q }}</span>
+                <Icon
+                  name="mdi:chevron-down"
+                  :class="['w-5 h-5 text-gray-400 flex-shrink-0 transition duration-300', expandedFaq === idx && 'rotate-180']"
+                />
               </button>
+              <Transition
+                enter-active-class="transition duration-200"
+                enter-from-class="max-h-0 opacity-0"
+                enter-to-class="max-h-96 opacity-100"
+                leave-active-class="transition duration-200"
+                leave-from-class="max-h-96 opacity-100"
+                leave-to-class="max-h-0 opacity-0"
+              >
+                <div
+                  v-if="expandedFaq === idx"
+                  class="px-4 py-3 border-t border-white/10 text-gray-300 bg-slate-700/30 text-sm leading-relaxed"
+                >
+                  {{ item.a }}
+                </div>
+              </Transition>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Reviews -->
-      <div v-if="activeTab === 'reviews'" class="space-y-4">
-        <h2 class="text-xl font-bold text-white mb-6">Мои отзывы</h2>
-        <div class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5 text-gray-400">
-          <p class="mb-4">У вас еще нет отзывов</p>
-          <NuxtLink
-            to="/reviews"
-            class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
-          >
-            Оставить отзыв
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- FAQ -->
-      <div v-if="activeTab === 'faq'" class="space-y-3">
-        <h2 class="text-xl font-bold text-white mb-6">Часто задаваемые вопросы</h2>
-        <div class="space-y-2">
-          <div
-            v-for="(item, idx) in faqItems"
-            :key="idx"
-            class="bg-slate-800 border border-white/10 rounded-lg overflow-hidden"
-          >
-            <button
-              @click="expandedFaq = expandedFaq === idx ? null : idx"
-              class="w-full px-4 py-4 flex items-center justify-between hover:bg-slate-700/50 transition"
-            >
-              <span class="text-white font-medium text-sm text-left">{{ item.q }}</span>
-              <Icon
-                name="mdi:chevron-down"
-                :class="['w-5 h-5 text-gray-400 flex-shrink-0 transition duration-300', expandedFaq === idx && 'rotate-180']"
+        <!-- Settings -->
+        <div v-show="activeTab === 'settings'">
+          <h2 class="text-xl font-bold text-white mb-6">Настройки</h2>
+          <div class="bg-slate-800 border border-white/10 rounded-lg p-5 space-y-4 max-w-md">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-2">Имя</label>
+              <input
+                :value="user?.name"
+                disabled
+                class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
               />
-            </button>
-            <Transition
-              enter-active-class="transition duration-200"
-              enter-from-class="max-h-0 opacity-0"
-              enter-to-class="max-h-96 opacity-100"
-              leave-active-class="transition duration-200"
-              leave-from-class="max-h-96 opacity-100"
-              leave-to-class="max-h-0 opacity-0"
-            >
-              <div
-                v-if="expandedFaq === idx"
-                class="px-4 py-3 border-t border-white/10 text-gray-300 bg-slate-700/30 text-sm leading-relaxed"
-              >
-                {{ item.a }}
-              </div>
-            </Transition>
-          </div>
-        </div>
-      </div>
-
-      <!-- Settings -->
-      <div v-if="activeTab === 'settings'" class="space-y-4">
-        <h2 class="text-xl font-bold text-white mb-6">Настройки</h2>
-        <div class="bg-slate-800 border border-white/10 rounded-lg p-5 space-y-4 max-w-md">
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-2">Имя</label>
-            <input
-              :value="user?.name"
-              disabled
-              class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
-            <input
-              :value="user?.email"
-              disabled
-              class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-2">Телефон</label>
-            <input
-              :value="user?.phone"
-              disabled
-              class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
-            />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+              <input
+                :value="user?.email"
+                disabled
+                class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-2">Телефон</label>
+              <input
+                :value="user?.phone"
+                disabled
+                class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
+              />
+            </div>
           </div>
         </div>
       </div>
