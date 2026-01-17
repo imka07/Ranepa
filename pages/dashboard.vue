@@ -1,22 +1,22 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
     <!-- Header -->
-    <nav class="bg-slate-800/80 border-b border-white/10 sticky top-0 z-50">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-white">{{ user?.name || 'Личный кабинет' }}</h1>
-          <p class="text-gray-400 text-sm">{{ user?.email }}</p>
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{{ user?.name || 'Личный кабинет' }}</h1>
+          <p class="text-slate-500 text-sm mt-0.5">{{ user?.email }}</p>
         </div>
         <div class="flex gap-3">
           <NuxtLink
             to="/"
-            class="px-4 py-2 text-gray-200 border border-white/20 rounded-lg hover:border-white/40 hover:bg-white/5 transition font-medium text-sm"
+            class="px-4 py-2 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
           >
             ← Главная
           </NuxtLink>
           <button
             @click="handleLogout"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition font-medium text-sm"
+            class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 font-medium text-sm shadow-md hover:shadow-lg transform hover:scale-105"
           >
             Выход
           </button>
@@ -27,17 +27,17 @@
     <!-- Content -->
     <div class="max-w-7xl mx-auto px-4 py-8">
       <!-- Navigation Tabs -->
-      <div class="bg-slate-800/50 border border-white/10 rounded-lg mb-8 overflow-hidden">
-        <div class="flex flex-wrap border-b border-white/10">
+      <div class="bg-white/60 backdrop-blur-sm border border-slate-200/50 rounded-xl mb-8 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div class="flex flex-wrap border-b border-slate-200/50">
           <button
             v-for="tab in tabs"
             :key="tab.id"
             @click="activeTab = tab.id"
             :class="[
-              'px-4 py-3 font-medium text-sm transition border-b-2 -mb-px',
+              'px-4 py-3.5 font-medium text-sm transition-all duration-200 border-b-2 -mb-px relative',
               activeTab === tab.id
-                ? 'text-blue-500 border-blue-500 bg-blue-500/10'
-                : 'text-gray-400 hover:text-white border-transparent'
+                ? 'text-white border-blue-500 bg-gradient-to-r from-blue-500 to-blue-600 shadow-md'
+                : 'text-slate-600 hover:text-slate-800 border-transparent hover:bg-slate-100/50'
             ]"
           >
             {{ tab.label }}
@@ -46,45 +46,48 @@
       </div>
 
       <!-- Content Area -->
-      <div class="bg-slate-800/50 border border-white/10 rounded-lg p-6">
+      <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
         <!-- Orders History -->
         <div v-show="activeTab === 'orders'">
-          <h2 class="text-xl font-bold text-white mb-6">История заказов</h2>
-          <div v-if="orders.length === 0" class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5">
-            <p class="text-gray-400 mb-4">У вас еще нет заказов</p>
+          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
+            История заказов
+          </h2>
+          <div v-if="orders.length === 0" class="text-center py-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50 shadow-sm">
+            <p class="text-slate-600 mb-4">У вас еще нет заказов</p>
             <NuxtLink
               to="/"
-              class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
+              class="inline-block px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105"
             >
               Создать заказ
             </NuxtLink>
           </div>
-          <div v-for="order in orders" :key="order.id" class="bg-slate-800 border border-white/10 rounded-lg p-5 cursor-pointer hover:border-white/20 transition mb-4" @click="selectedOrder = order; activeTab = 'chat'">
+          <div v-for="order in orders" :key="order.id" class="bg-white border border-slate-200/50 rounded-lg p-5 cursor-pointer hover:border-blue-300/50 hover:shadow-lg transition-all duration-300 mb-4 transform hover:translate-y-[-2px] hover:bg-blue-50/30" @click="selectedOrder = order; activeTab = 'chat'">
             <div class="flex items-start justify-between mb-4">
               <div class="flex-1">
-                <h3 class="text-lg font-semibold text-white">{{ order.subject }}: {{ order.theme }}</h3>
-                <p class="text-gray-400 text-sm">Заказ #{{ order.id }}</p>
+                <h3 class="text-lg font-semibold text-slate-800">{{ order.subject }}: {{ order.theme }}</h3>
+                <p class="text-slate-500 text-sm mt-1">Заказ #{{ order.id }}</p>
               </div>
-              <span :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-4', statusColor(order.status)]">
+              <span :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-4 shadow-sm', statusColor(order.status)]">
                 {{ statusLabel(order.status) }}
               </span>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400">
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Тип</p>
-                <p class="text-white">{{ getWorkTypeLabel(order.workType) }}</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-slate-600">
+              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-100/50">
+                <p class="text-xs text-slate-500 mb-1 font-medium">Тип</p>
+                <p class="text-slate-800 font-semibold">{{ getWorkTypeLabel(order.workType) }}</p>
               </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Объём</p>
-                <p class="text-white">{{ order.volume }} стр.</p>
+              <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-3 rounded-lg border border-slate-100">
+                <p class="text-xs text-slate-500 mb-1 font-medium">Объём</p>
+                <p class="text-slate-800 font-semibold">{{ order.volume }} стр.</p>
               </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Дедлайн</p>
-                <p class="text-white">{{ formatDate(order.deadline) }}</p>
+              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-lg border border-green-100/50">
+                <p class="text-xs text-slate-500 mb-1 font-medium">Дедлайн</p>
+                <p class="text-slate-800 font-semibold">{{ formatDate(order.deadline) }}</p>
               </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Сообщений</p>
-                <p class="text-white">{{ order.messages.length }}</p>
+              <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-3 rounded-lg border border-purple-100/50">
+                <p class="text-xs text-slate-500 mb-1 font-medium">Сообщений</p>
+                <p class="text-slate-800 font-semibold">{{ order.messages.length }}</p>
               </div>
             </div>
           </div>
@@ -92,19 +95,22 @@
 
         <!-- Chat -->
         <div v-show="activeTab === 'chat'">
-          <h2 class="text-xl font-bold text-white mb-6">Чат</h2>
-          <div v-if="!selectedOrder" class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5 text-gray-400">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
+            Чат
+          </h2>
+          <div v-if="!selectedOrder" class="text-center py-12 bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg border border-slate-200/50 text-slate-500 shadow-sm">
             Выберите заказ для отправки сообщений
           </div>
-          <div v-else class="bg-slate-800 border border-white/10 rounded-lg overflow-hidden flex flex-col h-[500px]">
+          <div v-else class="bg-white border border-slate-200/50 rounded-lg overflow-hidden flex flex-col h-[500px] shadow-md">
             <!-- Order Info -->
-            <div class="p-4 border-b border-white/10 bg-slate-700/50">
-              <h3 class="text-lg font-semibold text-white">{{ selectedOrder.subject }}: {{ selectedOrder.theme }}</h3>
-              <p class="text-gray-400 text-sm">Заказ #{{ selectedOrder.id }}</p>
+            <div class="p-4 border-b border-slate-200/50 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <h3 class="text-lg font-semibold text-slate-800">{{ selectedOrder.subject }}: {{ selectedOrder.theme }}</h3>
+              <p class="text-slate-500 text-sm mt-1">Заказ #{{ selectedOrder.id }}</p>
             </div>
 
             <!-- Messages -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-3">
+            <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-white to-blue-50/20">
               <div
                 v-for="msg in selectedOrder.messages"
                 :key="msg.id"
@@ -112,14 +118,14 @@
               >
                 <div
                   :class="[
-                    'max-w-xs px-4 py-2 rounded-lg text-sm',
+                    'max-w-xs px-4 py-3 rounded-lg text-sm shadow-sm',
                     msg.sender === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-700 text-gray-100'
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-br-none'
+                      : 'bg-slate-100 text-slate-800 rounded-bl-none border border-slate-200/50'
                   ]"
                 >
                   <p>{{ msg.text }}</p>
-                  <p :class="['text-xs mt-1', msg.sender === 'user' ? 'text-blue-100' : 'text-gray-400']">
+                  <p :class="['text-xs mt-1', msg.sender === 'user' ? 'text-blue-100' : 'text-slate-500']">
                     {{ formatTime(msg.timestamp) }}
                   </p>
                 </div>
@@ -127,18 +133,18 @@
             </div>
 
             <!-- Input -->
-            <div class="p-4 border-t border-white/10 bg-slate-700/50">
+            <div class="p-4 border-t border-slate-200/50 bg-gradient-to-t from-blue-50/30 to-white">
               <div class="flex gap-2">
                 <input
                   v-model="messageText"
                   type="text"
                   placeholder="Напишите сообщение..."
-                  class="flex-1 px-3 py-2 bg-slate-800 text-white border border-white/10 rounded-lg focus:border-blue-500 focus:outline-none placeholder-gray-500 text-sm"
+                  class="flex-1 px-4 py-2.5 bg-white text-slate-800 border border-slate-300 rounded-lg focus:border-blue-500 focus:shadow-md focus:outline-none placeholder-slate-400 text-sm transition-all duration-200"
                   @keyup.enter="sendMessage"
                 />
                 <button
                   @click="sendMessage"
-                  class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
+                  class="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105"
                 >
                   Отправить
                 </button>
@@ -149,12 +155,15 @@
 
         <!-- Reviews -->
         <div v-show="activeTab === 'reviews'">
-          <h2 class="text-xl font-bold text-white mb-6">Мои отзывы</h2>
-          <div class="text-center py-12 bg-slate-800/30 rounded-lg border border-white/5 text-gray-400">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
+            Мои отзывы
+          </h2>
+          <div class="text-center py-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50 text-slate-600 shadow-sm">
             <p class="mb-4">У вас еще нет отзывов</p>
             <NuxtLink
               to="/reviews"
-              class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition text-sm font-medium"
+              class="inline-block px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105"
             >
               Оставить отзыв
             </NuxtLink>
@@ -163,21 +172,24 @@
 
         <!-- FAQ -->
         <div v-show="activeTab === 'faq'">
-          <h2 class="text-xl font-bold text-white mb-6">Часто задаваемые вопросы</h2>
-          <div class="space-y-2">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
+            Часто задаваемые вопросы
+          </h2>
+          <div class="space-y-3">
             <div
               v-for="(item, idx) in faqItems"
               :key="idx"
-              class="bg-slate-800 border border-white/10 rounded-lg overflow-hidden"
+              class="bg-white border border-slate-200/50 rounded-lg overflow-hidden hover:shadow-md transition-all duration-300 shadow-sm"
             >
               <button
                 @click="expandedFaq = expandedFaq === idx ? null : idx"
-                class="w-full px-4 py-4 flex items-center justify-between hover:bg-slate-700/50 transition"
+                class="w-full px-4 py-4 flex items-center justify-between hover:bg-blue-50/50 transition-colors duration-200"
               >
-                <span class="text-white font-medium text-sm text-left">{{ item.q }}</span>
+                <span class="text-slate-800 font-medium text-sm text-left">{{ item.q }}</span>
                 <Icon
                   name="mdi:chevron-down"
-                  :class="['w-5 h-5 text-gray-400 flex-shrink-0 transition duration-300', expandedFaq === idx && 'rotate-180']"
+                  :class="['w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-300', expandedFaq === idx && 'rotate-180 text-blue-500']"
                 />
               </button>
               <Transition
@@ -190,7 +202,7 @@
               >
                 <div
                   v-if="expandedFaq === idx"
-                  class="px-4 py-3 border-t border-white/10 text-gray-300 bg-slate-700/30 text-sm leading-relaxed"
+                  class="px-4 py-3 border-t border-slate-200/50 text-slate-700 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 text-sm leading-relaxed"
                 >
                   {{ item.a }}
                 </div>
@@ -201,30 +213,33 @@
 
         <!-- Settings -->
         <div v-show="activeTab === 'settings'">
-          <h2 class="text-xl font-bold text-white mb-6">Настройки</h2>
-          <div class="bg-slate-800 border border-white/10 rounded-lg p-5 space-y-4 max-w-md">
+          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
+            Настройки
+          </h2>
+          <div class="bg-white border border-slate-200/50 rounded-lg p-6 space-y-4 max-w-md shadow-sm">
             <div>
-              <label class="block text-sm font-medium text-gray-400 mb-2">Имя</label>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Имя</label>
               <input
                 :value="user?.name"
                 disabled
-                class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
+                class="w-full px-4 py-2.5 bg-gradient-to-br from-slate-50 to-blue-50 text-slate-600 border border-slate-200 rounded-lg cursor-not-allowed text-sm font-medium"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Email</label>
               <input
                 :value="user?.email"
                 disabled
-                class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
+                class="w-full px-4 py-2.5 bg-gradient-to-br from-slate-50 to-blue-50 text-slate-600 border border-slate-200 rounded-lg cursor-not-allowed text-sm font-medium"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-400 mb-2">Телефон</label>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Телефон</label>
               <input
                 :value="user?.phone"
                 disabled
-                class="w-full px-4 py-2 bg-slate-700/50 text-gray-400 border border-white/10 rounded-lg cursor-not-allowed text-sm"
+                class="w-full px-4 py-2.5 bg-gradient-to-br from-slate-50 to-blue-50 text-slate-600 border border-slate-200 rounded-lg cursor-not-allowed text-sm font-medium"
               />
             </div>
           </div>
@@ -301,12 +316,12 @@ const statusLabel = (status: string) => {
 
 const statusColor = (status: string) => {
   const colors: Record<string, string> = {
-    pending: 'bg-gray-900/40 text-gray-300 border border-gray-700',
-    'in-progress': 'bg-white/10 text-white border border-white/20',
-    completed: 'bg-green-900/30 text-green-300 border border-green-900/50',
-    delivered: 'bg-green-900/40 text-green-200 border border-green-800'
+    pending: 'bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border border-yellow-300/50 shadow-sm',
+    'in-progress': 'bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-300/50 shadow-sm',
+    completed: 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-300/50 shadow-sm',
+    delivered: 'bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 border border-emerald-300/50 shadow-sm'
   }
-  return colors[status] || 'bg-gray-900/30 text-gray-400'
+  return colors[status] || 'bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-300/50 shadow-sm'
 }
 
 const getWorkTypeLabel = (type: string) => {
