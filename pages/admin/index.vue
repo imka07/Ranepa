@@ -1,16 +1,16 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
     <!-- Навигация -->
-    <nav class="bg-slate-800/80 border-b border-white/10 sticky top-0 z-50">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+        <h1 class="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text">
             Admin Panel
         </h1>
         <div class="flex items-center gap-4">
-          <span class="text-gray-400 text-sm">{{ adminUser?.email }}</span>
+          <span class="text-slate-600 text-sm font-medium">{{ adminUser?.email }}</span>
           <button
             @click="handleLogout"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition text-sm"
+            class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 duration-200"
           >
             Выход
           </button>
@@ -22,40 +22,39 @@
     <div class="max-w-7xl mx-auto px-4 py-8">
       <!-- Статистика -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-slate-700/50 border border-white/10 rounded-lg p-6">
-          <div class="text-gray-400 text-sm mb-2">Всего заказов</div>
-          <div class="text-3xl font-bold text-white">{{ stats.totalOrders }}</div>
-          <div class="text-xs text-yellow-500 mt-2">{{ stats.ordersInProgress }} в обработке</div>
+        <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="text-slate-600 text-sm mb-2 font-medium">Всего заказов</div>
+          <div class="text-3xl font-bold text-slate-800">{{ stats.totalOrders }}</div>
+          <div class="text-xs text-yellow-600 mt-2 font-semibold">{{ stats.ordersInProgress }} в обработке</div>
         </div>
-        <div class="bg-slate-700/50 border border-white/10 rounded-lg p-6">
-          <div class="text-gray-400 text-sm mb-2">Всего пользователей</div>
-          <div class="text-3xl font-bold text-white">{{ stats.totalUsers }}</div>
-          <div class="text-xs text-red-500 mt-2">{{ stats.blockedUsers }} блокировано</div>
+        <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="text-slate-600 text-sm mb-2 font-medium">Всего пользователей</div>
+          <div class="text-3xl font-bold text-slate-800">{{ stats.totalUsers }}</div>
+          <div class="text-xs text-red-600 mt-2 font-semibold">{{ stats.blockedUsers }} блокировано</div>
         </div>
-        <div class="bg-slate-700/50 border border-white/10 rounded-lg p-6">
-          <div class="text-gray-400 text-sm mb-2">Услуг
-</div>
-          <div class="text-3xl font-bold text-white">{{ stats.totalServices }}</div>
+        <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="text-slate-600 text-sm mb-2 font-medium">Услуг</div>
+          <div class="text-3xl font-bold text-slate-800">{{ stats.totalServices }}</div>
         </div>
-        <div class="bg-slate-700/50 border border-white/10 rounded-lg p-6">
-          <div class="text-gray-400 text-sm mb-2">Сообщения</div>
-          <div class="text-3xl font-bold text-white">{{ stats.totalMessages }}</div>
-          <div class="text-xs text-blue-500 mt-2">{{ stats.unreadMessages }} новых</div>
+        <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="text-slate-600 text-sm mb-2 font-medium">Сообщения</div>
+          <div class="text-3xl font-bold text-slate-800">{{ stats.totalMessages }}</div>
+          <div class="text-xs text-blue-600 mt-2 font-semibold">{{ stats.unreadMessages }} новых</div>
         </div>
       </div>
 
-      <!-- Меню красноты табов -->
-      <div class="bg-slate-800/50 border border-white/10 rounded-lg mb-8 overflow-hidden">
-        <div class="flex flex-wrap border-b border-white/10">
+      <!-- Меню табов -->
+      <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg mb-8 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div class="flex flex-wrap border-b border-slate-200/50">
           <button
             v-for="tab in tabs"
             :key="tab"
             @click="activeTab = tab"
             :class="[
-              'px-4 py-3 font-medium text-sm transition border-b-2 -mb-px',
+              'px-4 py-3.5 font-medium text-sm transition-all duration-200 border-b-2 -mb-px',
               activeTab === tab
-                ? 'text-blue-500 border-blue-500 bg-blue-500/10'
-                : 'text-gray-400 hover:text-white border-transparent'
+                ? 'text-white border-blue-500 bg-gradient-to-r from-blue-500 to-blue-600 shadow-md'
+                : 'text-slate-600 hover:text-slate-800 border-transparent hover:bg-slate-100/50'
             ]"
           >
             {{ tabLabels[tab] }}
@@ -64,7 +63,7 @@
       </div>
 
       <!-- Содержимое табов -->
-      <div class="bg-slate-800/50 border border-white/10 rounded-lg p-6">
+      <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
         <!-- Обзор заказов -->
         <div v-show="activeTab === 'orders'">
           <AdminOrdersSection />
