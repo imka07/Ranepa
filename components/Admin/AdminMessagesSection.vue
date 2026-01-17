@@ -7,7 +7,7 @@
     </div>
 
     <div v-else class="space-y-4">
-      <div v-for="message in messages" :key="message.id" class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div v-for="message in messages" :key="message.id" class="bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
         <div class="flex justify-between items-start mb-2">
           <div>
             <h4 class="text-white font-semibold">{{ message.subject }}</h4>

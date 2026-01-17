@@ -11,7 +11,7 @@
     </div>
 
     <!-- Form -->
-    <div class="flex-1 py-12 px-4">
+    <div class="flex-1 py-8 px-4">
       <div class="max-w-2xl mx-auto">
         <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-8 space-y-5 shadow-sm hover:shadow-md transition-shadow duration-300">
           <div>

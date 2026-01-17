@@ -7,7 +7,7 @@
     </div>
 
     <div v-else class="space-y-3">
-      <div v-for="user in users" :key="user.id" class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4 flex justify-between items-center shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div v-for="user in users" :key="user.id" class="bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg p-4 flex justify-between items-center shadow-md hover:shadow-lg transition-shadow duration-300">
         <div>
           <h4 class="text-white font-semibold">{{ user.name }}</h4>
           <p class="text-blue-100 text-sm">{{ user.email }} • {{ user.phone }}</p>

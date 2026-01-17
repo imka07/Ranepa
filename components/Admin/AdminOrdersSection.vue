@@ -7,7 +7,7 @@
     </div>
 
     <div v-else class="space-y-4">
-      <div v-for="order in orders" :key="order.id" class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div v-for="order in orders" :key="order.id" class="bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
         <div class="flex justify-between items-start mb-3">
           <div>
             <h4 class="text-white font-semibold text-lg">{{ order.subject }}</h4>

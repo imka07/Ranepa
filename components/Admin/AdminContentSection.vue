@@ -37,7 +37,7 @@
     </div>
 
     <div v-else class="space-y-3">
-      <div v-for="block in contentBlocks" :key="block.id" class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div v-for="block in contentBlocks" :key="block.id" class="bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
         <div class="flex justify-between items-start mb-2">
           <div class="flex-1">
             <div class="flex items-center gap-2 mb-1">

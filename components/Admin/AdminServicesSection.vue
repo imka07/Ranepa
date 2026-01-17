@@ -11,7 +11,7 @@
       </button>
     </div>
 
-    <div v-if="showAddForm" class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4 mb-6 shadow-md">
+    <div v-if="showAddForm" class="bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg p-4 mb-6 shadow-md">
       <div class="space-y-3">
         <input v-model="newService.name" placeholder="Название услуги" class="w-full px-3 py-2 rounded-lg bg-white/20 text-white border border-blue-300 focus:border-white focus:outline-none placeholder-blue-100 text-sm" />
         <input v-model="newService.description" placeholder="Описание услуги" class="w-full px-3 py-2 rounded-lg bg-white/20 text-white border border-blue-300 focus:border-white focus:outline-none placeholder-blue-100 text-sm" />
@@ -31,7 +31,7 @@
     </div>
 
     <div v-else class="space-y-3">
-      <div v-for="service in services" :key="service.id" class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
+      <div v-for="service in services" :key="service.id" class="bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
         <div class="flex justify-between items-start mb-2">
           <div>
             <h4 class="text-white font-semibold">{{ service.name }}</h4>
