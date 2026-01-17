@@ -1,34 +1,34 @@
 <template>
   <div>
-    <h3 class="text-lg font-semibold text-white mb-4">Управление заказами</h3>
+    <h3 class="text-lg font-semibold text-slate-900 mb-4">Управление заказами</h3>
     
     <div v-if="orders.length === 0" class="text-center py-8">
-      <p class="text-gray-400">Нет заказов</p>
+      <p class="text-slate-600">Нет заказов</p>
     </div>
 
     <div v-else class="space-y-4">
-      <div v-for="order in orders" :key="order.id" class="bg-slate-700/30 border border-white/10 rounded-lg p-4">
+      <div v-for="order in orders" :key="order.id" class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
         <div class="flex justify-between items-start mb-3">
           <div>
-            <h4 class="text-white font-semibold">{{ order.subject }}</h4>
-            <p class="text-gray-400 text-sm">{{ order.userName }} • {{ formatDate(order.createdAt) }}</p>
+            <h4 class="text-white font-semibold text-lg">{{ order.subject }}</h4>
+            <p class="text-blue-100 text-sm">{{ order.userName }} • {{ formatDate(order.createdAt) }}</p>
           </div>
           <div class="text-right">
-            <div class="text-2xl font-bold text-green-400">{{ order.price }} ₽</div>
-            <div class="text-xs text-gray-400">Order #{{ order.id }}</div>
+            <div class="text-2xl font-bold text-green-300">{{ order.price }} ₽</div>
+            <div class="text-xs text-blue-100">Order #{{ order.id }}</div>
           </div>
         </div>
 
-        <p class="text-gray-300 text-sm mb-4">{{ order.description }}</p>
+        <p class="text-blue-50 text-sm mb-4">{{ order.description }}</p>
 
         <div class="flex gap-2 items-center flex-wrap">
           <span
             :class="[
-              'px-3 py-1 rounded-full text-xs font-medium',
-              order.status === 'принят' && 'bg-blue-500/30 text-blue-300 border border-blue-500/50',
-              order.status === 'в работе' && 'bg-yellow-500/30 text-yellow-300 border border-yellow-500/50',
-              order.status === 'готов' && 'bg-green-500/30 text-green-300 border border-green-500/50',
-              order.status === 'отменен' && 'bg-red-500/30 text-red-300 border border-red-500/50'
+              'px-3 py-1 rounded-full text-xs font-medium text-white',
+              order.status === 'принят' && 'bg-yellow-500/70 border border-yellow-400',
+              order.status === 'в работе' && 'bg-orange-500/70 border border-orange-400',
+              order.status === 'готов' && 'bg-green-500/70 border border-green-400',
+              order.status === 'отменен' && 'bg-red-500/70 border border-red-400'
             ]"
           >
             {{ order.status }}
@@ -36,17 +36,17 @@
           
           <select
             @change="updateOrderStatus(order.id, $event.target.value)"
-            class="px-3 py-1 rounded-lg bg-slate-600/50 text-white text-xs border border-white/20 focus:border-blue-500 focus:outline-none cursor-pointer"
+            class="px-3 py-1 rounded-lg bg-white/20 text-white text-xs border border-blue-300 focus:border-white focus:outline-none cursor-pointer hover:bg-white/30 transition"
           >
-            <option value="принят">Принят</option>
-            <option value="в работе">В работе</option>
-            <option value="готов">Готов</option>
-            <option value="отменен">Отменен</option>
+            <option value="принят" class="bg-slate-900">Принят</option>
+            <option value="в работе" class="bg-slate-900">В работе</option>
+            <option value="готов" class="bg-slate-900">Готов</option>
+            <option value="отменен" class="bg-slate-900">Отменен</option>
           </select>
           
           <button
             @click="deleteOrder(order.id)"
-            class="px-3 py-1 rounded-lg bg-red-600/30 text-red-300 text-xs border border-red-500/50 hover:bg-red-600/50 transition"
+            class="px-3 py-1 rounded-lg bg-red-600 text-white text-xs border border-red-500 hover:bg-red-700 transition font-medium"
           >
             Удалить
           </button>
