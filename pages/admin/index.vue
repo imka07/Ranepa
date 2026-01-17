@@ -70,24 +70,24 @@
         </div>
 
         <!-- Управление пользователями -->
-        <div v-show="activeTab === 'users'">
+        <!-- <div v-show="activeTab === 'users'">
           <AdminUsersSection />
-        </div>
+        </div> -->
 
         <!-- Управление услугами -->
-        <div v-show="activeTab === 'services'">
+        <!-- <div v-show="activeTab === 'services'">
           <AdminServicesSection />
-        </div>
+        </div> -->
 
         <!-- Обработка сообщений -->
-        <div v-show="activeTab === 'messages'">
+        <!-- <div v-show="activeTab === 'messages'">
           <AdminMessagesSection />
-        </div>
+        </div> -->
 
         <!-- Управление контентом -->
-        <div v-show="activeTab === 'content'">
+        <!-- <div v-show="activeTab === 'content'">
           <AdminContentSection />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -115,7 +115,7 @@ const tabLabels: Record<string, string> = {
   users: 'Пользователи',
   services: 'Услуги',
   messages: 'Сообщения',
-  content: 'Контент'
+  // content: 'Контент'
 }
 
 const handleLogout = () => {
