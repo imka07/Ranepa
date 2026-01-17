@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white/70 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-40 shadow-sm">
+  <header class="bg-blue-100 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-40 shadow-sm">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
       <!-- Logo -->
       <NuxtLink to="/" class="flex items-center gap-2 group">

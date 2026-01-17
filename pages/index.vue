@@ -213,7 +213,7 @@
                 ]"
                 @click="form.contactType = 'phone'"
               >
-                📱 Телефон
+                Телефон
               </button>
               <button
                 type="button"
@@ -225,7 +225,7 @@
                 ]"
                 @click="form.contactType = 'telegram'"
               >
-                ✈️ Telegram
+                Telegram
               </button>
             </div>
           </div>
