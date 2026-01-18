@@ -62,7 +62,7 @@
               Создать заказ
             </NuxtLink>
           </div>
-          <div v-for="order in orders" :key="order.id" class="bg-white border border-slate-200/50 rounded-lg p-5 cursor-pointer hover:border-blue-300/50 hover:shadow-lg transition-all duration-300 mb-4 transform hover:translate-y-[-2px] hover:bg-blue-50/30" @click="selectedOrder = order; activeTab = 'chat'">
+          <div v-for="order in orders" :key="order.id" class="bg-white border border-slate-200/50 rounded-lg p-5 hover:border-blue-300/50 hover:shadow-lg transition-all duration-300 mb-4 transform hover:translate-y-[-2px] hover:bg-blue-50/30">
             <div class="flex items-start justify-between mb-4">
               <div class="flex-1">
                 <h3 class="text-lg font-semibold text-slate-800">{{ order.subject }}: {{ order.theme }}</h3>
@@ -88,66 +88,6 @@
               <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-3 rounded-lg border border-purple-100/50">
                 <p class="text-xs text-slate-500 mb-1 font-medium">Сообщений</p>
                 <p class="text-slate-800 font-semibold">{{ order.messages?.length || 0 }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Chat -->
-        <div v-show="activeTab === 'chat'">
-          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
-            Чат
-          </h2>
-          <div v-if="!selectedOrder" class="text-center py-12 bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg border border-slate-200/50 text-slate-500 shadow-sm">
-            Выберите заказ для отправки сообщений
-          </div>
-          <div v-else class="bg-white border border-slate-200/50 rounded-lg overflow-hidden flex flex-col h-[500px] shadow-md">
-            <!-- Order Info -->
-            <div class="p-4 border-b border-slate-200/50 bg-gradient-to-r from-blue-50 to-indigo-50">
-              <h3 class="text-lg font-semibold text-slate-800">{{ selectedOrder.subject }}: {{ selectedOrder.theme }}</h3>
-              <p class="text-slate-500 text-sm mt-1">Заказ #{{ selectedOrder.id }}</p>
-            </div>
-
-            <!-- Messages -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-white to-blue-50/20">
-              <div
-                v-for="msg in selectedOrder.messages"
-                :key="msg.id"
-                :class="['flex', msg.sender === 'user' ? 'justify-end' : 'justify-start']"
-              >
-                <div
-                  :class="[
-                    'max-w-xs px-4 py-3 rounded-lg text-sm shadow-sm',
-                    msg.sender === 'user'
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-br-none'
-                      : 'bg-slate-100 text-slate-800 rounded-bl-none border border-slate-200/50'
-                  ]"
-                >
-                  <p>{{ msg.text }}</p>
-                  <p :class="['text-xs mt-1', msg.sender === 'user' ? 'text-blue-100' : 'text-slate-500']">
-                    {{ formatTime(msg.timestamp) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Input -->
-            <div class="p-4 border-t border-slate-200/50 bg-gradient-to-t from-blue-50/30 to-white">
-              <div class="flex gap-2">
-                <input
-                  v-model="messageText"
-                  type="text"
-                  placeholder="Напишите сообщение..."
-                  class="flex-1 px-4 py-2.5 bg-white text-slate-800 border border-slate-300 rounded-lg focus:border-blue-500 focus:shadow-md focus:outline-none placeholder-slate-400 text-sm transition-all duration-200"
-                  @keyup.enter="sendMessage"
-                />
-                <button
-                  @click="sendMessage"
-                  class="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  Отправить
-                </button>
               </div>
             </div>
           </div>
@@ -252,23 +192,20 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Order, Message } from '~/composables/useOrders'
+import type { Order } from '~/composables/useOrders'
 
 const router = useRouter()
 const { user, logout } = useAuth()
-const { orders, addMessage } = useOrders()
+const { orders } = useOrders()
 
 const activeTab = ref('orders')
-const selectedOrder = ref<Order | null>(null)
-const messageText = ref('')
 const expandedFaq = ref<number | null>(null)
 
 const tabs = [
   { id: 'orders', label: 'Заказы' },
-  // { id: 'chat', label: 'Чат' },
   { id: 'reviews', label: 'Отзывы' },
   { id: 'faq', label: 'FAQ' },
-  // { id: 'settings', label: 'Настройки' }
+  { id: 'settings', label: 'Настройки' }
 ]
 
 const faqItems = [
@@ -296,13 +233,6 @@ const faqItems = [
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('ru-RU')
-}
-
-const formatTime = (timestamp: string) => {
-  return new Date(timestamp).toLocaleTimeString('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
 }
 
 const statusLabel = (status: string) => {
@@ -336,19 +266,6 @@ const getWorkTypeLabel = (type: string) => {
     other: 'Другое'
   }
   return labels[type] || type
-}
-
-const sendMessage = () => {
-  if (!messageText.value.trim() || !selectedOrder.value?.id) return
-
-  addMessage(selectedOrder.value.id, 'user', messageText.value)
-  messageText.value = ''
-
-  setTimeout(() => {
-    if (selectedOrder.value?.id) {
-      addMessage(selectedOrder.value.id, 'manager', '✅ Сообщение получено!')
-    }
-  }, 2000)
 }
 
 const handleLogout = () => {
