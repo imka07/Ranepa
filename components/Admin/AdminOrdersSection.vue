@@ -14,8 +14,7 @@
             <p class="text-blue-100 text-sm">{{ order.userName }} • {{ formatDate(order.createdAt) }}</p>
           </div>
           <div class="text-right">
-            <div class="text-2xl font-bold text-green-300">{{ order.price }} ₽</div>
-            <div class="text-xs text-blue-100">Order #{{ order.id }}</div>
+            <div class="text-xs text-blue-100">Заказ №{{ order.id }}</div>
           </div>
         </div>
 
@@ -38,7 +37,7 @@
             @change="handleStatusChange(order.id, $event)"
             class="px-3 py-1 rounded-lg bg-white/20 text-white text-xs border border-blue-300 focus:border-white focus:outline-none cursor-pointer hover:bg-white/30 transition"
           >
-            <option value="принят" class="bg-slate-900">Принят</option>
+            <!-- <option value="принят" class="bg-slate-900">Принят</option> -->
             <option value="в работе" class="bg-slate-900">В работе</option>
             <option value="готов" class="bg-slate-900">Готов</option>
             <option value="отменен" class="bg-slate-900">Отменен</option>

@@ -8,7 +8,6 @@ export interface Order {
   status: 'принят' | 'в работе' | 'готов' | 'отменен'
   createdAt: string
   updatedAt: string
-  price: number
 }
 
 export interface AdminUser {
@@ -62,9 +61,9 @@ export const useAdminData = () => {
       description: 'Контрольная работа по алгебре',
       status: 'в работе',
       createdAt: '2026-01-15T10:00:00Z',
-      updatedAt: '2026-01-16T08:30:00Z',
-      price: 500
+      updatedAt: '2026-01-16T08:30:00Z'
     },
+
     {
       id: '2',
       userId: '2',
@@ -73,8 +72,7 @@ export const useAdminData = () => {
       description: 'История России XX век',
       status: 'готов',
       createdAt: '2026-01-14T15:00:00Z',
-      updatedAt: '2026-01-15T18:00:00Z',
-      price: 750
+      updatedAt: '2026-01-15T18:00:00Z'
     },
     {
       id: '3',
@@ -84,9 +82,19 @@ export const useAdminData = () => {
       description: 'Написание приложения',
       status: 'принят',
       createdAt: '2026-01-16T12:00:00Z',
-      updatedAt: '2026-01-16T12:15:00Z',
-      price: 1000
+      updatedAt: '2026-01-16T12:15:00Z'
+    },
+    {
+      id: '4',
+      userId: '4',
+      userName: 'Алексей',
+      subject: 'Программирование на soso',
+      description: 'Написание приложения',
+      status: 'принят',
+      createdAt: '2026-01-16T12:00:00Z',
+      updatedAt: '2026-01-16T12:15:00Z'
     }
+    
   ])
 
   // Mock данные пользователей

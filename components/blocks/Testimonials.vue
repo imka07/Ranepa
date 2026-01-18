@@ -35,7 +35,7 @@
                 </div>
               </div>
               <p class="text-sm text-slate-700 leading-relaxed mb-auto">
-                "„{{ t.content }}”
+                {{ t.content }}
               </p>
               <div v-if="t.rating" class="mt-3 flex items-center gap-1 text-yellow-500 font-semibold">
                 <span v-for="n in Math.round(t.rating)" :key="n">★</span>
@@ -75,9 +75,9 @@ const props = withDefaults(defineProps<{
   heading?: string
   subheading?: string
   testimonials?: Testimonial[]
-  speed?: number /** px per frame */
+  speed?: number
   pauseOnHover?: boolean
-  duplicate?: number /** how many times to duplicate the list for seamless loop */
+  duplicate?: number
   backgroundClass?: string
   borderClass?: string
   showControls?: boolean

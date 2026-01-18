@@ -21,26 +21,26 @@
     <!-- Контент -->
     <div class="max-w-7xl mx-auto px-4 py-8">
       <!-- Статистика -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div class="flex gap-4 mb-8">
+        <div class="w-full bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
           <div class="text-slate-600 text-sm mb-2 font-medium">Всего заказов</div>
           <div class="text-3xl font-bold text-slate-800">{{ stats.totalOrders }}</div>
           <div class="text-xs text-yellow-600 mt-2 font-semibold">{{ stats.ordersInProgress }} в обработке</div>
         </div>
-        <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <!-- <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
           <div class="text-slate-600 text-sm mb-2 font-medium">Всего пользователей</div>
           <div class="text-3xl font-bold text-slate-800">{{ stats.totalUsers }}</div>
           <div class="text-xs text-red-600 mt-2 font-semibold">{{ stats.blockedUsers }} блокировано</div>
-        </div>
-        <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+        </div> -->
+        <!-- <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
           <div class="text-slate-600 text-sm mb-2 font-medium">Услуг</div>
           <div class="text-3xl font-bold text-slate-800">{{ stats.totalServices }}</div>
-        </div>
-        <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+        </div> -->
+        <!-- <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
           <div class="text-slate-600 text-sm mb-2 font-medium">Сообщения</div>
           <div class="text-3xl font-bold text-slate-800">{{ stats.totalMessages }}</div>
           <div class="text-xs text-blue-600 mt-2 font-semibold">{{ stats.unreadMessages }} новых</div>
-        </div>
+        </div> -->
       </div>
 
       <!-- Меню табов -->
@@ -112,9 +112,9 @@ const stats = ref(getStats())
 const tabs = ['orders', 'users', 'services', 'messages', 'content'] as const
 const tabLabels: Record<string, string> = {
   orders: 'Заказы',
-  users: 'Пользователи',
-  services: 'Услуги',
-  messages: 'Сообщения',
+  // users: 'Пользователи',
+  // services: 'Услуги',
+  // messages: 'Сообщения',
   // content: 'Контент'
 }
 

@@ -265,10 +265,10 @@ const expandedFaq = ref<number | null>(null)
 
 const tabs = [
   { id: 'orders', label: 'Заказы' },
-  { id: 'chat', label: 'Чат' },
+  // { id: 'chat', label: 'Чат' },
   { id: 'reviews', label: 'Отзывы' },
   { id: 'faq', label: 'FAQ' },
-  { id: 'settings', label: 'Настройки' }
+  // { id: 'settings', label: 'Настройки' }
 ]
 
 const faqItems = [
