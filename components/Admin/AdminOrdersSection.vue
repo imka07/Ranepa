@@ -24,7 +24,7 @@
           <span
             :class="[
               'px-3 py-1 rounded-full text-xs font-medium text-white',
-              order.status === 'принят' && 'bg-yellow-500/70 border border-yellow-400',
+              // order.status === 'принят' && 'bg-yellow-500/70 border border-yellow-400',
               order.status === 'в работе' && 'bg-orange-500/70 border border-orange-400',
               order.status === 'готов' && 'bg-green-500/70 border border-green-400',
               order.status === 'отменен' && 'bg-red-500/70 border border-red-400'

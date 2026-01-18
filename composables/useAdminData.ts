@@ -5,7 +5,7 @@ export interface Order {
   userName: string
   subject: string
   description: string
-  status: 'принят' | 'в работе' | 'готов' | 'отменен'
+  status: 'в работе' | 'готов' | 'отменен'
   createdAt: string
   updatedAt: string
 }
@@ -70,7 +70,7 @@ export const useAdminData = () => {
       userName: 'Мария Сидорова',
       subject: 'Реферат по истории',
       description: 'История России XX век',
-      status: 'готов',
+      status: 'в работе',
       createdAt: '2026-01-14T15:00:00Z',
       updatedAt: '2026-01-15T18:00:00Z'
     },
@@ -80,7 +80,7 @@ export const useAdminData = () => {
       userName: 'Алексей Иванов',
       subject: 'Программирование на Python',
       description: 'Написание приложения',
-      status: 'принят',
+      status: 'в работе',
       createdAt: '2026-01-16T12:00:00Z',
       updatedAt: '2026-01-16T12:15:00Z'
     },
@@ -90,7 +90,7 @@ export const useAdminData = () => {
       userName: 'Алексей',
       subject: 'Программирование на soso',
       description: 'Написание приложения',
-      status: 'принят',
+      status: 'в работе',
       createdAt: '2026-01-16T12:00:00Z',
       updatedAt: '2026-01-16T12:15:00Z'
     }
