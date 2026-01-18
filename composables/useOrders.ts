@@ -24,10 +24,8 @@ export const useOrders = () => {
   // Загружаем заказы из localStorage
   const initOrders = () => {
     if (process.client) {
-      const stored = localStorage.getItem('orders')
-      if (stored) {
-        orders.value = JSON.parse(stored)
-      }
+      // Очищаем старые демо-данные
+      localStorage.removeItem('orders')
     }
   }
 
