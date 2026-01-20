@@ -74,7 +74,7 @@ export const useAdminData = () => {
     }
   }
 
-  // Управление пользователями
+  // Управлепшие пользователями
   const blockUser = (userId: string) => {
     const user = users.value.find(u => u.id === userId)
     if (user) {
