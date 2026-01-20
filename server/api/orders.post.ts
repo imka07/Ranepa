@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     // Подготавливаем сообщение для Telegram
     const telegramMessage = formatTelegramMessage(body)
     
-    // Отправляем в Telegram
+    // Отправляем в Telegram (если креды не настроены — просто пропускаем отправку)
     await sendToTelegram(telegramMessage, body.file || null)
     
     // Возвращаем успешный ответ
@@ -105,9 +105,10 @@ async function sendToTelegram(message: string, file: any): Promise<void> {
   const botToken = process.env.TELEGRAM_BOT_TOKEN
   const chatId = process.env.TELEGRAM_CHAT_ID
 
+  // Если креды не настроены — не валим обработку заявки (гостевой флоу должен работать)
   if (!botToken || !chatId) {
-    console.error('Telegram credentials not configured')
-    throw new Error('Telegram credentials not configured')
+    console.warn('Telegram credentials not configured (TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID). Skipping Telegram notification.')
+    return
   }
 
   // Отправляем текстовое сообщение
