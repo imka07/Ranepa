@@ -310,161 +310,27 @@ import Testimonials from '~/components/blocks/Testimonials.vue'
 import UiBaseModal from '~/components/ui/BaseModal.vue'
 import UiFileUploader from '~/components/ui/FileUploader.vue'
 import UiBaseAlert from '~/components/ui/BaseAlert.vue'
-import { computed, reactive, ref } from 'vue'
-
-type ContactType = 'phone' | 'telegram'
-type WorkType = 'essay' | 'coursework' | 'diploma' | 'abstract' | 'presentation' | 'solution' | 'other' | ''
-
-interface FormData {
-  workType: WorkType
-  subject: string
-  theme: string
-  deadline: string
-  volume: string
-  file: File | null
-  comment: string
-  name: string
-  contactType: ContactType
-  phone: string
-  telegram: string
-  email: string
-}
 
 useHead({
   title: 'Reshala'
 })
 
-// Получаем сегодняшнюю дату в формате YYYY-MM-DD для минимума в date input
-const today = ref(new Date().toISOString().split('T')[0])
-
-const isDeadlineFocused = ref(false)
-
-// Состояние формы
-const form = reactive<FormData>({
-  workType: '',
-  subject: '',
-  theme: '',
-  deadline: '',
-  volume: '',
-  file: null,
-  comment: '',
-  name: '',
-  contactType: 'phone',
-  phone: '',
-  telegram: '',
-  email: ''
-})
-
-// UI состояния
-const isOrderOpen = ref(false)
-const isLoading = ref(false)
-
-const alert = reactive({
-  show: false,
-  type: 'success' as 'success' | 'error',
-  title: '',
-  message: ''
-})
-
-let alertTimer: ReturnType<typeof setTimeout> | null = null
-
-// Проверка: все обязательные поля заполнены
-const canSubmit = computed(() => {
-  const contact = form.contactType === 'phone' ? form.phone : form.telegram
-  return Boolean(
-    form.workType &&
-    form.subject &&
-    form.theme &&
-    form.deadline &&
-    form.volume &&
-    form.name &&
-    contact
-  )
-})
-
-const openOrderModal = () => {
-  isOrderOpen.value = true
-}
-
-const closeOrderModal = () => {
-  isOrderOpen.value = false
-}
-
-const onFileSelect = (selectedFile: File) => {
-  form.file = selectedFile
-}
-
-const onFileRemove = () => {
-  form.file = null
-}
-
-const closeAlert = () => {
-  alert.show = false
-  if (alertTimer) {
-    clearTimeout(alertTimer)
-    alertTimer = null
-  }
-}
-
-const showAlert = (type: 'success' | 'error', title: string, message: string) => {
-  closeAlert()
-
-  alert.type = type
-  alert.title = title
-  alert.message = message
-  alert.show = true
-
-  alertTimer = setTimeout(() => {
-    closeAlert()
-  }, 5000)
-}
-
-// Форматирование размера файла в читаемый вид
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
-}
-
-const readFileAsBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-
-    reader.onload = () => {
-      const result = reader.result
-      if (typeof result !== 'string') return reject(new Error('FileReader result is not a string'))
-
-      const base64Data = result.split(',')[1]
-      if (!base64Data) return reject(new Error('Failed to read file as base64'))
-
-      resolve(base64Data)
-    }
-
-    reader.onerror = () => reject(new Error('Failed to read file'))
-    reader.readAsDataURL(file)
-  })
-}
-
-const resetForm = () => {
-  form.workType = ''
-  form.subject = ''
-  form.theme = ''
-  form.deadline = ''
-  form.volume = ''
-  form.file = null
-  form.comment = ''
-  form.name = ''
-  form.contactType = 'phone'
-  form.phone = ''
-  form.telegram = ''
-  form.email = ''
-}
-
-const submitOrder = async () => {
-  
-}
+const {
+  form,
+  isOrderOpen,
+  isLoading,
+  isDeadlineFocused,
+  alert,
+  today,
+  canSubmit,
+  openOrderModal,
+  closeOrderModal,
+  onFileSelect,
+  onFileRemove,
+  closeAlert,
+  formatFileSize,
+  submitOrder
+} = useOrderForm()
 </script>
 
 <style scoped>
