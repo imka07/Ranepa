@@ -43,7 +43,7 @@
             width="24"
             height="24"
           />
-          <span class="hidden sm:inline">{{ user?.name || 'Личный кабинет' }}</span>
+          <span class="hidden sm:inline">{{'Личный кабинет' }}</span>
           <span class="inline sm:hidden">ЛК</span>
         </NuxtLink>
       </div>

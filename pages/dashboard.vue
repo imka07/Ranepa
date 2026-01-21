@@ -3,10 +3,10 @@
     <!-- Header -->
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div>
+        <!-- <div>
           <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{{ user?.name || 'Личный кабинет' }}</h1>
           <p class="text-slate-500 text-sm mt-0.5">{{ user?.email }}</p>
-        </div>
+        </div> -->
         <div class="flex gap-3">
           <NuxtLink
             to="/"
@@ -197,7 +197,6 @@ const tabs = [
   { id: 'orders', label: 'Заказы' },
   { id: 'reviews', label: 'Отзывы' },
   { id: 'faq', label: 'FAQ' },
-  { id: 'settings', label: 'Настройки' }
 ]
 
 const faqItems = [

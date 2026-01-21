@@ -6,9 +6,9 @@
         <h1 class="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text">
             Admin Panel
         </h1>
-        <div class="flex items-center gap-4">
+        <!-- <div class="flex items-center gap-4">
           <span class="text-slate-600 text-sm font-medium">{{ adminUser?.email }}</span>
-        </div>
+        </div> -->
       </div>
     </nav>
 
