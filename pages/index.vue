@@ -84,11 +84,12 @@
                 required
               >
               <option value="" disabled>Выберите тип работы</option>
-              <option value="essay">Реферат</option>
+              <option value="diploma">Диплом</option>
               <option value="coursework">Курсовая работа</option>
-              <option value="diploma">Дипломная работа</option>
-              <option value="abstract">Абстракт</option>
+              <option value="scientific_article">Научная статья</option>
+              <option value="report">Реферат</option>
               <option value="presentation">Презентация</option>
+              <option value="exam_help">Помощь на экзамене</option>
               <option value="solution">Решение задач</option>
               <option value="other">Другое</option>
             </select>
