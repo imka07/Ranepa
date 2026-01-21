@@ -8,12 +8,6 @@
         </h1>
         <div class="flex items-center gap-4">
           <span class="text-slate-600 text-sm font-medium">{{ adminUser?.email }}</span>
-          <button
-            @click="handleLogout"
-            class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 duration-200"
-          >
-            Выход
-          </button>
         </div>
       </div>
     </nav>
@@ -94,16 +88,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import AdminOrdersSection from '~/components/Admin/AdminOrdersSection.vue'
 import AdminUsersSection from '~/components/Admin/AdminUsersSection.vue'
 import AdminServicesSection from '~/components/Admin/AdminServicesSection.vue'
 import AdminMessagesSection from '~/components/Admin/AdminMessagesSection.vue'
 import AdminContentSection from '~/components/Admin/AdminContentSection.vue'
 
-const router = useRouter()
-const { adminUser, isAdmin, adminLogout } = useAdmin()
+const { adminUser, isAdmin } = useAdmin()
 const { getStats } = useAdminData()
 
 const activeTab = ref<'orders' | 'users' | 'services' | 'messages' | 'content'>('orders')
@@ -118,18 +110,10 @@ const tabLabels: Record<string, string> = {
   // content: 'Контент'
 }
 
-const handleLogout = () => {
-  adminLogout()
-  router.push('/admin/login')
-}
-
-onMounted(() => {
-  if (!isAdmin.value) {
-    router.push('/admin/login')
-  }
-  // Обновляем статистику каждые 5 секунд
-  setInterval(() => {
-    stats.value = getStats()
-  }, 5000)
-})
+// Обновляем статистику каждые 5 секунд
+// onMounted(() => {
+//   setInterval(() => {
+//     stats.value = getStats()
+//   }, 5000)
+// })
 </script>
