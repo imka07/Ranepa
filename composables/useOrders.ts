@@ -1,14 +1,30 @@
+export interface OrderSection {
+  id: 'plan' | 'chapter1' | 'chapter2' | 'presentation'
+  name: string
+  completed: boolean
+}
+
 export interface Order {
   id: string
+  userId: string // ID пользователя, создавшего заказ
+  userName: string // Имя пользователя
+  userEmail: string // Email пользователя
   workType: string
   subject: string
   theme: string
   deadline: string
   volume: string
-  status: 'pending' | 'in-progress' | 'completed' | 'delivered'
-  createdAt: string
-  messages: Message[]
+  comment: string
+  name: string // Имя из формы (может отличаться от userName)
+  contactType: 'phone' | 'telegram'
+  phone: string
+  telegram: string
   file?: { name: string; url: string }
+  status: 'в работе' | 'решен' | 'отменен'
+  sections: OrderSection[] // Разделы работы
+  createdAt: string
+  updatedAt: string
+  messages: Message[]
 }
 
 export interface Message {
@@ -18,18 +34,33 @@ export interface Message {
   timestamp: string
 }
 
+// Фиксированные разделы для всех заказов
+const DEFAULT_SECTIONS: OrderSection[] = [
+  { id: 'plan', name: 'План', completed: false },
+  { id: 'chapter1', name: '1 глава', completed: false },
+  { id: 'chapter2', name: '2 глава', completed: false },
+  { id: 'presentation', name: 'Преза', completed: false }
+]
+
 export const useOrders = () => {
   const orders = ref<Order[]>([])
 
   // Загружаем заказы из localStorage
   const initOrders = () => {
     if (process.client) {
-      // Очищаем старые демо-данные
-      localStorage.removeItem('orders')
+      const stored = localStorage.getItem('orders')
+      if (stored) {
+        try {
+          orders.value = JSON.parse(stored)
+        } catch (e) {
+          console.error('Failed to parse orders from localStorage', e)
+          orders.value = []
+        }
+      }
     }
   }
 
-  // Сохраняем заказ в localStorage
+  // Сохраняем заказы в localStorage
   const saveOrders = () => {
     if (process.client) {
       localStorage.setItem('orders', JSON.stringify(orders.value))
@@ -37,12 +68,29 @@ export const useOrders = () => {
   }
 
   // Создаем новый заказ
-  const createOrder = (orderData: Omit<Order, 'id' | 'createdAt' | 'messages' | 'status'>) => {
+  const createOrder = (orderData: any) => {
+    const { user } = useAuth()
+    
     const newOrder: Order = {
       id: Math.random().toString(36).substr(2, 9),
-      ...orderData,
-      status: 'pending',
+      userId: user.value?.id || 'unknown',
+      userName: user.value?.name || 'Unknown',
+      userEmail: user.value?.email || 'unknown@mail.com',
+      workType: orderData.workType,
+      subject: orderData.subject,
+      theme: orderData.theme,
+      deadline: orderData.deadline,
+      volume: orderData.volume,
+      comment: orderData.comment,
+      name: orderData.name,
+      contactType: orderData.contactType,
+      phone: orderData.phone,
+      telegram: orderData.telegram,
+      file: orderData.file,
+      status: 'в работе',
+      sections: JSON.parse(JSON.stringify(DEFAULT_SECTIONS)), // Глубокая копия
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       messages: [
         {
           id: Math.random().toString(36).substr(2, 9),
@@ -57,6 +105,16 @@ export const useOrders = () => {
     return newOrder
   }
 
+  // Получаем заказы конкретного пользователя
+  const getUserOrders = (userId: string) => {
+    return orders.value.filter(o => o.userId === userId)
+  }
+
+  // Получаем все заказы (для админа)
+  const getAllOrders = () => {
+    return orders.value
+  }
+
   // Добавляем сообщение в чат
   const addMessage = (orderId: string, sender: 'user' | 'manager', text: string) => {
     const order = orders.value.find(o => o.id === orderId)
@@ -68,6 +126,7 @@ export const useOrders = () => {
         timestamp: new Date().toISOString()
       }
       order.messages.push(newMessage)
+      order.updatedAt = new Date().toISOString()
       saveOrders()
       return newMessage
     }
@@ -78,13 +137,36 @@ export const useOrders = () => {
     const order = orders.value.find(o => o.id === orderId)
     if (order) {
       order.status = status
+      order.updatedAt = new Date().toISOString()
       saveOrders()
+    }
+  }
+
+  // Обновляем статус раздела
+  const updateSectionStatus = (orderId: string, sectionId: string, completed: boolean) => {
+    const order = orders.value.find(o => o.id === orderId)
+    if (order) {
+      const section = order.sections.find(s => s.id === sectionId)
+      if (section) {
+        section.completed = completed
+        order.updatedAt = new Date().toISOString()
+        saveOrders()
+      }
     }
   }
 
   // Получаем один заказ по ID
   const getOrder = (orderId: string) => {
     return orders.value.find(o => o.id === orderId)
+  }
+
+  // Вычисляем процент готовности заказа
+  const getOrderProgress = (orderId: string): number => {
+    const order = orders.value.find(o => o.id === orderId)
+    if (!order) return 0
+    
+    const completedSections = order.sections.filter(s => s.completed).length
+    return Math.round((completedSections / order.sections.length) * 100)
   }
 
   onMounted(() => {
@@ -94,8 +176,12 @@ export const useOrders = () => {
   return {
     orders,
     createOrder,
+    getUserOrders,
+    getAllOrders,
     addMessage,
     updateOrderStatus,
-    getOrder
+    updateSectionStatus,
+    getOrder,
+    getOrderProgress
   }
 }
