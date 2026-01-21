@@ -5,7 +5,46 @@
         <h3 class="text-lg font-semibold text-slate-800">{{ order.subject }}: {{ order.theme }}</h3>
         <p class="text-slate-500 text-sm mt-1">Заказ #{{ order.id }}</p>
       </div>
-      <span :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-4 shadow-sm', statusColor(order.status)]">
+      <!-- Открываемая статус-кнопка (админ может тогда менять, усер нет) -->
+      <div v-if="isAdminView" class="relative">
+        <button
+          @click="toggleStatusMenu"
+          :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-4 shadow-sm transition-all cursor-pointer hover:shadow-md', statusColor(order.status)]"
+        >
+          {{ statusLabel(order.status) }}
+        </button>
+
+        <!-- Меню выбора статуса -->
+        <Transition
+          enter-active-class="transition duration-100"
+          enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition duration-100"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
+        >
+          <div
+            v-if="statusMenuOpen"
+            class="absolute top-full right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-max"
+          >
+            <button
+              v-for="status in statusOptions"
+              :key="status"
+              @click="selectStatus(status)"
+              :class="[
+                'block w-full px-4 py-2.5 text-left text-sm font-medium transition-colors border-b border-slate-100 last:border-0 hover:bg-slate-50',
+                order.status === status
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-slate-700'
+              ]"
+            >
+              {{ statusLabel(status) }}
+            </button>
+          </div>
+        </Transition>
+      </div>
+      <!-- Обычный статус-бейдж (усер) -->
+      <span v-else :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-4 shadow-sm', statusColor(order.status)]">
         {{ statusLabel(order.status) }}
       </span>
     </div>
@@ -75,50 +114,8 @@
 
     <!-- Действия -->
     <div v-if="showActions" class="flex gap-2 pt-3 border-t border-slate-200/50">
-      <!-- для админа: дропдаун статуса + кнопка удаления -->
+      <!-- для админа: кнопка удаления -->
       <div v-if="isAdminView" class="flex gap-2 w-full">
-        <!-- Кнопка-дропдаун статуса -->
-        <div class="relative flex-1">
-          <button
-            @click="toggleStatusMenu"
-            class="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition text-sm font-medium shadow-md hover:shadow-lg flex items-center justify-between"
-          >
-            <span>{{ statusLabel(order.status) }}</span>
-            <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': statusMenuOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </button>
-
-          <!-- Меню выбора статуса -->
-          <Transition
-            enter-active-class="transition duration-100"
-            enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition duration-100"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
-          >
-            <div
-              v-if="statusMenuOpen"
-              class="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10"
-            >
-              <button
-                v-for="status in statusOptions"
-                :key="status"
-                @click="selectStatus(status)"
-                :class="[
-                  'w-full px-4 py-2.5 text-left text-sm font-medium transition-colors border-b border-slate-100 last:border-0',
-                  order.status === status
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-slate-700 hover:bg-slate-50'
-                ]"
-              >
-                {{ statusLabel(status) }}
-              </button>
-            </div>
-          </Transition>
-        </div>
-
         <!-- Кнопка удаления -->
         <button
           @click="handleDelete"
@@ -142,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Order } from '~/composables/useOrders'
 
 interface Props {
@@ -172,7 +169,25 @@ const { getOrderProgress, deleteOrder } = useOrders()
 const statusMenuOpen = ref(false)
 const statusOptions: Array<'в работе' | 'решен' | 'отменен'> = ['в работе', 'решен', 'отменен']
 
-const progress = computed(() => getOrderProgress(props.order.id))
+const progress = ref(0)
+
+// Пересчитываем прогресс при изменении sections
+const recalculateProgress = () => {
+  const completedSections = props.order.sections.filter(s => s.completed).length
+  progress.value = Math.round((completedSections / props.order.sections.length) * 100)
+}
+
+// Получаем начальное значение прогресса
+recalculateProgress()
+
+// Обслуживаем изменения sections
+watch(
+  () => props.order.sections,
+  () => {
+    recalculateProgress()
+  },
+  { deep: true }
+)
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('ru-RU')
