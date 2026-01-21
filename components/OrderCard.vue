@@ -70,7 +70,7 @@
     </div>
 
     <!-- Прогресс выполнения (только для админа) -->
-    <div v-if="showProgress" class="mb-4">
+    <div v-if="showProgress && order.sections && order.sections.length > 0" class="mb-4">
       <div class="flex items-center justify-between mb-2">
         <p class="text-xs font-semibold text-slate-600">Прогресс выполнения</p>
         <p class="text-xs font-bold text-blue-600">{{ progress }}%</p>
@@ -84,7 +84,7 @@
     </div>
 
     <!-- Разделы работы (только для админа) -->
-    <div v-if="showSections" class="mb-4">
+    <div v-if="showSections && order.sections && order.sections.length > 0" class="mb-4">
       <p class="text-xs font-semibold text-slate-600 mb-2">Разделы работы</p>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div
@@ -139,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import type { Order } from '~/composables/useOrders'
 
 interface Props {
@@ -164,7 +164,7 @@ const emit = defineEmits<{
   'delete-order': []
 }>()
 
-const { getOrderProgress, deleteOrder } = useOrders()
+const { deleteOrder } = useOrders()
 
 const statusMenuOpen = ref(false)
 const statusOptions: Array<'в работе' | 'решен' | 'отменен'> = ['в работе', 'решен', 'отменен']
@@ -173,7 +173,11 @@ const progress = ref(0)
 
 // Пересчитываем прогресс при изменении sections
 const recalculateProgress = () => {
-  const completedSections = props.order.sections.filter(s => s.completed).length
+  if (!props.order.sections || props.order.sections.length === 0) {
+    progress.value = 0
+    return
+  }
+  const completedSections = props.order.sections.filter(s => s?.completed).length
   progress.value = Math.round((completedSections / props.order.sections.length) * 100)
 }
 
