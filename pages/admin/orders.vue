@@ -1,22 +1,25 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50">
-    <!-- Admin Header -->
-    <nav class="bg-gradient-to-r from-slate-900 to-slate-800 border-b border-slate-700/50 sticky top-0 z-50 shadow-lg">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <!-- Header -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <Icon name="mdi:shield-admin" class="w-8 h-8 text-white" />
+          <Icon name="mdi:shield-admin" class="w-7 h-7 text-slate-700" />
           <div>
-            <h1 class="text-xl font-bold text-white">Admin Dashboard</h1>
-            <p class="text-slate-400 text-xs mt-0.5">Order Management System</p>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Кабинет администратора
+            </h1>
+            <p class="text-slate-500 text-xs mt-0.5">Управление заказами</p>
           </div>
         </div>
+
         <div class="flex gap-3 items-center">
-          <div class="px-3 py-2 bg-slate-800 rounded-lg text-xs text-slate-400 font-mono">
-            Ордеров: <span class="text-white font-bold">{{ allOrders.length }}</span>
+          <div class="px-3 py-2 bg-white/60 backdrop-blur-sm border border-slate-200/50 rounded-lg text-xs text-slate-600 font-medium shadow-sm">
+            Заказов: <span class="text-slate-900 font-bold">{{ allOrders.length }}</span>
           </div>
           <NuxtLink
             to="/"
-            class="px-4 py-2 text-white border border-slate-600 rounded-lg hover:bg-slate-700 hover:border-slate-500 transition-all duration-200 font-medium text-sm shadow-md"
+            class="px-4 py-2 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
           >
             ← На сайт
           </NuxtLink>
@@ -31,12 +34,12 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <!-- Status Filter -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Фильтор по статусу</label>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Фильтр по статусу</label>
             <select
               v-model="filterStatus"
-              class="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition bg-white text-slate-700 font-medium"
+              class="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white text-slate-700 font-medium"
             >
-              <option value="">All</option>
+              <option value="">Все</option>
               <option value="в работе">В работе</option>
               <option value="решен">Решен</option>
               <option value="отменен">Отменен</option>
@@ -48,9 +51,9 @@
             <label class="block text-sm font-semibold text-slate-700 mb-2">Тип работы</label>
             <select
               v-model="filterWorkType"
-              class="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition bg-white text-slate-700 font-medium"
+              class="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition bg-white text-slate-700 font-medium"
             >
-              <option value="">All</option>
+              <option value="">Все</option>
               <option value="essay">Реферат</option>
               <option value="coursework">Курсовая</option>
               <option value="diploma">Диплом</option>
@@ -64,8 +67,8 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Наберите ID, email или тему..."
-              class="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition placeholder:text-slate-400 font-medium"
+              placeholder="Введите ID, email или тему..."
+              class="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder:text-slate-400 font-medium"
             />
           </div>
         </div>
