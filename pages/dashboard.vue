@@ -3,10 +3,10 @@
     <!-- Header -->
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <!-- <div>
+        <div>
           <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{{ user?.name || 'Личный кабинет' }}</h1>
           <p class="text-slate-500 text-sm mt-0.5">{{ user?.email }}</p>
-        </div> -->
+        </div>
         <div class="flex gap-3">
           <NuxtLink
             to="/"
@@ -47,7 +47,7 @@
             <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
             История заказов
           </h2>
-          <div v-if="orders.length === 0" class="text-center py-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50 shadow-sm">
+          <div v-if="userOrders.length === 0" class="text-center py-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50 shadow-sm">
             <p class="text-slate-600 mb-4">У вас еще нет заказов</p>
             <NuxtLink
               to="/"
@@ -56,34 +56,16 @@
               Создать заказ
             </NuxtLink>
           </div>
-          <div v-for="order in orders" :key="order.id" class="bg-white border border-slate-200/50 rounded-lg p-5 hover:border-blue-300/50 hover:shadow-lg transition-all duration-300 mb-4 transform hover:translate-y-[-2px] hover:bg-blue-50/30">
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex-1">
-                <h3 class="text-lg font-semibold text-slate-800">{{ order.subject }}: {{ order.theme }}</h3>
-                <p class="text-slate-500 text-sm mt-1">Заказ #{{ order.id }}</p>
-              </div>
-              <span :class="['px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ml-4 shadow-sm', statusColor(order.status)]">
-                {{ statusLabel(order.status) }}
-              </span>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-slate-600">
-              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-100/50">
-                <p class="text-xs text-slate-500 mb-1 font-medium">Тип</p>
-                <p class="text-slate-800 font-semibold">{{ getWorkTypeLabel(order.workType) }}</p>
-              </div>
-              <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-3 rounded-lg border border-slate-100">
-                <p class="text-xs text-slate-500 mb-1 font-medium">Объём</p>
-                <p class="text-slate-800 font-semibold">{{ order.volume }} стр.</p>
-              </div>
-              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-lg border border-green-100/50">
-                <p class="text-xs text-slate-500 mb-1 font-medium">Дедлайн</p>
-                <p class="text-slate-800 font-semibold">{{ formatDate(order.deadline) }}</p>
-              </div>
-              <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-3 rounded-lg border border-purple-100/50">
-                <p class="text-xs text-slate-500 mb-1 font-medium">Сообщений</p>
-                <p class="text-slate-800 font-semibold">{{ order.messages?.length || 0 }}</p>
-              </div>
-            </div>
+          <div v-else>
+            <OrderCard
+              v-for="order in userOrders"
+              :key="order.id"
+              :order="order"
+              :is-admin-view="false"
+              :show-progress="false"
+              :show-sections="false"
+              :show-actions="true"
+            />
           </div>
         </div>
 
@@ -184,11 +166,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { Order } from '~/composables/useOrders'
+import { ref, computed } from 'vue'
+import OrderCard from '~/components/OrderCard.vue'
 
 const { user } = useAuth()
-const { orders } = useOrders()
+const { getUserOrders } = useOrders()
 
 const activeTab = ref('orders')
 const expandedFaq = ref<number | null>(null)
@@ -197,7 +179,13 @@ const tabs = [
   { id: 'orders', label: 'Заказы' },
   { id: 'reviews', label: 'Отзывы' },
   { id: 'faq', label: 'FAQ' },
+  { id: 'settings', label: 'Настройки' }
 ]
+
+const userOrders = computed(() => {
+  if (!user.value) return []
+  return getUserOrders(user.value.id)
+})
 
 const faqItems = [
   {
@@ -221,41 +209,4 @@ const faqItems = [
     a: 'Да, мы выполняем срочные заказы. За ускоренное выполнение взимается доп. сбор 20-50% от стоимости работы.'
   }
 ]
-
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('ru-RU')
-}
-
-const statusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    pending: 'Ожидание',
-    'in-progress': 'В работе',
-    completed: 'Завершено',
-    delivered: 'Доставлено'
-  }
-  return labels[status] || status
-}
-
-const statusColor = (status: string) => {
-  const colors: Record<string, string> = {
-    pending: 'bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border border-yellow-300/50 shadow-sm',
-    'in-progress': 'bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-300/50 shadow-sm',
-    completed: 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-300/50 shadow-sm',
-    delivered: 'bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 border border-emerald-300/50 shadow-sm'
-  }
-  return colors[status] || 'bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-300/50 shadow-sm'
-}
-
-const getWorkTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    essay: 'Реферат',
-    coursework: 'Курсовая',
-    diploma: 'Диплом',
-    abstract: 'Абстракт',
-    presentation: 'Презентация',
-    solution: 'Решение задач',
-    other: 'Другое'
-  }
-  return labels[type] || type
-}
 </script>
