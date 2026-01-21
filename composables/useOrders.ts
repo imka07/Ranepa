@@ -15,7 +15,7 @@ export interface Order {
   deadline: string
   volume: string
   comment: string
-  name: string // Имя из формы (может отличаться от userName)
+  name: string // Имя из формы
   contactType: 'phone' | 'telegram'
   phone: string
   telegram: string
@@ -52,6 +52,7 @@ export const useOrders = () => {
       if (stored) {
         try {
           orders.value = JSON.parse(stored)
+          console.log('📦 Загруженные заказы:', orders.value)
         } catch (e) {
           console.error('Failed to parse orders from localStorage', e)
           orders.value = []
@@ -64,6 +65,7 @@ export const useOrders = () => {
   const saveOrders = () => {
     if (process.client) {
       localStorage.setItem('orders', JSON.stringify(orders.value))
+      console.log('💾 Заказы сохранены:', orders.value)
     }
   }
 
@@ -71,11 +73,18 @@ export const useOrders = () => {
   const createOrder = (orderData: any) => {
     const { user } = useAuth()
     
+    // Убедимся что userId установлен
+    const userId = user.value?.id || 'unknown'
+    const userName = user.value?.name || 'Unknown'
+    const userEmail = user.value?.email || 'unknown@mail.com'
+    
+    console.log('👤 Создание заказа для пользователя:', { userId, userName, userEmail })
+    
     const newOrder: Order = {
       id: Math.random().toString(36).substr(2, 9),
-      userId: user.value?.id || 'unknown',
-      userName: user.value?.name || 'Unknown',
-      userEmail: user.value?.email || 'unknown@mail.com',
+      userId: userId,
+      userName: userName,
+      userEmail: userEmail,
       workType: orderData.workType,
       subject: orderData.subject,
       theme: orderData.theme,
@@ -100,14 +109,22 @@ export const useOrders = () => {
         }
       ]
     }
+    
+    console.log('✅ Новый заказ создан:', newOrder)
     orders.value.push(newOrder)
     saveOrders()
     return newOrder
   }
 
-  // Получаем заказы конкретного пользователя
+  // Получаем заказы пользователя
   const getUserOrders = (userId: string) => {
-    return orders.value.filter(o => o.userId === userId)
+    console.log('🔍 Ищу заказы для userId:', userId)
+    const userOrders = orders.value.filter(o => {
+      console.log(`  Проверяю заказ ${o.id}: userId=${o.userId} (ищу ${userId})`)
+      return o.userId === userId
+    })
+    console.log('📋 Найдено заказов:', userOrders.length)
+    return userOrders
   }
 
   // Получаем все заказы (для админа)
@@ -160,7 +177,7 @@ export const useOrders = () => {
     return orders.value.find(o => o.id === orderId)
   }
 
-  // Вычисляем процент готовности заказа
+  // Вычисляем прогресс выполнения заказа
   const getOrderProgress = (orderId: string): number => {
     const order = orders.value.find(o => o.id === orderId)
     if (!order) return 0
