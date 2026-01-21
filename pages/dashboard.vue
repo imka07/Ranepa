@@ -14,12 +14,6 @@
           >
             ← Главная
           </NuxtLink>
-          <button
-            @click="handleLogout"
-            class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 font-medium text-sm shadow-md hover:shadow-lg transform hover:scale-105"
-          >
-            Выход
-          </button>
         </div>
       </div>
     </nav>
@@ -190,12 +184,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import type { Order } from '~/composables/useOrders'
 
-const router = useRouter()
-const { user, logout } = useAuth()
+const { user } = useAuth()
 const { orders } = useOrders()
 
 const activeTab = ref('orders')
@@ -267,15 +259,4 @@ const getWorkTypeLabel = (type: string) => {
   }
   return labels[type] || type
 }
-
-const handleLogout = () => {
-  logout()
-  router.push('/auth')
-}
-
-onMounted(() => {
-  if (!user.value) {
-    router.push('/auth')
-  }
-})
 </script>
