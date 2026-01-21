@@ -173,6 +173,18 @@ export const useOrders = () => {
     }
   }
 
+  // Удаляем заказ (только для админа)
+  const deleteOrder = (orderId: string) => {
+    const index = orders.value.findIndex(o => o.id === orderId)
+    if (index !== -1) {
+      orders.value.splice(index, 1)
+      saveOrders()
+      console.log('🗑️ Заказ удален:', orderId)
+      return true
+    }
+    return false
+  }
+
   // Получаем один заказ по ID
   const getOrder = (orderId: string) => {
     return orders.value.find(o => o.id === orderId)
@@ -199,6 +211,7 @@ export const useOrders = () => {
     addMessage,
     updateOrderStatus,
     updateSectionStatus,
+    deleteOrder,
     getOrder,
     getOrderProgress
   }
