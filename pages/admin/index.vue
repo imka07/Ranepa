@@ -15,15 +15,6 @@
             Выход
           </button>
         </div>
-    <!-- Навигация -->
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text">
-            Admin Panel
-        </h1>
-        <!-- <div class="flex items-center gap-4">
-          <span class="text-slate-600 text-sm font-medium">{{ adminUser?.email }}</span>
-        </div> -->
       </div>
     </nav>
 
@@ -50,33 +41,11 @@
           <div class="text-slate-600 text-sm font-medium mb-2">Сообщения</div>
           <div class="text-3xl font-bold text-slate-900">{{ stats.totalMessages }}</div>
           <div class="text-xs text-blue-600 mt-2 font-medium">{{ stats.unreadMessages }} новых</div>
-      <!-- Статистика -->
-      <div class="flex gap-4 mb-8">
-        <div class="w-full bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div class="text-slate-600 text-sm mb-2 font-medium">Всего заказов</div>
-          <div class="text-3xl font-bold text-slate-800">{{ stats.totalOrders }}</div>
-          <div class="text-xs text-yellow-600 mt-2 font-semibold">{{ stats.ordersInProgress }} в обработке</div>
         </div>
-        <!-- <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div class="text-slate-600 text-sm mb-2 font-medium">Всего пользователей</div>
-          <div class="text-3xl font-bold text-slate-800">{{ stats.totalUsers }}</div>
-          <div class="text-xs text-red-600 mt-2 font-semibold">{{ stats.blockedUsers }} блокировано</div>
-        </div> -->
-        <!-- <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div class="text-slate-600 text-sm mb-2 font-medium">Услуг</div>
-          <div class="text-3xl font-bold text-slate-800">{{ stats.totalServices }}</div>
-        </div> -->
-        <!-- <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div class="text-slate-600 text-sm mb-2 font-medium">Сообщения</div>
-          <div class="text-3xl font-bold text-slate-800">{{ stats.totalMessages }}</div>
-          <div class="text-xs text-blue-600 mt-2 font-semibold">{{ stats.unreadMessages }} новых</div>
-        </div> -->
       </div>
 
       <!-- Navigation Tabs -->
       <div class="bg-white/60 backdrop-blur-sm border border-slate-200/50 rounded-xl mb-8 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-      <!-- Меню табов -->
-      <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg mb-8 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
         <div class="flex flex-wrap border-b border-slate-200/50">
           <button
             v-for="tab in tabs"
@@ -84,7 +53,6 @@
             @click="activeTab = tab"
             :class="[
               'px-4 py-3.5 font-medium text-sm transition-all duration-200 border-b-2 -mb-px relative',
-              'px-4 py-3.5 font-medium text-sm transition-all duration-200 border-b-2 -mb-px',
               activeTab === tab
                 ? 'text-white border-blue-500 bg-gradient-to-r from-blue-500 to-blue-600 shadow-md'
                 : 'text-slate-600 hover:text-slate-800 border-transparent hover:bg-slate-100/50'
@@ -98,54 +66,45 @@
       <!-- Content Area -->
       <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
         <!-- Orders -->
-      <!-- Содержимое табов -->
-      <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-        <!-- Обзор заказов -->
         <div v-show="activeTab === 'orders'">
           <AdminOrdersSection />
         </div>
 
         <!-- Users -->
         <div v-show="activeTab === 'users'">
-        <!-- Управление пользователями -->
-        <!-- <div v-show="activeTab === 'users'">
           <AdminUsersSection />
-        </div> -->
+        </div>
 
         <!-- Services -->
         <div v-show="activeTab === 'services'">
-        <!-- Управление услугами -->
-        <!-- <div v-show="activeTab === 'services'">
           <AdminServicesSection />
-        </div> -->
+        </div>
 
         <!-- Messages -->
         <div v-show="activeTab === 'messages'">
-        <!-- Обработка сообщений -->
-        <!-- <div v-show="activeTab === 'messages'">
           <AdminMessagesSection />
-        </div> -->
+        </div>
 
         <!-- Content -->
         <div v-show="activeTab === 'content'">
-        <!-- Управление контентом -->
-        <!-- <div v-show="activeTab === 'content'">
           <AdminContentSection />
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import AdminOrdersSection from '~/components/Admin/AdminOrdersSection.vue'
 import AdminUsersSection from '~/components/Admin/AdminUsersSection.vue'
 import AdminServicesSection from '~/components/Admin/AdminServicesSection.vue'
 import AdminMessagesSection from '~/components/Admin/AdminMessagesSection.vue'
 import AdminContentSection from '~/components/Admin/AdminContentSection.vue'
 
-const { adminUser, isAdmin } = useAdmin()
+const router = useRouter()
+const { adminUser, isAdmin, adminLogout } = useAdmin()
 const { getStats } = useAdminData()
 
 const activeTab = ref<'orders' | 'users' | 'services' | 'messages' | 'content'>('orders')
@@ -157,23 +116,20 @@ const tabLabels: Record<string, string> = {
   users: '👥 Пользователи',
   services: '⚙️ Услуги',
   messages: '💬 Сообщения',
-  content: '📋 Контент'
+  content: '📝 Контент'
 }
 
 const handleLogout = () => {
   adminLogout()
   router.push('/admin/login')
-  orders: 'Заказы',
-  // users: 'Пользователи',
-  // services: 'Услуги',
-  // messages: 'Сообщения',
-  // content: 'Контент'
 }
 
-// Обновляем статистику каждые 5 секунд
-// onMounted(() => {
-//   setInterval(() => {
-//     stats.value = getStats()
-//   }, 5000)
-// })
+onMounted(() => {
+  if (!isAdmin.value) {
+    router.push('/admin/login')
+  }
+  setInterval(() => {
+    stats.value = getStats()
+  }, 5000)
+})
 </script>
