@@ -15,7 +15,26 @@ export const useAdmin = () => {
       if (stored) {
         adminUser.value = JSON.parse(stored)
         isAdmin.value = true
+      } else {
+        // Автоматический вход админа
+        const defaultAdmin = adminCredentials[0]
+        adminUser.value = {
+          id: Math.random().toString(36).substr(2, 9),
+          email: defaultAdmin.email,
+          role: defaultAdmin.role
+        }
+        isAdmin.value = true
+        localStorage.setItem('admin', JSON.stringify(adminUser.value))
       }
+    } else {
+      // На сервере тоже устанавливаем админа
+      const defaultAdmin = adminCredentials[0]
+      adminUser.value = {
+        id: Math.random().toString(36).substr(2, 9),
+        email: defaultAdmin.email,
+        role: defaultAdmin.role
+      }
+      isAdmin.value = true
     }
   }
 
@@ -39,13 +58,9 @@ export const useAdmin = () => {
     return false
   }
 
-  // Выход администратора
+  // Выход администратора (отключена функциональность)
   const adminLogout = () => {
-    adminUser.value = null
-    isAdmin.value = false
-    if (process.client) {
-      localStorage.removeItem('admin')
-    }
+    // Функция отключена, админ всегда остается авторизованным
   }
 
   onMounted(() => {
