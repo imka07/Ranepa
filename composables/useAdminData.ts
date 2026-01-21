@@ -5,10 +5,9 @@ export interface Order {
   userName: string
   subject: string
   description: string
-  status: 'принят' | 'в работе' | 'готов' | 'отменен'
+  status: 'в работе' | 'готов' | 'отменен'
   createdAt: string
   updatedAt: string
-  price: number
 }
 
 export interface AdminUser {
@@ -52,155 +51,12 @@ export interface ContentBlock {
 }
 
 export const useAdminData = () => {
-  // Mock данные заказов
-  const orders = ref<Order[]>([
-    {
-      id: '1',
-      userId: '1',
-      userName: 'Иван Петров',
-      subject: 'Решение по математике',
-      description: 'Контрольная работа по алгебре',
-      status: 'в работе',
-      createdAt: '2026-01-15T10:00:00Z',
-      updatedAt: '2026-01-16T08:30:00Z',
-      price: 500
-    },
-    {
-      id: '2',
-      userId: '2',
-      userName: 'Мария Сидорова',
-      subject: 'Реферат по истории',
-      description: 'История России XX век',
-      status: 'готов',
-      createdAt: '2026-01-14T15:00:00Z',
-      updatedAt: '2026-01-15T18:00:00Z',
-      price: 750
-    },
-    {
-      id: '3',
-      userId: '3',
-      userName: 'Алексей Иванов',
-      subject: 'Программирование на Python',
-      description: 'Написание приложения',
-      status: 'принят',
-      createdAt: '2026-01-16T12:00:00Z',
-      updatedAt: '2026-01-16T12:15:00Z',
-      price: 1000
-    }
-  ])
-
-  // Mock данные пользователей
-  const users = ref<AdminUser[]>([
-    {
-      id: '1',
-      name: 'Иван Петров',
-      email: 'ivan@mail.com',
-      phone: '+7 900 111-11-11',
-      role: 'user',
-      status: 'активен',
-      createdAt: '2026-01-10T10:00:00Z'
-    },
-    {
-      id: '2',
-      name: 'Мария Сидорова',
-      email: 'maria@mail.com',
-      phone: '+7 900 222-22-22',
-      role: 'user',
-      status: 'активен',
-      createdAt: '2026-01-12T14:00:00Z'
-    },
-    {
-      id: '3',
-      name: 'Алексей Иванов',
-      email: 'alex@mail.com',
-      phone: '+7 900 333-33-33',
-      role: 'user',
-      status: 'активен',
-      createdAt: '2026-01-15T09:00:00Z'
-    }
-  ])
-
-  // Mock данные услуг
-  const services = ref<Service[]>([
-    {
-      id: '1',
-      name: 'Решение задач',
-      description: 'Помощь в решении математических задач',
-      price: 100,
-      category: 'Математика',
-      isActive: true
-    },
-    {
-      id: '2',
-      name: 'Написание рефератов',
-      description: 'Качественные рефераты на любые темы',
-      price: 300,
-      category: 'Гуманитарные науки',
-      isActive: true
-    },
-    {
-      id: '3',
-      name: 'Помощь с программированием',
-      description: 'Написание и отладка программного кода',
-      price: 500,
-      category: 'IT',
-      isActive: true
-    },
-    {
-      id: '4',
-      name: 'Подготовка к ЕГЭ',
-      description: 'Интенсивная подготовка к единому государственному экзамену',
-      price: 200,
-      category: 'Образование',
-      isActive: false
-    }
-  ])
-
-  // Mock данные сообщений
-  const messages = ref<Message[]>([
-    {
-      id: '1',
-      userId: '1',
-      userName: 'Иван Петров',
-      email: 'ivan@mail.com',
-      subject: 'Вопрос о стоимости',
-      text: 'Какова стоимость написания реферата на 20 страниц?',
-      status: 'новое',
-      createdAt: '2026-01-16T11:30:00Z'
-    },
-    {
-      id: '2',
-      userId: '2',
-      userName: 'Мария Сидорова',
-      email: 'maria@mail.com',
-      subject: 'Спасибо за помощь!',
-      text: 'Спасибо за качественное выполнение работы!',
-      status: 'прочитано',
-      createdAt: '2026-01-15T16:00:00Z'
-    }
-  ])
-
-  // Mock данные контента
-  const contentBlocks = ref<ContentBlock[]>([
-    {
-      id: '1',
-      type: 'text',
-      title: 'Заголовок главной страницы',
-      content: 'Добро пожаловать на Reshala - портал помощи студентам',
-      page: 'index',
-      order: 1,
-      isActive: true
-    },
-    {
-      id: '2',
-      type: 'section',
-      title: 'Наши услуги',
-      content: 'Мы предоставляем полный спектр услуг для студентов',
-      page: 'index',
-      order: 2,
-      isActive: true
-    }
-  ])
+  // Пустые данные (без моков)
+  const orders = ref<Order[]>([])
+  const users = ref<AdminUser[]>([])
+  const services = ref<Service[]>([])
+  const messages = ref<Message[]>([])
+  const contentBlocks = ref<ContentBlock[]>([])
 
   // Управление заказами
   const updateOrderStatus = (orderId: string, newStatus: Order['status']) => {
@@ -218,7 +74,7 @@ export const useAdminData = () => {
     }
   }
 
-  // Управление пользователями
+  // Управлепшие пользователями
   const blockUser = (userId: string) => {
     const user = users.value.find(u => u.id === userId)
     if (user) {

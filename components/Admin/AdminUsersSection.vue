@@ -1,25 +1,25 @@
 <template>
   <div>
-    <h3 class="text-lg font-semibold text-white mb-4">Управление пользователями</h3>
+    <h3 class="text-lg font-semibold text-slate-900 mb-4">Управление пользователями</h3>
     
     <div v-if="users.length === 0" class="text-center py-8">
-      <p class="text-gray-400">Нет пользователей</p>
+      <p class="text-slate-600">Нет пользователей</p>
     </div>
 
     <div v-else class="space-y-3">
-      <div v-for="user in users" :key="user.id" class="bg-slate-700/30 border border-white/10 rounded-lg p-4 flex justify-between items-center">
+      <div v-for="user in users" :key="user.id" class="bg-gradient-to-br from-blue-500 to-blue-400 rounded-lg p-4 flex justify-between items-center shadow-md hover:shadow-lg transition-shadow duration-300">
         <div>
           <h4 class="text-white font-semibold">{{ user.name }}</h4>
-          <p class="text-gray-400 text-sm">{{ user.email }} • {{ user.phone }}</p>
-          <p class="text-xs text-gray-500 mt-1">ID: {{ user.id }} • Зарегистрирован: {{ formatDate(user.createdAt) }}</p>
+          <p class="text-blue-100 text-sm">{{ user.email }} • {{ user.phone }}</p>
+          <p class="text-xs text-blue-100 mt-1">ID: {{ user.id }} • Зарегистрирован: {{ formatDate(user.createdAt) }}</p>
         </div>
         
         <div class="flex gap-2">
           <span
             :class="[
-              'px-3 py-1 rounded-full text-xs font-medium',
-              user.status === 'активен' && 'bg-green-500/30 text-green-300 border border-green-500/50',
-              user.status === 'заблокирован' && 'bg-red-500/30 text-red-300 border border-red-500/50'
+              'px-3 py-1 rounded-full text-xs font-medium text-white',
+              user.status === 'активен' && 'bg-green-500/70 border border-green-400',
+              user.status === 'заблокирован' && 'bg-red-500/70 border border-red-400'
             ]"
           >
             {{ user.status }}
@@ -28,7 +28,7 @@
           <button
             v-if="user.status === 'активен'"
             @click="blockUser(user.id)"
-            class="px-3 py-1 rounded-lg bg-red-600/30 text-red-300 text-xs border border-red-500/50 hover:bg-red-600/50 transition"
+            class="px-3 py-1 rounded-lg bg-red-600 text-white text-xs border border-red-500 hover:bg-red-700 transition font-medium"
           >
             Заблокировать
           </button>
@@ -36,14 +36,14 @@
           <button
             v-if="user.status === 'заблокирован'"
             @click="unblockUser(user.id)"
-            class="px-3 py-1 rounded-lg bg-green-600/30 text-green-300 text-xs border border-green-500/50 hover:bg-green-600/50 transition"
+            class="px-3 py-1 rounded-lg bg-green-600 text-white text-xs border border-green-500 hover:bg-green-700 transition font-medium"
           >
             Разблокировать
           </button>
           
           <button
             @click="deleteUser(user.id)"
-            class="px-3 py-1 rounded-lg bg-gray-600/30 text-gray-300 text-xs border border-gray-500/50 hover:bg-gray-600/50 transition"
+            class="px-3 py-1 rounded-lg bg-red-600 text-white text-xs border border-red-500 hover:bg-red-700 transition font-medium"
           >
             Удалить
           </button>

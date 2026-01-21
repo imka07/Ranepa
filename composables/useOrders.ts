@@ -1,14 +1,30 @@
+export interface OrderSection {
+  id: 'plan' | 'chapter1' | 'chapter2' | 'presentation'
+  name: string
+  completed: boolean
+}
+
 export interface Order {
   id: string
+  userId: string // ID пользователя, создавшего заказ
+  userName: string // Имя пользователя
+  userEmail: string // Email пользователя
   workType: string
   subject: string
   theme: string
   deadline: string
   volume: string
-  status: 'pending' | 'in-progress' | 'completed' | 'delivered'
-  createdAt: string
-  messages: Message[]
+  comment: string
+  name: string // Имя из формы
+  contactType: 'phone' | 'telegram'
+  phone: string
+  telegram: string
   file?: { name: string; url: string }
+  status: 'в работе' | 'решен' | 'отменен'
+  sections: OrderSection[] // Разделы работы
+  createdAt: string
+  updatedAt: string
+  messages: Message[]
 }
 
 export interface Message {
@@ -18,7 +34,17 @@ export interface Message {
   timestamp: string
 }
 
+// Фиксированные разделы для всех заказов
+const DEFAULT_SECTIONS: OrderSection[] = [
+  { id: 'plan', name: 'План', completed: false },
+  { id: 'chapter1', name: '1 глава', completed: false },
+  { id: 'chapter2', name: '2 глава', completed: false },
+  { id: 'presentation', name: 'Преза', completed: false }
+]
+
 export const useOrders = () => {
+  // Инициализируем useAuth на верхнем уровне
+  const { user } = useAuth()
   const orders = ref<Order[]>([])
 
   // Загружаем заказы из localStorage
@@ -26,25 +52,55 @@ export const useOrders = () => {
     if (process.client) {
       const stored = localStorage.getItem('orders')
       if (stored) {
-        orders.value = JSON.parse(stored)
+        try {
+          orders.value = JSON.parse(stored)
+          console.log('📦 Загруженные заказы:', orders.value)
+        } catch (e) {
+          console.error('Failed to parse orders from localStorage', e)
+          orders.value = []
+        }
       }
     }
   }
 
-  // Сохраняем заказ в localStorage
+  // Сохраняем заказы в localStorage
   const saveOrders = () => {
     if (process.client) {
       localStorage.setItem('orders', JSON.stringify(orders.value))
+      console.log('💾 Заказы сохранены:', orders.value)
     }
   }
 
   // Создаем новый заказ
-  const createOrder = (orderData: Omit<Order, 'id' | 'createdAt' | 'messages' | 'status'>) => {
+  const createOrder = (orderData: any) => {
+    // Убедимся что userId установлен
+    const userId = user.value?.id || 'unknown'
+    const userName = user.value?.name || 'Unknown'
+    const userEmail = user.value?.email || 'unknown@mail.com'
+    
+    console.log('👤 Создание заказа для пользователя:', { userId, userName, userEmail })
+    console.log('   user.value:', user.value)
+    
     const newOrder: Order = {
       id: Math.random().toString(36).substr(2, 9),
-      ...orderData,
-      status: 'pending',
+      userId: userId,
+      userName: userName,
+      userEmail: userEmail,
+      workType: orderData.workType,
+      subject: orderData.subject,
+      theme: orderData.theme,
+      deadline: orderData.deadline,
+      volume: orderData.volume,
+      comment: orderData.comment,
+      name: orderData.name,
+      contactType: orderData.contactType,
+      phone: orderData.phone,
+      telegram: orderData.telegram,
+      file: orderData.file,
+      status: 'в работе',
+      sections: JSON.parse(JSON.stringify(DEFAULT_SECTIONS)), // Глубокая копия
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       messages: [
         {
           id: Math.random().toString(36).substr(2, 9),
@@ -54,9 +110,27 @@ export const useOrders = () => {
         }
       ]
     }
+    
+    console.log('✅ Новый заказ создан:', newOrder)
     orders.value.push(newOrder)
     saveOrders()
     return newOrder
+  }
+
+  // Получаем заказы пользователя
+  const getUserOrders = (userId: string) => {
+    console.log('🔍 Ищу заказы для userId:', userId)
+    const userOrders = orders.value.filter(o => {
+      console.log(`  Проверяю заказ ${o.id}: userId=${o.userId} (ищу ${userId})`)
+      return o.userId === userId
+    })
+    console.log('📋 Найдено заказов:', userOrders.length)
+    return userOrders
+  }
+
+  // Получаем все заказы (для админа)
+  const getAllOrders = () => {
+    return orders.value
   }
 
   // Добавляем сообщение в чат
@@ -70,6 +144,7 @@ export const useOrders = () => {
         timestamp: new Date().toISOString()
       }
       order.messages.push(newMessage)
+      order.updatedAt = new Date().toISOString()
       saveOrders()
       return newMessage
     }
@@ -80,7 +155,21 @@ export const useOrders = () => {
     const order = orders.value.find(o => o.id === orderId)
     if (order) {
       order.status = status
+      order.updatedAt = new Date().toISOString()
       saveOrders()
+    }
+  }
+
+  // Обновляем статус раздела
+  const updateSectionStatus = (orderId: string, sectionId: string, completed: boolean) => {
+    const order = orders.value.find(o => o.id === orderId)
+    if (order) {
+      const section = order.sections.find(s => s.id === sectionId)
+      if (section) {
+        section.completed = completed
+        order.updatedAt = new Date().toISOString()
+        saveOrders()
+      }
     }
   }
 
@@ -89,95 +178,28 @@ export const useOrders = () => {
     return orders.value.find(o => o.id === orderId)
   }
 
-  // Пример: добавим тестовые данные при первом запуске
-  const addDemoData = () => {
-    if (orders.value.length === 0 && process.client) {
-      orders.value = [
-        {
-          id: 'order-001',
-          workType: 'essay',
-          subject: 'История',
-          theme: 'Великая Октябрьская революция',
-          deadline: '2026-02-15',
-          volume: '10',
-          status: 'in-progress',
-          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          messages: [
-            {
-              id: 'msg-1',
-              sender: 'manager',
-              text: 'Запрос получен. Менеджер скоро с вами свяжется.',
-              timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            {
-              id: 'msg-2',
-              sender: 'manager',
-              text: 'Принял ваш заказ. Начинаю работу. Эксперт работает на ускоренном режиме.',
-              timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            {
-              id: 'msg-3',
-              sender: 'user',
-              text: 'Как прогресс? Можно обновление?',
-              timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            {
-              id: 'msg-4',
-              sender: 'manager',
-              text: 'Сейчас активно пишем! Осталось 3-4 страницы. Закончим в течение суток.',
-              timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-            }
-          ]
-        },
-        {
-          id: 'order-002',
-          workType: 'coursework',
-          subject: 'Высшая математика',
-          theme: 'Кратные интегралы',
-          deadline: '2026-03-01',
-          volume: '25',
-          status: 'completed',
-          createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-          messages: [
-            {
-              id: 'msg-5',
-              sender: 'manager',
-              text: 'Получена версия 1.0',
-              timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            {
-              id: 'msg-6',
-              sender: 'user',
-              text: 'Можно исправления в третьем разделе?',
-              timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            {
-              id: 'msg-7',
-              sender: 'manager',
-              text: 'Конечно! Отправляю исправления через 1-2 дня.',
-              timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-            }
-          ],
-          file: {
-            name: 'Coursework_Final.pdf',
-            url: '/files/coursework.pdf'
-          }
-        }
-      ]
-      saveOrders()
-    }
+  // Вычисляем прогресс выполнения заказа
+  const getOrderProgress = (orderId: string): number => {
+    const order = orders.value.find(o => o.id === orderId)
+    if (!order) return 0
+    
+    const completedSections = order.sections.filter(s => s.completed).length
+    return Math.round((completedSections / order.sections.length) * 100)
   }
 
   onMounted(() => {
     initOrders()
-    addDemoData()
   })
 
   return {
     orders,
     createOrder,
+    getUserOrders,
+    getAllOrders,
     addMessage,
     updateOrderStatus,
-    getOrder
+    updateSectionStatus,
+    getOrder,
+    getOrderProgress
   }
 }

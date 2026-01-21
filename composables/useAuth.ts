@@ -18,7 +18,17 @@ export const useAuth = () => {
       if (stored) {
         user.value = JSON.parse(stored)
         isAuthenticated.value = true
+      } else {
+        // Автоматический вход тестового пользователя
+        user.value = testUser
+        isAuthenticated.value = true
+        localStorage.setItem('user', JSON.stringify(testUser))
+        localStorage.setItem('password', testPassword)
       }
+    } else {
+      // На сервере также устанавливаем тестового пользователя
+      user.value = testUser
+      isAuthenticated.value = true
     }
   }
 
@@ -68,14 +78,9 @@ export const useAuth = () => {
     return false
   }
 
-  // Выход
+  // Выход (отключена функциональность)
   const logout = () => {
-    user.value = null
-    isAuthenticated.value = false
-    if (process.client) {
-      localStorage.removeItem('user')
-      localStorage.removeItem('password')
-    }
+    // Функция отключена, пользователь всегда остается авторизованным
   }
 
   onMounted(() => {

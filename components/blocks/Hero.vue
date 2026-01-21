@@ -5,19 +5,19 @@
         <!-- Text content -->
         <div :class="['space-y-6', textAlignClass]">
           <slot name="eyebrow">
-            <p v-if="eyebrow" class="text-xs font-semibold tracking-wider uppercase text-blue-400">
+            <p v-if="eyebrow" class="text-xs font-semibold tracking-wider uppercase text-blue-600">
               {{ eyebrow }}
             </p>
           </slot>
 
           <slot name="title">
-            <h1 :class="['font-semibold tracking-tight text-white', titleSizeClass]">
+            <h1 :class="['font-semibold tracking-tight text-slate-900', titleSizeClass]">
               {{ title }}
             </h1>
           </slot>
 
           <slot name="subtitle">
-            <p class="text-base text-gray-300 leading-relaxed min-h-[3rem]">
+            <p class="text-base text-slate-700 leading-relaxed min-h-[3rem]">
               <Transition name="fade" mode="out-in">
                 <span class="inline-block" :key="currentIndex">{{ currentSubtitle }}</span>
               </Transition>
@@ -102,7 +102,7 @@ const props = withDefaults(defineProps<{
   imageAlt: 'Иллюстрация',
   alignment: 'left',
   size: 'lg',
-  backgroundClass: 'bg-black',
+  backgroundClass: 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50',
   borderClass: ''
 })
 
@@ -201,11 +201,11 @@ const titleSizeClass = computed(() => {
 }
 
 .spinner > div {
-  background-color: rgba(0, 77, 255, 0.2);
+  background-color: rgba(59, 130, 246, 0.15);
   height: 100%;
   position: absolute;
   width: 100%;
-  border: 2px solid #004dff;
+  border: 2px solid rgba(59, 130, 246, 0.4);
 }
 
 .spinner div:nth-of-type(1) {
@@ -236,5 +236,3 @@ const titleSizeClass = computed(() => {
   transform: translateZ(100px);
 }
 </style>
-
-
