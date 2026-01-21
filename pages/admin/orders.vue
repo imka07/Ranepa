@@ -15,7 +15,7 @@
 
         <div class="flex gap-3 items-center">
           <div class="px-3 py-2 bg-white/60 backdrop-blur-sm border border-slate-200/50 rounded-lg text-xs text-slate-600 font-medium shadow-sm">
-            Заказов: <span class="text-slate-900 font-bold">{{ allOrders.length }}</span>
+            Заказов: <span class="text-slate-900 font-bold">{{ allOrders?.length || 0 }}</span>
           </div>
           <NuxtLink
             to="/"
@@ -76,7 +76,7 @@
 
       <!-- Orders List -->
       <div class="bg-white/70 backdrop-blur-sm border border-slate-200/50 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
-        <div v-if="filteredOrders.length === 0" class="text-center py-12 px-4">
+        <div v-if="!filteredOrders || filteredOrders.length === 0" class="text-center py-12 px-4">
           <p class="text-slate-600 text-lg font-medium">Нет заказов, соответствующих фильтрам</p>
         </div>
         <div v-else class="divide-y divide-slate-200/50">
@@ -108,9 +108,16 @@ const filterStatus = ref('')
 const filterWorkType = ref('')
 const searchQuery = ref('')
 
-const allOrders = computed(() => getAllOrders())
+const allOrders = computed(() => {
+  const orders = getAllOrders()
+  return Array.isArray(orders) ? orders : []
+})
 
 const filteredOrders = computed(() => {
+  if (!Array.isArray(allOrders.value) || allOrders.value.length === 0) {
+    return []
+  }
+
   return allOrders.value.filter(order => {
     // Фильтр по статусу
     if (filterStatus.value && order.status !== filterStatus.value) return false
