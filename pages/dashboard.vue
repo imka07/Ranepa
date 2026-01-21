@@ -166,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import OrderCard from '~/components/OrderCard.vue'
 
 const { user } = useAuth()
@@ -183,8 +183,14 @@ const tabs = [
 ]
 
 const userOrders = computed(() => {
-  if (!user.value) return []
-  return getUserOrders(user.value.id)
+  console.log('📄 Dashboard: Пользователь:', user.value?.id)
+  if (!user.value) {
+    console.warn('⚠️ Dashboard: Пользователь не авторизован')
+    return []
+  }
+  const orders = getUserOrders(user.value.id)
+  console.log('📚 Dashboard: Найдено заказов:', orders.length)
+  return orders
 })
 
 const faqItems = [
@@ -209,4 +215,8 @@ const faqItems = [
     a: 'Да, мы выполняем срочные заказы. За ускоренное выполнение взимается доп. сбор 20-50% от стоимости работы.'
   }
 ]
+
+onMounted(() => {
+  console.log('🔠 Dashboard mounted')
+})
 </script>
