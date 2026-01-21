@@ -4,8 +4,7 @@
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{{ user?.name || 'Личный кабинет' }}</h1>
-          <p class="text-slate-500 text-sm mt-0.5">{{ user?.email }}</p>
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Личный кабинет</h1>
         </div>
         <div class="flex gap-3">
           <NuxtLink
@@ -64,7 +63,7 @@
               :is-admin-view="false"
               :show-progress="false"
               :show-sections="false"
-              :show-actions="true"
+              :show-actions="false"
             />
           </div>
         </div>
@@ -103,10 +102,15 @@
                 class="w-full px-4 py-4 flex items-center justify-between hover:bg-blue-50/50 transition-colors duration-200"
               >
                 <span class="text-slate-800 font-medium text-sm text-left">{{ item.q }}</span>
-                <Icon
-                  name="mdi:chevron-down"
-                  :class="['w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-300', expandedFaq === idx && 'rotate-180 text-blue-500']"
-                />
+                <svg
+                  class="w-5 h-5 text-slate-400 flex-shrink-0 transition-transform duration-300"
+                  :class="expandedFaq === idx && 'rotate-180 text-blue-500'"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
               </button>
               <Transition
                 enter-active-class="transition duration-200"
@@ -123,40 +127,6 @@
                   {{ item.a }}
                 </div>
               </Transition>
-            </div>
-          </div>
-        </div>
-
-        <!-- Settings -->
-        <div v-show="activeTab === 'settings'">
-          <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
-            Настройки
-          </h2>
-          <div class="bg-white border border-slate-200/50 rounded-lg p-6 space-y-4 max-w-md shadow-sm">
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">Имя</label>
-              <input
-                :value="user?.name"
-                disabled
-                class="w-full px-4 py-2.5 bg-gradient-to-br from-slate-50 to-blue-50 text-slate-600 border border-slate-200 rounded-lg cursor-not-allowed text-sm font-medium"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">Email</label>
-              <input
-                :value="user?.email"
-                disabled
-                class="w-full px-4 py-2.5 bg-gradient-to-br from-slate-50 to-blue-50 text-slate-600 border border-slate-200 rounded-lg cursor-not-allowed text-sm font-medium"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">Телефон</label>
-              <input
-                :value="user?.phone"
-                disabled
-                class="w-full px-4 py-2.5 bg-gradient-to-br from-slate-50 to-blue-50 text-slate-600 border border-slate-200 rounded-lg cursor-not-allowed text-sm font-medium"
-              />
             </div>
           </div>
         </div>
@@ -178,8 +148,7 @@ const expandedFaq = ref<number | null>(null)
 const tabs = [
   { id: 'orders', label: 'Заказы' },
   { id: 'reviews', label: 'Отзывы' },
-  { id: 'faq', label: 'FAQ' },
-  { id: 'settings', label: 'Настройки' }
+  { id: 'faq', label: 'FAQ' }
 ]
 
 const userOrders = computed(() => {
