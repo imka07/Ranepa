@@ -25,6 +25,10 @@ interface AlertState {
 }
 
 export const useOrderForm = () => {
+  // Инициализируем зависимости на верхнем уровне
+  const { user } = useAuth()
+  const { createOrder } = useOrders()
+
   // Состояние формы
   const form = reactive<FormData>({
     workType: '',
@@ -189,13 +193,13 @@ export const useOrderForm = () => {
     isLoading.value = true
 
     try {
-      const { user } = useAuth()
-      const { createOrder } = useOrders()
-
       // Убедимся что пользователь инициализирован
       if (!user.value) {
+        console.error('❌ Пользователь не авторизован:', user.value)
         throw new Error('Пользователь не авторизован')
       }
+
+      console.log('👤 Пользователь авторизован:', user.value)
 
       // Подготавливаем данные для сохранения
       const orderData: any = {
@@ -224,6 +228,7 @@ export const useOrderForm = () => {
 
       // Сохраняем заказ в localStorage
       const newOrder = createOrder(orderData)
+      console.log('✅ Заказ создан:', newOrder)
 
       // Отправляем в ТГ бот если есть эндпоинт
       try {
