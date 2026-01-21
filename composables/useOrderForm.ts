@@ -178,7 +178,7 @@ export const useOrderForm = () => {
   }
 
   /**
-   * Отправить заявку на сервер
+   * Отправить заявку
    */
   const submitOrder = async () => {
     if (!canSubmit.value) {
@@ -189,7 +189,9 @@ export const useOrderForm = () => {
     isLoading.value = true
 
     try {
-      // Подготавливаем данные для отправки
+      const { createOrder } = useOrders()
+
+      // Подготавливаем данные для сохранения
       const orderData: any = {
         workType: form.workType,
         subject: form.subject,
@@ -214,11 +216,19 @@ export const useOrderForm = () => {
         }
       }
 
-      // Отправляем заявку на сервер
-      const response = await $fetch('/api/orders', {
-        method: 'POST',
-        body: orderData
-      })
+      // Сохраняем заказ в localStorage
+      const newOrder = createOrder(orderData)
+
+      // Отправляем в ТГ бот если есть эндпоинт
+      try {
+        await $fetch('/api/orders', {
+          method: 'POST',
+          body: orderData
+        })
+      } catch (telegramError) {
+        // Не провалить если ТГ не работает - заказ все равно сохраняется
+        console.warn('Telegram notification failed, but order was saved locally')
+      }
 
       // Успешная отправка
       showAlert('success', 'Успешно!', 'Ваша заявка отправлена. Мы скоро свяжемся с вами!')
