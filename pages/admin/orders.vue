@@ -88,8 +88,8 @@
             :show-progress="true"
             :show-sections="true"
             :show-actions="true"
-            @update-status="handleUpdateStatus"
-            @toggle-section="handleToggleSection"
+            @update-status="(status) => handleUpdateStatus(order.id, status)"
+            @toggle-section="(sectionId) => handleToggleSection(order.id, sectionId)"
           />
         </div>
       </div>
