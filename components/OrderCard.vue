@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <!-- Действия -->
+    <!-- действия -->
     <div v-if="showActions" class="flex gap-2 pt-3 border-t border-slate-200/50">
       <button
         v-if="isAdminView"
@@ -102,13 +102,6 @@
 
 <script setup lang="ts">
 import type { Order } from '~/composables/useOrders'
-
-define<emits:
-{
-  'view-details': [],
-  'update-status': [status: 'в работе' | 'решен' | 'отменен'],
-  'toggle-section': [sectionId: string]
-}>
 
 interface Props {
   order: Order
