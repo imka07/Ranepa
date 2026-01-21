@@ -90,6 +90,7 @@
             :show-actions="true"
             @update-status="(status) => handleUpdateStatus(order.id, status)"
             @toggle-section="(sectionId) => handleToggleSection(order.id, sectionId)"
+            @delete-order="() => handleDeleteOrder(order.id)"
           />
         </div>
       </div>
@@ -101,7 +102,7 @@
 import { ref, computed } from 'vue'
 import OrderCard from '~/components/OrderCard.vue'
 
-const { getAllOrders, updateOrderStatus, updateSectionStatus } = useOrders()
+const { getAllOrders, updateOrderStatus, updateSectionStatus, deleteOrder } = useOrders()
 
 const filterStatus = ref('')
 const filterWorkType = ref('')
@@ -144,5 +145,9 @@ const handleToggleSection = (orderId: string, sectionId: string) => {
       updateSectionStatus(orderId, sectionId, !section.completed)
     }
   }
+}
+
+const handleDeleteOrder = (orderId: string) => {
+  deleteOrder(orderId)
 }
 </script>
