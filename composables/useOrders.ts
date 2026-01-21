@@ -43,6 +43,8 @@ const DEFAULT_SECTIONS: OrderSection[] = [
 ]
 
 export const useOrders = () => {
+  // Инициализируем useAuth на верхнем уровне
+  const { user } = useAuth()
   const orders = ref<Order[]>([])
 
   // Загружаем заказы из localStorage
@@ -71,14 +73,13 @@ export const useOrders = () => {
 
   // Создаем новый заказ
   const createOrder = (orderData: any) => {
-    const { user } = useAuth()
-    
     // Убедимся что userId установлен
     const userId = user.value?.id || 'unknown'
     const userName = user.value?.name || 'Unknown'
     const userEmail = user.value?.email || 'unknown@mail.com'
     
     console.log('👤 Создание заказа для пользователя:', { userId, userName, userEmail })
+    console.log('   user.value:', user.value)
     
     const newOrder: Order = {
       id: Math.random().toString(36).substr(2, 9),
