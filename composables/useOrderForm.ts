@@ -189,7 +189,13 @@ export const useOrderForm = () => {
     isLoading.value = true
 
     try {
+      const { user } = useAuth()
       const { createOrder } = useOrders()
+
+      // Когда условия: обеспечить что пользователь инициализирован
+      if (!user.value) {
+        throw new Error('Пользователь не авторизован')
+      }
 
       // Подготавливаем данные для сохранения
       const orderData: any = {
@@ -235,7 +241,7 @@ export const useOrderForm = () => {
       closeOrderModal()
     } catch (error: any) {
       console.error('Error submitting order:', error)
-      const errorMessage = error?.data?.message || 'Произошла ошибка при отправке заявки. Попробуйте позже.'
+      const errorMessage = error?.data?.message || 'Произошла ошибка при отправке заявки. Попробуйте поже.
       showAlert('error', 'Ошибка', errorMessage)
     } finally {
       isLoading.value = false
