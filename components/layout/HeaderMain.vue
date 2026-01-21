@@ -31,24 +31,9 @@
         </NuxtLink>
       </nav>
 
-      <!-- Auth Buttons -->
+      <!-- Dashboard Button -->
       <div class="flex items-center gap-3">
         <NuxtLink
-          v-if="!isAuthenticated"
-          to="/auth"
-          class="px-4 py-2 text-slate-700 text-sm font-medium rounded-md border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition"
-        >
-          Вход
-        </NuxtLink>
-        <NuxtLink
-          v-if="!isAuthenticated"
-          to="/auth"
-          class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-medium rounded-md hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition transform hover:scale-105 duration-200"
-        >
-          Регистрация
-        </NuxtLink>
-        <NuxtLink
-          v-if="isAuthenticated"
           to="/dashboard"
           class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-medium rounded-md hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition transform hover:scale-105 duration-200 flex items-center gap-2"
         >
@@ -58,7 +43,8 @@
             width="24"
             height="24"
           />
-          <span class="hidden sm:inline">{{ user?.name || 'Кабинет' }}</span>
+          <span class="hidden sm:inline">{{ user?.name || 'Личный кабинет' }}</span>
+          <span class="inline sm:hidden">ЛК</span>
         </NuxtLink>
       </div>
     </div>
