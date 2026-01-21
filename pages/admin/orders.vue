@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import OrderCard from '~/components/OrderCard.vue'
 
 const { getAllOrders, updateOrderStatus, updateSectionStatus, deleteOrder } = useOrders()
@@ -107,6 +107,30 @@ const { getAllOrders, updateOrderStatus, updateSectionStatus, deleteOrder } = us
 const filterStatus = ref('')
 const filterWorkType = ref('')
 const searchQuery = ref('')
+
+// Очищаем мок-данные при загрузке страницы
+onMounted(() => {
+  if (process.client) {
+    const stored = localStorage.getItem('orders')
+    if (stored) {
+      try {
+        const orders = JSON.parse(stored)
+        // Проверяем, есть ли мок-данные (по известным темам)
+        const mockThemes = ['Великая Октябрьская революция', 'Краткие интегралы']
+        const hasMockData = orders.some((o: any) => mockThemes.some(theme => o.theme?.includes(theme)))
+        
+        if (hasMockData) {
+          console.log('🧹 Найдены мок-данные, очищаю localStorage...')
+          localStorage.removeItem('orders')
+          // Перезагружаем страницу для обновления
+          window.location.reload()
+        }
+      } catch (e) {
+        console.error('Error checking for mock data:', e)
+      }
+    }
+  }
+})
 
 const allOrders = computed(() => {
   const orders = getAllOrders()
