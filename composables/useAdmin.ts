@@ -4,36 +4,57 @@ export const useAdmin = () => {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
   const isInitialized = ref(false)
+  const initPromise = ref<Promise<void> | null>(null)
 
-  // Инициализация администратора при загрузке
+  // Инициализация администратора при загружке
   const initAdmin = async () => {
-    if (isInitialized.value) return // Предотвращаем двойную инициализацию
-    if (!process.client) return
+    // Если дожидаемся инициализации, вернем ту же победу
+    if (initPromise.value) {
+      return initPromise.value
+    }
 
-    isLoading.value = true
-    try {
-      // Проверяем, есть ли валидный токен на сервере
-      // Отправляем с credentials: 'include', чтобы cookies отправлялись
-      const { data, error: fetchError } = await useFetch('/api/admin/verify', {
-        credentials: 'include'
-      })
+    // Если уже инициализированы
+    if (isInitialized.value) {
+      return
+    }
 
-      if (!fetchError.value && data.value?.isAdmin && data.value.admin) {
-        adminUser.value = data.value.admin
-        isAdmin.value = true
-        error.value = null
-      } else {
+    if (!process.client) {
+      isInitialized.value = true
+      return
+    }
+
+    // Начинаем инициализацию
+    const init = (async () => {
+      isLoading.value = true
+      try {
+        // Проверяем, есть ли валидный токен на сервере
+        // Отправляем с credentials: 'include', чтобы cookies отправлялись
+        const response = await $fetch('/api/admin/verify', {
+          method: 'GET',
+          credentials: 'include'
+        } as any).catch(() => null)
+
+        if (response?.isAdmin && response?.admin) {
+          adminUser.value = response.admin
+          isAdmin.value = true
+          error.value = null
+        } else {
+          adminUser.value = null
+          isAdmin.value = false
+        }
+      } catch (err: any) {
+        // Если ошибка - значит, нет валидного токена
         adminUser.value = null
         isAdmin.value = false
+      } finally {
+        isLoading.value = false
+        isInitialized.value = true
+        initPromise.value = null
       }
-    } catch (err: any) {
-      // Если ошибка - значит, нет валидного токена
-      adminUser.value = null
-      isAdmin.value = false
-    } finally {
-      isLoading.value = false
-      isInitialized.value = true
-    }
+    })()
+
+    initPromise.value = init
+    return init
   }
 
   // Вход администратора
@@ -42,20 +63,15 @@ export const useAdmin = () => {
     error.value = null
 
     try {
-      const { data, error: fetchError } = await useFetch('/api/admin/login', {
+      const response = await $fetch('/api/admin/login', {
         method: 'POST',
         body: { email, password },
         credentials: 'include'
-      })
+      } as any)
 
-      if (fetchError.value) {
-        error.value = fetchError.value?.message || 'Login failed'
-        return false
-      }
-
-      if (data.value?.success) {
+      if (response?.success) {
         // После успешного логина, получаем информацию из токена
-        adminUser.value = data.value.admin
+        adminUser.value = response.admin
         isAdmin.value = true
         isInitialized.value = true
         return true
@@ -75,15 +91,16 @@ export const useAdmin = () => {
   const adminLogout = async () => {
     isLoading.value = true
     try {
-      await useFetch('/api/admin/logout', {
+      await $fetch('/api/admin/logout', {
         method: 'POST',
         credentials: 'include'
-      })
+      } as any)
 
       adminUser.value = null
       isAdmin.value = false
       error.value = null
       isInitialized.value = false
+      initPromise.value = null
     } catch (err: any) {
       console.error('Logout error:', err)
     } finally {
