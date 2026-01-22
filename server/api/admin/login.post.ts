@@ -11,6 +11,8 @@ const adminCredentials = [
 
 export default defineEventHandler(async (event) => {
   try {
+    console.log('🔍 [LOGIN] Login attempt')
+
     // Проверяем что запрос POST
     if (event.node.req.method !== 'POST') {
       throw createError({
@@ -22,6 +24,8 @@ export default defineEventHandler(async (event) => {
     // Получаем данные из body
     const body = await readBody(event)
     const { email, password } = body
+
+    console.log('🔍 [LOGIN] Email:', email)
 
     // Валидация
     if (!email || !password) {
@@ -37,14 +41,20 @@ export default defineEventHandler(async (event) => {
     )
 
     if (!admin) {
+      console.log('🔴 [LOGIN] Invalid credentials')
       throw createError({
         statusCode: 401,
         statusMessage: 'Invalid email or password'
       })
     }
 
+    console.log('🔊 [LOGIN] Credentials valid, generating token')
+
     // Генерируем токен
     const token = generateToken(admin.email, admin.role, 24 * 60 * 60 * 1000) // 24 часа
+
+    console.log('🔊 [LOGIN] Token generated, length:', token.length)
+    console.log('🔊 [LOGIN] Setting cookie with secure:', process.env.NODE_ENV === 'production')
 
     // Устанавливаем httpOnly cookie с токеном
     setCookie(event, 'admin_token', token, {
@@ -53,6 +63,8 @@ export default defineEventHandler(async (event) => {
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 // 24 часа в секундах
     })
+
+    console.log('✅ [LOGIN] Cookie set successfully')
 
     // Возвращаем успешный ответ (без самого токена, т.к. он в cookie)
     return {
@@ -64,7 +76,7 @@ export default defineEventHandler(async (event) => {
       }
     }
   } catch (error: any) {
-    console.error('Admin login error:', error)
+    console.error('🔴 [LOGIN] Error:', error.statusMessage || error.message)
 
     throw createError({
       statusCode: error.statusCode || 500,
