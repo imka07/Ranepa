@@ -1,67 +1,88 @@
 export const useAdmin = () => {
   const adminUser = ref<{ id: string; email: string; role: 'admin' | 'superadmin' } | null>(null)
   const isAdmin = ref(false)
+  const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
-  // Mock администраторы
-  const adminCredentials = [
-    { email: 'admin@reshala.com', password: 'admin123', role: 'admin' as const },
-    { email: 'superadmin@reshala.com', password: 'superadmin123', role: 'superadmin' as const }
-  ]
+  // Инициализация администратора при загрузке
+  const initAdmin = async () => {
+    if (!process.client) return
 
-  // Инициализация администратора из localStorage
-  const initAdmin = () => {
-    if (process.client) {
-      const stored = localStorage.getItem('admin')
-      if (stored) {
-        adminUser.value = JSON.parse(stored)
+    isLoading.value = true
+    try {
+      // Проверяем, есть ли валидный токен на сервере
+      const { data } = await useFetch('/api/admin/verify')
+
+      if (data.value?.isAdmin && data.value.admin) {
+        adminUser.value = data.value.admin
         isAdmin.value = true
+        error.value = null
       } else {
-        // Автоматический вход админа
-        const defaultAdmin = adminCredentials[0]
-        adminUser.value = {
-          id: Math.random().toString(36).substr(2, 9),
-          email: defaultAdmin.email,
-          role: defaultAdmin.role
-        }
-        isAdmin.value = true
-        localStorage.setItem('admin', JSON.stringify(adminUser.value))
+        adminUser.value = null
+        isAdmin.value = false
       }
-    } else {
-      // На сервере тоже устанавливаем админа
-      const defaultAdmin = adminCredentials[0]
-      adminUser.value = {
-        id: Math.random().toString(36).substr(2, 9),
-        email: defaultAdmin.email,
-        role: defaultAdmin.role
-      }
-      isAdmin.value = true
+    } catch (err: any) {
+      // Если ошибка - значит, нет валидного токена
+      adminUser.value = null
+      isAdmin.value = false
+    } finally {
+      isLoading.value = false
     }
   }
 
   // Вход администратора
-  const adminLogin = (email: string, password: string): boolean => {
-    const admin = adminCredentials.find(
-      a => a.email === email && a.password === password
-    )
-    if (admin) {
-      adminUser.value = {
-        id: Math.random().toString(36).substr(2, 9),
-        email: admin.email,
-        role: admin.role
+  const adminLogin = async (email: string, password: string): Promise<boolean> => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const { data, error: fetchError } = await useFetch('/api/admin/login', {
+        method: 'POST',
+        body: { email, password }
+      })
+
+      if (fetchError.value) {
+        error.value = fetchError.value?.message || 'Login failed'
+        return false
       }
-      isAdmin.value = true
-      if (process.client) {
-        localStorage.setItem('admin', JSON.stringify(adminUser.value))
+
+      if (data.value?.success) {
+        // После успешного логина, получаем информацию из токена
+        adminUser.value = data.value.admin
+        isAdmin.value = true
+        return true
       }
-      return true
+
+      error.value = 'Invalid response from server'
+      return false
+    } catch (err: any) {
+      error.value = err.message || 'Login error'
+      return false
+    } finally {
+      isLoading.value = false
     }
-    return false
   }
 
-  // Выход администратора (отключена функциональность)
-  const adminLogout = () => {
-    // Функция отключена, админ всегда остается авторизованным
+  // Выход администратора
+  const adminLogout = async () => {
+    isLoading.value = true
+    try {
+      await useFetch('/api/admin/logout', {
+        method: 'POST'
+      })
+
+      adminUser.value = null
+      isAdmin.value = false
+      error.value = null
+    } catch (err: any) {
+      console.error('Logout error:', err)
+    } finally {
+      isLoading.value = false
+    }
   }
+
+  // Проверка, является ли роль суперадмином
+  const isSuperAdmin = computed(() => adminUser.value?.role === 'superadmin')
 
   onMounted(() => {
     initAdmin()
@@ -70,7 +91,11 @@ export const useAdmin = () => {
   return {
     adminUser,
     isAdmin,
+    isLoading,
+    error,
+    isSuperAdmin,
     adminLogin,
-    adminLogout
+    adminLogout,
+    initAdmin
   }
 }
