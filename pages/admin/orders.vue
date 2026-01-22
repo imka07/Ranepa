@@ -18,10 +18,10 @@
             Заказов: <span class="text-slate-900 font-bold">{{ allOrders?.length || 0 }}</span>
           </div>
           <NuxtLink
-            to="/"
+            to="/admin"
             class="px-4 py-2 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
           >
-            ← На сайт
+            ← На панель
           </NuxtLink>
         </div>
       </div>
@@ -102,6 +102,11 @@
 import { ref, computed, onMounted } from 'vue'
 import OrderCard from '~/components/OrderCard.vue'
 
+// Устанавливаем middleware для защиты этой страницы
+definePageMeta({
+  middleware: 'admin-auth'
+})
+
 const { getAllOrders, updateOrderStatus, updateSectionStatus, deleteOrder } = useOrders()
 
 const filterStatus = ref('')
@@ -118,9 +123,9 @@ onMounted(() => {
         // Проверяем, есть ли мок-данные (по известным темам)
         const mockThemes = ['Великая Октябрьская революция', 'Краткие интегралы']
         const hasMockData = orders.some((o: any) => mockThemes.some(theme => o.theme?.includes(theme)))
-        
+
         if (hasMockData) {
-          console.log('🧹 Найдены мок-данные, очищаю localStorage...')
+          console.log('🧼 Найдены мок-данные, очищаю localStorage...')
           localStorage.removeItem('orders')
           // Перезагружаем страницу для обновления
           window.location.reload()
