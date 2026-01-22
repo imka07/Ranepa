@@ -1,6 +1,6 @@
 /**
  * Middleware для защиты админских маршрутов
- * Использует общее состояние useState
+ * Опирается на инициализацию в плагине
  */
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
@@ -16,13 +16,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   console.log('🧐 [middleware] Current state - isInitialized:', isInitialized.value, 'isAdmin:', isAdmin.value)
 
-  // Если ещё не инициализированы, дожидаемся
-  // initAdmin() будет вызван автоматически при создании composable
+  // Ожидаем инициализации (она должна быть запущена в плагине)
   if (!isInitialized.value) {
     console.log('🧐 [middleware] Not initialized, waiting for init...')
-    // Подождём инициализации (await задаст все в middleware)
     await initAdmin()
-    console.log('🧐 [middleware] After initAdmin - isAdmin:', isAdmin.value, 'isInitialized:', isInitialized.value)
+    console.log('🧐 [middleware] After initAdmin - isAdmin:', isAdmin.value)
   }
 
   // Проверяем авторизацию
