@@ -13,7 +13,10 @@ export const useAdmin = () => {
     isLoading.value = true
     try {
       // Проверяем, есть ли валидный токен на сервере
-      const { data, error: fetchError } = await useFetch('/api/admin/verify')
+      // Отправляем с credentials: 'include', чтобы cookies отправлялись
+      const { data, error: fetchError } = await useFetch('/api/admin/verify', {
+        credentials: 'include'
+      })
 
       if (!fetchError.value && data.value?.isAdmin && data.value.admin) {
         adminUser.value = data.value.admin
@@ -41,7 +44,8 @@ export const useAdmin = () => {
     try {
       const { data, error: fetchError } = await useFetch('/api/admin/login', {
         method: 'POST',
-        body: { email, password }
+        body: { email, password },
+        credentials: 'include'
       })
 
       if (fetchError.value) {
@@ -72,7 +76,8 @@ export const useAdmin = () => {
     isLoading.value = true
     try {
       await useFetch('/api/admin/logout', {
-        method: 'POST'
+        method: 'POST',
+        credentials: 'include'
       })
 
       adminUser.value = null
