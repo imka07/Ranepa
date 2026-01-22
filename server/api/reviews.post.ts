@@ -25,17 +25,18 @@ export default defineEventHandler(async (event) => {
     // Получаем Supabase клиент
     const supabase = getSupabaseClient()
     
+    // Подготавливаем данные для вставки
+    const reviewData = {
+      name: body.name,
+      role: body.role,
+      rating: Number(body.rating),
+      content: body.content
+    }
+    
     // Сохраняем отзыв в базу данных
     const { data, error } = await supabase
       .from('reviews')
-      .insert([
-        {
-          name: body.name,
-          role: body.role,
-          rating: body.rating,
-          content: body.content
-        }
-      ])
+      .insert(reviewData as any)
       .select()
     
     if (error) {
