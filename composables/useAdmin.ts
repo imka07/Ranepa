@@ -1,16 +1,22 @@
+/**
+ * Админ composable с общим состоянием
+ * Оно работает автоматически до client hydration
+ */
+
 export const useAdmin = () => {
-  const adminUser = ref<{ id: string; email: string; role: 'admin' | 'superadmin' } | null>(null)
-  const isAdmin = ref(false)
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
-  const isInitialized = ref(false)
+  // Общее состояние в сессии
+  const adminUser = useState('admin.user', () => null as { id: string; email: string; role: 'admin' | 'superadmin' } | null)
+  const isAdmin = useState('admin.isAdmin', () => false)
+  const isLoading = useState('admin.isLoading', () => false)
+  const error = useState('admin.error', () => null as string | null)
+  const isInitialized = useState('admin.isInitialized', () => false)
   const initPromise = ref<Promise<void> | null>(null)
 
-  // Инициализация администратора при загружке
+  // Инициализация администратора
   const initAdmin = async () => {
     console.log('🧐 [useAdmin] initAdmin called, isInitialized:', isInitialized.value)
 
-    // Если дожидаемся инициализации, вернем ту же победу
+    // Если дожидаемся инициализации
     if (initPromise.value) {
       console.log('🧐 [useAdmin] Already waiting for init, returning existing promise')
       return initPromise.value
@@ -36,7 +42,6 @@ export const useAdmin = () => {
       try {
         console.log('🧐 [useAdmin] Sending verify request to server...')
 
-        // Проверяем, есть ли валидный токен на сервере
         const response = await $fetch('/api/admin/verify', {
           method: 'GET',
           credentials: 'include'
@@ -56,7 +61,6 @@ export const useAdmin = () => {
         }
       } catch (err: any) {
         console.error('❌ [useAdmin] Init error:', err.message || err)
-        // Если ошибка - значит, нет валидного токена
         adminUser.value = null
         isAdmin.value = false
       } finally {
@@ -88,7 +92,6 @@ export const useAdmin = () => {
 
       if (response?.success) {
         console.log('✅ [useAdmin] Login successful')
-        // После успешного логина, получаем информацию из токена
         adminUser.value = response.admin
         isAdmin.value = true
         isInitialized.value = true
@@ -133,6 +136,7 @@ export const useAdmin = () => {
   // Проверка, является ли роль суперадмином
   const isSuperAdmin = computed(() => adminUser.value?.role === 'superadmin')
 
+  // Пытаемся инициализировать при onMounted
   onMounted(async () => {
     console.log('🧐 [useAdmin] onMounted called')
     await initAdmin()
