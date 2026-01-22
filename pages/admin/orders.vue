@@ -102,10 +102,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import OrderCard from '~/components/OrderCard.vue'
 
-// Устанавливаем middleware для защиты этой страницы
-definePageMeta({
-  middleware: 'admin-auth'
-})
+// Глобальная аутентификация обрабатывается middleware/auth.global.ts
+// definePageMeta больше не нужен
 
 const router = useRouter()
 const { getAllOrders, updateOrderStatus, updateSectionStatus, deleteOrder } = useOrders()
