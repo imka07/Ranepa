@@ -5,10 +5,10 @@ export default defineEventHandler(async (event) => {
     // Получаем токен из cookies
     const token = getCookie(event, 'admin_token')
 
-    console.log('🔍 [VERIFY] Cookie received:', token ? 'YES' : 'NO')
+    console.log('\ud83d\udd0d [VERIFY] Cookie received:', token ? 'YES (length: ' + token.length + ')' : 'NO')
 
     if (!token) {
-      console.log('🔴 [VERIFY] No token in cookies')
+      console.log('\ud83d\udd34 [VERIFY] No token in cookies')
       throw createError({
         statusCode: 401,
         statusMessage: 'No auth token found'
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     const verified = verifyToken(token)
 
     if (!verified) {
-      console.log('🔴 [VERIFY] Token verification failed')
+      console.log('\ud83d\udd34 [VERIFY] Token verification failed')
       // Удаляем невалидный токен
       setCookie(event, 'admin_token', '', { maxAge: 0 })
 
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    console.log('🔊 [VERIFY] Token verified successfully:', verified.email)
+    console.log('\ud83d\udd0a [VERIFY] Token verified successfully:', verified.email)
 
     // Возвращаем информацию админа
     return {
@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
       }
     }
   } catch (error: any) {
-    console.log('🔴 [VERIFY] Error:', error.statusMessage || error.message)
+    console.log('\ud83d\udd34 [VERIFY] Error:', error.statusMessage || error.message)
     throw createError({
       statusCode: error.statusCode || 500,
       statusMessage: error.statusMessage || 'Internal server error'
