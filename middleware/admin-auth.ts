@@ -16,9 +16,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   console.log('🧐 [middleware] Current state - isInitialized:', isInitialized.value, 'isAdmin:', isAdmin.value)
 
-  // Ожидаем инициализации, если ещё не сделана
+  // Если ещё не инициализированы, дожидаемся
+  // initAdmin() будет вызван автоматически при создании composable
   if (!isInitialized.value) {
-    console.log('🧐 [middleware] Not initialized, calling initAdmin...')
+    console.log('🧐 [middleware] Not initialized, waiting for init...')
+    // Подождём инициализации (await задаст все в middleware)
     await initAdmin()
     console.log('🧐 [middleware] After initAdmin - isAdmin:', isAdmin.value, 'isInitialized:', isInitialized.value)
   }
