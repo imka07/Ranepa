@@ -1,5 +1,5 @@
 export interface OrderSection {
-  id: 'plan' | 'chapter1' | 'chapter2' | 'presentation'
+  id: 'plan' | 'chapter1' | 'chapter2' | 'chapter3' | 'presentation'
   name: string
   completed: boolean
 }
@@ -39,6 +39,7 @@ const DEFAULT_SECTIONS: OrderSection[] = [
   { id: 'plan', name: 'План', completed: false },
   { id: 'chapter1', name: '1 глава', completed: false },
   { id: 'chapter2', name: '2 глава', completed: false },
+  { id: 'chapter3', name: '3 глава', completed: false },
   { id: 'presentation', name: 'Преза', completed: false }
 ]
 
