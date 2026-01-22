@@ -8,41 +8,54 @@ export const useAdmin = () => {
 
   // Инициализация администратора при загружке
   const initAdmin = async () => {
+    console.log('🧐 [useAdmin] initAdmin called, isInitialized:', isInitialized.value)
+
     // Если дожидаемся инициализации, вернем ту же победу
     if (initPromise.value) {
+      console.log('🧐 [useAdmin] Already waiting for init, returning existing promise')
       return initPromise.value
     }
 
     // Если уже инициализированы
     if (isInitialized.value) {
+      console.log('🧐 [useAdmin] Already initialized')
       return
     }
 
     if (!process.client) {
+      console.log('🧐 [useAdmin] Not on client, skipping')
       isInitialized.value = true
       return
     }
+
+    console.log('🧐 [useAdmin] Starting initialization...')
 
     // Начинаем инициализацию
     const init = (async () => {
       isLoading.value = true
       try {
+        console.log('🧐 [useAdmin] Sending verify request to server...')
+
         // Проверяем, есть ли валидный токен на сервере
-        // Отправляем с credentials: 'include', чтобы cookies отправлялись
         const response = await $fetch('/api/admin/verify', {
           method: 'GET',
           credentials: 'include'
-        } as any).catch(() => null)
+        } as any)
+
+        console.log('🧐 [useAdmin] Verify response:', response)
 
         if (response?.isAdmin && response?.admin) {
+          console.log('✅ [useAdmin] Admin verified:', response.admin.email)
           adminUser.value = response.admin
           isAdmin.value = true
           error.value = null
         } else {
+          console.log('❌ [useAdmin] Response is not admin')
           adminUser.value = null
           isAdmin.value = false
         }
       } catch (err: any) {
+        console.error('❌ [useAdmin] Init error:', err.message || err)
         // Если ошибка - значит, нет валидного токена
         adminUser.value = null
         isAdmin.value = false
@@ -50,6 +63,7 @@ export const useAdmin = () => {
         isLoading.value = false
         isInitialized.value = true
         initPromise.value = null
+        console.log('🧐 [useAdmin] Initialization complete, isAdmin:', isAdmin.value)
       }
     })()
 
@@ -59,6 +73,7 @@ export const useAdmin = () => {
 
   // Вход администратора
   const adminLogin = async (email: string, password: string): Promise<boolean> => {
+    console.log('🧐 [useAdmin] Login attempt for:', email)
     isLoading.value = true
     error.value = null
 
@@ -69,7 +84,10 @@ export const useAdmin = () => {
         credentials: 'include'
       } as any)
 
+      console.log('🧐 [useAdmin] Login response:', response)
+
       if (response?.success) {
+        console.log('✅ [useAdmin] Login successful')
         // После успешного логина, получаем информацию из токена
         adminUser.value = response.admin
         isAdmin.value = true
@@ -77,9 +95,11 @@ export const useAdmin = () => {
         return true
       }
 
+      console.log('❌ [useAdmin] Invalid response')
       error.value = 'Invalid response from server'
       return false
     } catch (err: any) {
+      console.error('❌ [useAdmin] Login error:', err.message || err)
       error.value = err.message || 'Login error'
       return false
     } finally {
@@ -89,6 +109,7 @@ export const useAdmin = () => {
 
   // Выход администратора
   const adminLogout = async () => {
+    console.log('🧐 [useAdmin] Logout called')
     isLoading.value = true
     try {
       await $fetch('/api/admin/logout', {
@@ -96,13 +117,14 @@ export const useAdmin = () => {
         credentials: 'include'
       } as any)
 
+      console.log('✅ [useAdmin] Logout successful')
       adminUser.value = null
       isAdmin.value = false
       error.value = null
       isInitialized.value = false
       initPromise.value = null
     } catch (err: any) {
-      console.error('Logout error:', err)
+      console.error('❌ [useAdmin] Logout error:', err)
     } finally {
       isLoading.value = false
     }
@@ -112,6 +134,7 @@ export const useAdmin = () => {
   const isSuperAdmin = computed(() => adminUser.value?.role === 'superadmin')
 
   onMounted(async () => {
+    console.log('🧐 [useAdmin] onMounted called')
     await initAdmin()
   })
 
