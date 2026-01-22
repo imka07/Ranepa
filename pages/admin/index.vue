@@ -103,8 +103,13 @@ import AdminServicesSection from '~/components/Admin/AdminServicesSection.vue'
 import AdminMessagesSection from '~/components/Admin/AdminMessagesSection.vue'
 import AdminContentSection from '~/components/Admin/AdminContentSection.vue'
 
+// Устанавливаем middleware для защиты этой страницы
+definePageMeta({
+  middleware: 'admin-auth'
+})
+
 const router = useRouter()
-const { adminUser, isAdmin, adminLogout } = useAdmin()
+const { adminUser, adminLogout } = useAdmin()
 const { getStats } = useAdminData()
 
 const activeTab = ref<'orders' | 'users' | 'services' | 'messages' | 'content'>('orders')
@@ -119,15 +124,12 @@ const tabLabels: Record<string, string> = {
   content: '📝 Контент'
 }
 
-const handleLogout = () => {
-  adminLogout()
+const handleLogout = async () => {
+  await adminLogout()
   router.push('/admin/login')
 }
 
 onMounted(() => {
-  if (!isAdmin.value) {
-    router.push('/admin/login')
-  }
   setInterval(() => {
     stats.value = getStats()
   }, 5000)
