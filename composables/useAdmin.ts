@@ -3,17 +3,19 @@ export const useAdmin = () => {
   const isAdmin = ref(false)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const isInitialized = ref(false)
 
   // Инициализация администратора при загрузке
   const initAdmin = async () => {
+    if (isInitialized.value) return // Предотвращаем двойную инициализацию
     if (!process.client) return
 
     isLoading.value = true
     try {
       // Проверяем, есть ли валидный токен на сервере
-      const { data } = await useFetch('/api/admin/verify')
+      const { data, error: fetchError } = await useFetch('/api/admin/verify')
 
-      if (data.value?.isAdmin && data.value.admin) {
+      if (!fetchError.value && data.value?.isAdmin && data.value.admin) {
         adminUser.value = data.value.admin
         isAdmin.value = true
         error.value = null
@@ -27,6 +29,7 @@ export const useAdmin = () => {
       isAdmin.value = false
     } finally {
       isLoading.value = false
+      isInitialized.value = true
     }
   }
 
@@ -50,6 +53,7 @@ export const useAdmin = () => {
         // После успешного логина, получаем информацию из токена
         adminUser.value = data.value.admin
         isAdmin.value = true
+        isInitialized.value = true
         return true
       }
 
@@ -74,6 +78,7 @@ export const useAdmin = () => {
       adminUser.value = null
       isAdmin.value = false
       error.value = null
+      isInitialized.value = false
     } catch (err: any) {
       console.error('Logout error:', err)
     } finally {
@@ -84,8 +89,8 @@ export const useAdmin = () => {
   // Проверка, является ли роль суперадмином
   const isSuperAdmin = computed(() => adminUser.value?.role === 'superadmin')
 
-  onMounted(() => {
-    initAdmin()
+  onMounted(async () => {
+    await initAdmin()
   })
 
   return {
@@ -96,6 +101,7 @@ export const useAdmin = () => {
     isSuperAdmin,
     adminLogin,
     adminLogout,
-    initAdmin
+    initAdmin,
+    isInitialized
   }
 }
