@@ -3,14 +3,9 @@ import { generateToken } from '~/server/utils/jwt'
 // Админские учетные данные (в продакшене хранить в БД и хешировать пароль)
 const adminCredentials = [
   {
-    email: 'admin@reshala.com',
-    password: 'admin123',
+    email: 'inal@reshala.com',
+    password: 'x/s–$0R#Jg293_',
     role: 'admin' as const
-  },
-  {
-    email: 'superadmin@reshala.com',
-    password: 'superadmin123',
-    role: 'superadmin' as const
   }
 ]
 
