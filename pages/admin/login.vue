@@ -3,7 +3,7 @@
     <div class="w-full max-w-md">
       <!-- Header -->
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">🔐 Admin</h1>
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">Admin</h1>
         <p class="text-slate-600 text-sm">Вход в админ-панель</p>
       </div>
 
@@ -25,7 +25,7 @@
             <input
               v-model="email"
               type="email"
-              placeholder="admin@reshala.com"
+              placeholder="your@email.com"
               required
               class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 transition-colors focus:outline-none focus:border-blue-500 focus:bg-white"
               :disabled="isLoading"
@@ -55,21 +55,6 @@
             <span>{{ isLoading ? 'Вход...' : 'Войти' }}</span>
           </button>
         </form>
-
-        <!-- Test Credentials -->
-        <div class="mt-6 pt-6 border-t border-slate-200">
-          <p class="text-xs text-slate-600 font-medium mb-3">📝 Тестовые учетные данные:</p>
-          <div class="space-y-2 text-xs">
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <p class="font-mono text-slate-700">admin@reshala.com</p>
-              <p class="font-mono text-slate-700">admin123</p>
-            </div>
-            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <p class="font-mono text-slate-700">superadmin@reshala.com</p>
-              <p class="font-mono text-slate-700">superadmin123</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Back Link -->
@@ -110,8 +95,8 @@ const handleLogin = async () => {
     const success = await adminLogin(email.value, password.value)
 
     if (success) {
-      // Успешный логин - перенаправляем на панель
-      router.push('/admin')
+      // Успешный логин - перенаправляем на страницу заказов
+      router.push('/admin/orders')
     } else {
       error.value = 'Неверный email или пароль'
     }
@@ -122,8 +107,8 @@ const handleLogin = async () => {
   }
 }
 
-// Если уже авторизован, перенаправляем на панель
+// Если уже авторизован, перенаправляем на страницу заказов
 if (isAdmin.value) {
-  router.push('/admin')
+  router.push('/admin/orders')
 }
 </script>
