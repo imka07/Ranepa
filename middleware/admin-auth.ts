@@ -9,19 +9,19 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     return
   }
 
-  // Проверяем админ статус
-  const { isAdmin, initAdmin } = useAdmin()
+  const { isAdmin, initAdmin, isInitialized } = useAdmin()
 
-  // Обновляем статус из сервера (в случае SSR)
-  if (process.server) {
-    await initAdmin()
+  // Предотвращаем двойную инициализацию
+  if (isInitialized.value) {
+    // Если уже инициализированы, но не авторизован
+    if (!isAdmin.value) {
+      return navigateTo('/admin/login')
+    }
+    return
   }
 
-  // На клиенте проверяем можно ли есть изуст токен
-  if (!isAdmin.value) {
-    // Попытка понравить статус
-    await initAdmin()
-  }
+  // Првая инициализация - нужно дождаться
+  await initAdmin()
 
   // Окончательная проверка
   if (!isAdmin.value) {
