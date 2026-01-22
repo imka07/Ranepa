@@ -136,11 +136,12 @@ export const useAdmin = () => {
   // Проверка, является ли роль суперадмином
   const isSuperAdmin = computed(() => adminUser.value?.role === 'superadmin')
 
-  // Пытаемся инициализировать при onMounted
-  onMounted(async () => {
-    console.log('🧐 [useAdmin] onMounted called')
-    await initAdmin()
-  })
+  // Инициализируем при создании composable на клиенте
+  // Это сработает перед middleware и раньше, чем onMounted
+  if (process.client && !isInitialized.value) {
+    console.log('🧐 [useAdmin] Initializing on composable creation')
+    initAdmin()
+  }
 
   return {
     adminUser,
