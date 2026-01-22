@@ -48,13 +48,67 @@ export const useOrders = () => {
   const { user } = useAuth()
   const orders = ref<Order[]>([])
 
+  // Миграция: добавляет отсутствующую "3 глава" к существующим заказам
+  const migrateOrders = (ordersToMigrate: Order[]): Order[] => {
+    let hasChanges = false
+    
+    const migrated = ordersToMigrate.map(order => {
+      // Проверяем, есть ли уже chapter3
+      const hasChapter3 = order.sections.some(s => s.id === 'chapter3')
+      
+      if (!hasChapter3) {
+        console.log(`🔄 Миграция заказа ${order.id}: добавляю 3 главу`)
+        hasChanges = true
+        
+        // Находим индекс "Презы" (она должна быть последней)
+        const presentationIndex = order.sections.findIndex(s => s.id === 'presentation')
+        
+        if (presentationIndex !== -1) {
+          // Вставляем "3 глава" перед "Презой"
+          const newSections = [...order.sections]
+          newSections.splice(presentationIndex, 0, {
+            id: 'chapter3',
+            name: '3 глава',
+            completed: false
+          })
+          
+          return {
+            ...order,
+            sections: newSections
+          }
+        } else {
+          // Если "Презы" нет, просто добавляем в конец
+          return {
+            ...order,
+            sections: [
+              ...order.sections,
+              { id: 'chapter3', name: '3 глава', completed: false }
+            ]
+          }
+        }
+      }
+      
+      return order
+    })
+    
+    if (hasChanges) {
+      console.log('✅ Миграция завершена')
+    }
+    
+    return migrated
+  }
+
   // Загружаем заказы из localStorage
   const initOrders = () => {
     if (process.client) {
       const stored = localStorage.getItem('orders')
       if (stored) {
         try {
-          orders.value = JSON.parse(stored)
+          const parsedOrders = JSON.parse(stored)
+          // Применяем миграцию к загруженным заказам
+          orders.value = migrateOrders(parsedOrders)
+          // Сохраняем обновленные заказы
+          saveOrders()
           console.log('📦 Загруженные заказы:', orders.value)
         } catch (e) {
           console.error('Failed to parse orders from localStorage', e)
