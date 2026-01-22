@@ -3,6 +3,8 @@
  * Оно работает автоматически до client hydration
  */
 
+let initPromise: Promise<void> | null = null
+
 export const useAdmin = () => {
   // Общее состояние в сессии
   const adminUser = useState('admin.user', () => null as { id: string; email: string; role: 'admin' | 'superadmin' } | null)
@@ -10,16 +12,15 @@ export const useAdmin = () => {
   const isLoading = useState('admin.isLoading', () => false)
   const error = useState('admin.error', () => null as string | null)
   const isInitialized = useState('admin.isInitialized', () => false)
-  const initPromise = ref<Promise<void> | null>(null)
 
   // Инициализация администратора
   const initAdmin = async () => {
     console.log('🧐 [useAdmin] initAdmin called, isInitialized:', isInitialized.value)
 
     // Если дожидаемся инициализации
-    if (initPromise.value) {
+    if (initPromise) {
       console.log('🧐 [useAdmin] Already waiting for init, returning existing promise')
-      return initPromise.value
+      return initPromise
     }
 
     // Если уже инициализированы
@@ -37,7 +38,7 @@ export const useAdmin = () => {
     console.log('🧐 [useAdmin] Starting initialization...')
 
     // Начинаем инициализацию
-    const init = (async () => {
+    initPromise = (async () => {
       isLoading.value = true
       try {
         console.log('🧐 [useAdmin] Sending verify request to server...')
@@ -66,13 +67,12 @@ export const useAdmin = () => {
       } finally {
         isLoading.value = false
         isInitialized.value = true
-        initPromise.value = null
+        initPromise = null
         console.log('🧐 [useAdmin] Initialization complete, isAdmin:', isAdmin.value)
       }
     })()
 
-    initPromise.value = init
-    return init
+    return initPromise
   }
 
   // Вход администратора
@@ -125,7 +125,7 @@ export const useAdmin = () => {
       isAdmin.value = false
       error.value = null
       isInitialized.value = false
-      initPromise.value = null
+      initPromise = null
     } catch (err: any) {
       console.error('❌ [useAdmin] Logout error:', err)
     } finally {
@@ -135,13 +135,6 @@ export const useAdmin = () => {
 
   // Проверка, является ли роль суперадмином
   const isSuperAdmin = computed(() => adminUser.value?.role === 'superadmin')
-
-  // Инициализируем при создании composable на клиенте
-  // Это сработает перед middleware и раньше, чем onMounted
-  if (process.client && !isInitialized.value) {
-    console.log('🧐 [useAdmin] Initializing on composable creation')
-    initAdmin()
-  }
 
   return {
     adminUser,
