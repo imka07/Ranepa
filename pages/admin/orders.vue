@@ -16,12 +16,6 @@
           <div class="px-3 py-2 bg-white/60 backdrop-blur-sm border border-slate-200/50 rounded-lg text-xs text-slate-600 font-medium shadow-sm">
             Заказов: <span class="text-slate-900 font-bold">{{ allOrders?.length || 0 }}</span>
           </div>
-          <button
-            @click="handleLogout"
-            class="px-4 py-2 text-white bg-gradient-to-r from-red-500 to-red-600 rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
-          >
-            Выход
-          </button>
         </div>
       </div>
     </nav>
@@ -99,24 +93,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import OrderCard from '~/components/OrderCard.vue'
 
-// Глобальная аутентификация обрабатывается middleware/auth.global.ts
-// definePageMeta больше не нужен
+// Никаких авторизации - страница публичная
 
-const router = useRouter()
 const { getAllOrders, updateOrderStatus, updateSectionStatus, deleteOrder } = useOrders()
-const { adminLogout } = useAdmin()
 
 const filterStatus = ref('')
 const filterWorkType = ref('')
 const searchQuery = ref('')
-
-const handleLogout = async () => {
-  await adminLogout()
-  router.push('/admin/login')
-}
 
 // Очищаем мок-данные при загрузке страницы
 onMounted(() => {
