@@ -69,6 +69,12 @@
       </div>
     </div>
 
+    <!-- Сообщение от клиента (только для админа и если есть) -->
+    <div v-if="isAdminView && order.comment" class="mb-4 p-4 bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200/50 rounded-lg">
+      <p class="text-xs font-semibold text-amber-800 mb-2">Сообщение от клиента:</p>
+      <p class="text-sm text-slate-700 leading-relaxed">{{ order.comment }}</p>
+    </div>
+
     <!-- Прогресс выполнения (только для админа) -->
     <div v-if="showProgress && order.sections && order.sections.length > 0" class="mb-4">
       <div class="flex items-center justify-between mb-2">
@@ -86,7 +92,7 @@
     <!-- Разделы работы (только для админа) -->
     <div v-if="showSections && order.sections && order.sections.length > 0" class="mb-4">
       <p class="text-xs font-semibold text-slate-600 mb-2">Разделы работы</p>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
         <div
           v-for="section in order.sections"
           :key="section.id"
