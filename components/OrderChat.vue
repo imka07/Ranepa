@@ -34,7 +34,7 @@
         <input
           v-model="newMessage"
           type="text"
-          placeholder="Наберите сообщение..."
+          placeholder="Наберите сообщение..." 
           @keyup.enter="sendMessage"
           class="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder:text-slate-400 text-sm font-medium"
         />

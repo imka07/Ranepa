@@ -1,7 +1,7 @@
 import { ref, computed, reactive } from 'vue'
 
 type ContactType = 'phone' | 'telegram'
-type WorkType = 'essay' | 'coursework' | 'diploma' | 'abstract' | 'presentation' | 'solution' | 'other' | ''
+type WorkType = 'essay' | 'coursework' | 'diploma' | 'report' | 'presentation' | 'solution' | 'other' | ''
 
 interface FormData {
   workType: WorkType
