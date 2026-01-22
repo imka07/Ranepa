@@ -1,6 +1,6 @@
 /**
  * Middleware для защиты админских маршрутов
- * Проверяет токен в cookies при каждой загрузке страницы
+ * Использует общее состояние useState
  */
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
@@ -14,19 +14,16 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   const { isAdmin, initAdmin, isInitialized } = useAdmin()
 
-  console.log('🧐 [middleware] isInitialized:', isInitialized.value, 'isAdmin:', isAdmin.value)
+  console.log('🧐 [middleware] Current state - isInitialized:', isInitialized.value, 'isAdmin:', isAdmin.value)
 
-  // Предотвращаем двойную инициализацию
+  // Ожидаем инициализации, если ещё не сделана
   if (!isInitialized.value) {
     console.log('🧐 [middleware] Not initialized, calling initAdmin...')
-    // Ожидаем инициализации
     await initAdmin()
-    console.log('🧐 [middleware] After initAdmin, isAdmin:', isAdmin.value)
-  } else {
-    console.log('🧐 [middleware] Already initialized')
+    console.log('🧐 [middleware] After initAdmin - isAdmin:', isAdmin.value, 'isInitialized:', isInitialized.value)
   }
 
-  // После инициализации проверяем авторизацию
+  // Проверяем авторизацию
   if (!isAdmin.value) {
     console.log('🔴 [middleware] Not admin, redirecting to login')
     return navigateTo('/admin/login')
