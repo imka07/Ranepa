@@ -46,8 +46,8 @@
           </div>
 
           <!-- Error Message -->
-          <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-3">
-            <p class="text-red-600 text-sm font-medium">{{ error }}</p>
+          <div v-if="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-3">
+            <p class="text-red-600 text-sm font-medium">{{ errorMessage }}</p>
           </div>
 
           <!-- Submit Button -->
@@ -83,22 +83,30 @@ definePageMeta({
 })
 
 const router = useRouter()
-const { login, isAuthenticated } = useAdminAuth()
+const { login, checkAuth } = useAdminAuth()
 
 const email = ref('')
 const password = ref('')
-const error = ref('')
+const errorMessage = ref('')
 const loading = ref(false)
 
-// Если уже авторизован - редиректим на админку
-onMounted(() => {
-  if (isAuthenticated.value) {
-    router.push('/admin/orders')
+// Проверяем, может уже авторизован
+onMounted(async () => {
+  try {
+    const response = await $fetch<{ authenticated: boolean }>('/api/admin/verify', {
+      credentials: 'include'
+    })
+    
+    if (response.authenticated) {
+      router.push('/admin/orders')
+    }
+  } catch (error) {
+    // Не авторизован - остаемся на странице логина
   }
 })
 
 const handleLogin = async () => {
-  error.value = ''
+  errorMessage.value = ''
   loading.value = true
 
   try {
@@ -108,10 +116,12 @@ const handleLogin = async () => {
       // Успешная авторизация - переходим в админку
       await router.push('/admin/orders')
     } else {
-      error.value = result.error || 'Ошибка входа'
+      // Отображаем ошибку
+      errorMessage.value = result.error || 'Вы ввели неверный пароль, попробуйте еще раз'
     }
   } catch (e: any) {
-    error.value = 'Произошла ошибка при входе'
+    console.error('Ошибка входа:', e)
+    errorMessage.value = 'Вы ввели неверный пароль, попробуйте еще раз'
   } finally {
     loading.value = false
   }

@@ -1,19 +1,15 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  // Только для клиента и серверного рендеринга
-  const { isAuthenticated, isLoading, checkAuth } = useAdminAuth()
+  // Проверяем авторизацию напрямую через API
+  try {
+    const response = await $fetch<{ authenticated: boolean }>('/api/admin/verify', {
+      credentials: 'include'
+    })
 
-  // Если еще не проверяли авторизацию - проверяем
-  if (process.client && isLoading.value) {
-    await checkAuth()
-  }
-
-  // На сервере всегда проверяем
-  if (process.server) {
-    await checkAuth()
-  }
-
-  // Если не авторизован - редиректим на страницу логина
-  if (!isAuthenticated.value) {
+    if (!response.authenticated) {
+      return navigateTo('/admin-login')
+    }
+  } catch (error) {
+    console.error('Auth check failed:', error)
     return navigateTo('/admin-login')
   }
 })

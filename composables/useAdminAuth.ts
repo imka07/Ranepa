@@ -8,7 +8,7 @@ export interface AdminUser {
 export const useAdminAuth = () => {
   const isAuthenticated: Ref<boolean> = useState('admin-authenticated', () => false)
   const adminUser: Ref<AdminUser | null> = useState('admin-user', () => null)
-  const isLoading: Ref<boolean> = useState('admin-loading', () => true)
+  const isLoading: Ref<boolean> = useState('admin-loading', () => false)
 
   /**
    * Проверяет авторизацию при загрузке приложения
@@ -51,21 +51,11 @@ export const useAdminAuth = () => {
         adminUser.value = response.user
         return { success: true }
       } else {
-        return { success: false, error: response.error || 'Ошибка авторизации' }
+        return { success: false, error: 'Вы ввели неверный пароль, попробуйте еще раз' }
       }
     } catch (error: any) {
       console.error('Login error:', error)
-      
-      // Правильная обработка ошибок от API
-      if (error?.data?.error) {
-        return { success: false, error: error.data.error }
-      } else if (error?.statusMessage) {
-        return { success: false, error: error.statusMessage === 'Invalid credentials' ? 'Неверный email или пароль' : error.statusMessage }
-      } else if (error?.message) {
-        return { success: false, error: error.message }
-      } else {
-        return { success: false, error: 'Ошибка подключения к серверу' }
-      }
+      return { success: false, error: 'Вы ввели неверный пароль, попробуйте еще раз' }
     }
   }
 
