@@ -13,9 +13,23 @@
         </div>
 
         <div class="flex gap-3 items-center">
+          <!-- User Info -->
+          <div class="px-3 py-2 bg-white/60 backdrop-blur-sm border border-slate-200/50 rounded-lg text-xs text-slate-600 font-medium shadow-sm">
+            <span class="text-blue-600">✓</span> {{ adminUser?.email || 'Admin' }}
+          </div>
+          
+          <!-- Orders Count -->
           <div class="px-3 py-2 bg-white/60 backdrop-blur-sm border border-slate-200/50 rounded-lg text-xs text-slate-600 font-medium shadow-sm">
             Заказов: <span class="text-slate-900 font-bold">{{ allOrders?.length || 0 }}</span>
           </div>
+
+          <!-- Logout Button -->
+          <button
+            @click="handleLogout"
+            class="px-4 py-2 bg-red-500/90 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition duration-200 shadow-sm hover:shadow-md"
+          >
+            Выйти
+          </button>
         </div>
       </div>
     </nav>
@@ -95,8 +109,13 @@
 import { ref, computed, onMounted } from 'vue'
 import OrderCard from '~/components/OrderCard.vue'
 
-// Никаких авторизации - страница публичная
+// Защищаем страницу через middleware
+definePageMeta({
+  middleware: ['admin-auth']
+})
 
+const router = useRouter()
+const { logout, adminUser } = useAdminAuth()
 const { getAllOrders, updateOrderStatus, updateSectionStatus, deleteOrder } = useOrders()
 
 const filterStatus = ref('')
@@ -175,5 +194,10 @@ const handleToggleSection = (orderId: string, sectionId: string) => {
 
 const handleDeleteOrder = (orderId: string) => {
   deleteOrder(orderId)
+}
+
+const handleLogout = async () => {
+  await logout()
+  router.push('/admin-login')
 }
 </script>
