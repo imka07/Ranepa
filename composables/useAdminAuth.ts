@@ -54,7 +54,18 @@ export const useAdminAuth = () => {
         return { success: false, error: response.error || 'Ошибка авторизации' }
       }
     } catch (error: any) {
-      return { success: false, error: error?.data?.error || 'Ошибка подключения' }
+      console.error('Login error:', error)
+      
+      // Правильная обработка ошибок от API
+      if (error?.data?.error) {
+        return { success: false, error: error.data.error }
+      } else if (error?.statusMessage) {
+        return { success: false, error: error.statusMessage === 'Invalid credentials' ? 'Неверный email или пароль' : error.statusMessage }
+      } else if (error?.message) {
+        return { success: false, error: error.message }
+      } else {
+        return { success: false, error: 'Ошибка подключения к серверу' }
+      }
     }
   }
 
