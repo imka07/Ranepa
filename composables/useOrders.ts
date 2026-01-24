@@ -24,152 +24,72 @@ export interface Order {
   sections: OrderSection[] // Разделы работы
   createdAt: string
   updatedAt: string
-  messages: Message[]
 }
-
-export interface Message {
-  id: string
-  sender: 'user' | 'manager'
-  text: string
-  timestamp: string
-}
-
-// Фиксированные разделы для всех заказов
-const DEFAULT_SECTIONS: OrderSection[] = [
-  { id: 'plan', name: 'План', completed: false },
-  { id: 'chapter1', name: '1 глава', completed: false },
-  { id: 'chapter2', name: '2 глава', completed: false },
-  { id: 'chapter3', name: '3 глава', completed: false },
-  { id: 'presentation', name: 'Преза', completed: false }
-]
 
 export const useOrders = () => {
-  // Инициализируем useAuth на верхнем уровне
   const { user } = useAuth()
   const orders = ref<Order[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-  // Миграция: добавляет отсутствующую "3 глава" к существующим заказам
-  const migrateOrders = (ordersToMigrate: Order[]): Order[] => {
-    let hasChanges = false
+  // Загружаем все заказы из API
+  const fetchOrders = async () => {
+    loading.value = true
+    error.value = null
     
-    const migrated = ordersToMigrate.map(order => {
-      // Проверяем, есть ли уже chapter3
-      const hasChapter3 = order.sections.some(s => s.id === 'chapter3')
+    try {
+      const response = await $fetch<{ success: boolean; orders: Order[] }>('/api/orders')
       
-      if (!hasChapter3) {
-        console.log(`🔄 Миграция заказа ${order.id}: добавляю 3 главу`)
-        hasChanges = true
-        
-        // Находим индекс "Презы" (она должна быть последней)
-        const presentationIndex = order.sections.findIndex(s => s.id === 'presentation')
-        
-        if (presentationIndex !== -1) {
-          // Вставляем "3 глава" перед "Презой"
-          const newSections = [...order.sections]
-          newSections.splice(presentationIndex, 0, {
-            id: 'chapter3',
-            name: '3 глава',
-            completed: false
-          })
-          
-          return {
-            ...order,
-            sections: newSections
-          }
-        } else {
-          // Если "Презы" нет, просто добавляем в конец
-          return {
-            ...order,
-            sections: [
-              ...order.sections,
-              { id: 'chapter3', name: '3 глава', completed: false }
-            ]
-          }
-        }
+      if (response.success) {
+        orders.value = response.orders
+        console.log('📦 Заказы загружены из API:', orders.value)
       }
-      
-      return order
-    })
-    
-    if (hasChanges) {
-      console.log('✅ Миграция завершена')
-    }
-    
-    return migrated
-  }
-
-  // Загружаем заказы из localStorage
-  const initOrders = () => {
-    if (process.client) {
-      const stored = localStorage.getItem('orders')
-      if (stored) {
-        try {
-          const parsedOrders = JSON.parse(stored)
-          // Применяем миграцию к загруженным заказам
-          orders.value = migrateOrders(parsedOrders)
-          // Сохраняем обновленные заказы
-          saveOrders()
-          console.log('📦 Загруженные заказы:', orders.value)
-        } catch (e) {
-          console.error('Failed to parse orders from localStorage', e)
-          orders.value = []
-        }
-      }
-    }
-  }
-
-  // Сохраняем заказы в localStorage
-  const saveOrders = () => {
-    if (process.client) {
-      localStorage.setItem('orders', JSON.stringify(orders.value))
-      console.log('💾 Заказы сохранены:', orders.value)
+    } catch (err) {
+      console.error('Failed to fetch orders:', err)
+      error.value = 'Не удалось загрузить заказы'
+      orders.value = []
+    } finally {
+      loading.value = false
     }
   }
 
   // Создаем новый заказ
-  const createOrder = (orderData: any) => {
-    // Убедимся что userId установлен
-    const userId = user.value?.id || 'unknown'
-    const userName = user.value?.name || 'Unknown'
-    const userEmail = user.value?.email || 'unknown@mail.com'
+  const createOrder = async (orderData: any) => {
+    loading.value = true
+    error.value = null
     
-    console.log('👤 Создание заказа для пользователя:', { userId, userName, userEmail })
-    console.log('   user.value:', user.value)
-    
-    const newOrder: Order = {
-      id: Math.random().toString(36).substr(2, 9),
-      userId: userId,
-      userName: userName,
-      userEmail: userEmail,
-      workType: orderData.workType,
-      subject: orderData.subject,
-      theme: orderData.theme,
-      deadline: orderData.deadline,
-      volume: orderData.volume,
-      comment: orderData.comment,
-      name: orderData.name,
-      contactType: orderData.contactType,
-      phone: orderData.phone,
-      telegram: orderData.telegram,
-      file: orderData.file,
-      status: 'в работе',
-      sections: JSON.parse(JSON.stringify(DEFAULT_SECTIONS)), // Глубокая копия
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      messages: [
-        {
-          id: Math.random().toString(36).substr(2, 9),
-          sender: 'manager',
-          text: 'Запрос получен. Менеджер скоро с вами свяжется.',
-          timestamp: new Date().toISOString()
+    try {
+      const userId = user.value?.id || 'guest'
+      const userName = user.value?.name || orderData.name
+      const userEmail = user.value?.email || 'guest@mail.com'
+      
+      console.log('👤 Создание заказа для пользователя:', { userId, userName, userEmail })
+      
+      const response = await $fetch<{ success: boolean; order: Order }>('/api/orders', {
+        method: 'POST',
+        body: {
+          ...orderData,
+          userId,
+          userName,
+          userEmail
         }
-      ]
+      })
+      
+      if (response.success && response.order) {
+        console.log('✅ Новый заказ создан:', response.order)
+        
+        // Добавляем заказ в начало списка
+        orders.value.unshift(response.order)
+        
+        return response.order
+      }
+    } catch (err) {
+      console.error('Failed to create order:', err)
+      error.value = 'Не удалось создать заказ'
+      throw err
+    } finally {
+      loading.value = false
     }
-    
-    console.log('✅ Новый заказ создан:', newOrder)
-    orders.value.push(newOrder)
-    saveOrders()
-    return newOrder
   }
 
   // Получаем заказы пользователя
@@ -188,56 +108,89 @@ export const useOrders = () => {
     return orders.value
   }
 
-  // Добавляем сообщение в чат
-  const addMessage = (orderId: string, sender: 'user' | 'manager', text: string) => {
-    const order = orders.value.find(o => o.id === orderId)
-    if (order) {
-      const newMessage: Message = {
-        id: Math.random().toString(36).substr(2, 9),
-        sender,
-        text,
-        timestamp: new Date().toISOString()
-      }
-      order.messages.push(newMessage)
-      order.updatedAt = new Date().toISOString()
-      saveOrders()
-      return newMessage
-    }
-  }
-
   // Обновляем статус заказа
-  const updateOrderStatus = (orderId: string, status: Order['status']) => {
-    const order = orders.value.find(o => o.id === orderId)
-    if (order) {
-      order.status = status
-      order.updatedAt = new Date().toISOString()
-      saveOrders()
+  const updateOrderStatus = async (orderId: string, status: Order['status']) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const response = await $fetch<{ success: boolean; order: Order }>(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        body: { status }
+      })
+      
+      if (response.success && response.order) {
+        // Обновляем заказ в локальном состоянии
+        const index = orders.value.findIndex(o => o.id === orderId)
+        if (index !== -1) {
+          orders.value[index] = response.order
+        }
+        console.log('✅ Статус заказа обновлен:', orderId, status)
+      }
+    } catch (err) {
+      console.error('Failed to update order status:', err)
+      error.value = 'Не удалось обновить статус заказа'
+      throw err
+    } finally {
+      loading.value = false
     }
   }
 
   // Обновляем статус раздела
-  const updateSectionStatus = (orderId: string, sectionId: string, completed: boolean) => {
-    const order = orders.value.find(o => o.id === orderId)
-    if (order) {
-      const section = order.sections.find(s => s.id === sectionId)
-      if (section) {
-        section.completed = completed
-        order.updatedAt = new Date().toISOString()
-        saveOrders()
+  const updateSectionStatus = async (orderId: string, sectionId: string, completed: boolean) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const response = await $fetch<{ success: boolean; order: Order }>(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        body: { sectionId, completed }
+      })
+      
+      if (response.success && response.order) {
+        // Обновляем заказ в локальном состоянии
+        const index = orders.value.findIndex(o => o.id === orderId)
+        if (index !== -1) {
+          orders.value[index] = response.order
+        }
+        console.log('✅ Статус раздела обновлен:', orderId, sectionId, completed)
       }
+    } catch (err) {
+      console.error('Failed to update section status:', err)
+      error.value = 'Не удалось обновить статус раздела'
+      throw err
+    } finally {
+      loading.value = false
     }
   }
 
   // Удаляем заказ (только для админа)
-  const deleteOrder = (orderId: string) => {
-    const index = orders.value.findIndex(o => o.id === orderId)
-    if (index !== -1) {
-      orders.value.splice(index, 1)
-      saveOrders()
-      console.log('🗑️ Заказ удален:', orderId)
-      return true
+  const deleteOrder = async (orderId: string) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const response = await $fetch<{ success: boolean }>(`/api/orders/${orderId}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.success) {
+        // Удаляем заказ из локального состояния
+        const index = orders.value.findIndex(o => o.id === orderId)
+        if (index !== -1) {
+          orders.value.splice(index, 1)
+        }
+        console.log('🗑️ Заказ удален:', orderId)
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error('Failed to delete order:', err)
+      error.value = 'Не удалось удалить заказ'
+      throw err
+    } finally {
+      loading.value = false
     }
-    return false
   }
 
   // Получаем один заказ по ID
@@ -254,16 +207,19 @@ export const useOrders = () => {
     return Math.round((completedSections / order.sections.length) * 100)
   }
 
+  // Инициализация: загружаем заказы при монтировании
   onMounted(() => {
-    initOrders()
+    fetchOrders()
   })
 
   return {
     orders,
+    loading,
+    error,
+    fetchOrders,
     createOrder,
     getUserOrders,
     getAllOrders,
-    addMessage,
     updateOrderStatus,
     updateSectionStatus,
     deleteOrder,
