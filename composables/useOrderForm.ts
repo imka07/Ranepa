@@ -24,6 +24,13 @@ interface AlertState {
   message: string
 }
 
+/**
+ * Генерирует уникальный ID запроса
+ */
+function generateRequestId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+}
+
 export const useOrderForm = () => {
   // Инициализируем зависимости на верхнем уровне
   const { user } = useAuth()
@@ -47,6 +54,9 @@ export const useOrderForm = () => {
   const isOrderOpen = ref(false)
   const isLoading = ref(false)
   const isDeadlineFocused = ref(false)
+  
+  // ID последнего запроса для предотвращения дубликатов
+  let lastRequestId: string | null = null
 
   const alert = reactive<AlertState>({
     show: false,
@@ -87,6 +97,8 @@ export const useOrderForm = () => {
   const closeOrderModal = () => {
     isOrderOpen.value = false
     resetForm()
+    // Сбрасываем ID запроса при закрытии
+    lastRequestId = null
   }
 
   /**
@@ -191,9 +203,21 @@ export const useOrderForm = () => {
 
     // Защита от повторной отправки
     if (isLoading.value) {
+      console.warn('⚠️ Попытка повторной отправки заблокирована (isLoading=true)')
       return
     }
 
+    // Генерируем уникальный ID запроса
+    const requestId = generateRequestId()
+    console.log(`🆔 Генерация нового запроса: ${requestId}`)
+
+    // Проверяем, не дублируется ли запрос
+    if (lastRequestId === requestId) {
+      console.warn(`⚠️ Дублирующийся запрос заблокирован: ${requestId}`)
+      return
+    }
+
+    lastRequestId = requestId
     isLoading.value = true
 
     try {
@@ -207,6 +231,7 @@ export const useOrderForm = () => {
 
       // Подготавливаем данные для сохранения
       const orderData: any = {
+        requestId, // Добавляем ID запроса
         workType: form.workType,
         subject: form.subject,
         theme: form.theme,
@@ -233,21 +258,25 @@ export const useOrderForm = () => {
         }
       }
 
+      console.log(`🚀 Отправка запроса ${requestId} на backend...`)
+
       // Отправляем заявку на backend (создаётся только ОДИН заказ в Supabase)
       const response = await $fetch('/api/orders', {
         method: 'POST',
         body: orderData
       })
 
-      console.log('✅ Заказ успешно создан:', response)
+      console.log(`✅ Заказ успешно создан (${requestId}):`, response)
 
       // Успешная отправка
       showAlert('success', 'Успешно!', 'Ваша заявка отправлена. Мы скоро свяжемся с вами!')
       closeOrderModal()
     } catch (error: any) {
-      console.error('Error submitting order:', error)
+      console.error(`❌ Ошибка при отправке запроса ${requestId}:`, error)
       const errorMessage = error?.data?.message || 'Произошла ошибка при отправке заявки. Попробуйте позже.'
       showAlert('error', 'Ошибка', errorMessage)
+      // Сбрасываем lastRequestId при ошибке, чтобы пользователь мог повторить
+      lastRequestId = null
     } finally {
       isLoading.value = false
     }
