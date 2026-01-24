@@ -1,3 +1,5 @@
+import { getSupabaseClient } from '../utils/supabase'
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   
@@ -31,16 +33,59 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    // Сохраняем заказ в Supabase
+    const supabase = getSupabaseClient()
+    
+    const orderData = {
+      user_id: body.userId || 'guest',
+      user_name: body.userName || body.name,
+      user_email: body.userEmail || 'guest@mail.com',
+      work_type: body.workType,
+      subject: body.subject,
+      theme: body.theme,
+      deadline: body.deadline,
+      volume: body.volume,
+      comment: body.comment || '',
+      name: body.name,
+      contact_type: body.contactType,
+      phone: body.phone || '',
+      telegram: body.telegram || '',
+      file: body.file || null,
+      status: 'в работе',
+      sections: [
+        { id: 'plan', name: 'План', completed: false },
+        { id: 'chapter1', name: '1 глава', completed: false },
+        { id: 'chapter2', name: '2 глава', completed: false },
+        { id: 'chapter3', name: '3 глава', completed: false },
+        { id: 'presentation', name: 'Преза', completed: false }
+      ]
+    }
+
+    const { data: order, error } = await supabase
+      .from('orders')
+      .insert(orderData)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Supabase error:', error)
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Failed to save order to database'
+      })
+    }
+
     // Подготавливаем сообщение для Telegram
     const telegramMessage = formatTelegramMessage(body)
     
     // Отправляем в Telegram (если креды не настроены — просто пропускаем отправку)
     await sendToTelegram(telegramMessage, body.file || null)
     
-    // Возвращаем успешный ответ
+    // Возвращаем успешный ответ с созданным заказом
     return {
       success: true,
-      message: 'Order submitted successfully'
+      message: 'Order submitted successfully',
+      order
     }
   } catch (error) {
     console.error('Error processing order:', error)
