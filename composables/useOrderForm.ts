@@ -27,7 +27,6 @@ interface AlertState {
 export const useOrderForm = () => {
   // Инициализируем зависимости на верхнем уровне
   const { user } = useAuth()
-  const { createOrder } = useOrders()
 
   // Состояние формы
   const form = reactive<FormData>({
@@ -190,6 +189,11 @@ export const useOrderForm = () => {
       return
     }
 
+    // Защита от повторной отправки
+    if (isLoading.value) {
+      return
+    }
+
     isLoading.value = true
 
     try {
@@ -212,7 +216,10 @@ export const useOrderForm = () => {
         name: form.name,
         contactType: form.contactType,
         phone: form.phone,
-        telegram: form.telegram
+        telegram: form.telegram,
+        userId: user.value.id,
+        userName: user.value.name,
+        userEmail: user.value.email
       }
 
       // Если есть файл, конвертируем его в Base64
@@ -226,20 +233,13 @@ export const useOrderForm = () => {
         }
       }
 
-      // Сохраняем заказ в localStorage
-      const newOrder = createOrder(orderData)
-      console.log('✅ Заказ создан:', newOrder)
+      // Отправляем заявку на backend (создаётся только ОДИН заказ в Supabase)
+      const response = await $fetch('/api/orders', {
+        method: 'POST',
+        body: orderData
+      })
 
-      // Отправляем в ТГ бот если есть эндпоинт
-      try {
-        await $fetch('/api/orders', {
-          method: 'POST',
-          body: orderData
-        })
-      } catch (telegramError) {
-        // Не провалить если ТГ не работает - заказ все равно сохраняется
-        console.warn('Telegram notification failed, but order was saved locally')
-      }
+      console.log('✅ Заказ успешно создан:', response)
 
       // Успешная отправка
       showAlert('success', 'Успешно!', 'Ваша заявка отправлена. Мы скоро свяжемся с вами!')
