@@ -31,21 +31,32 @@ export const useOrders = () => {
   const orders = ref<Order[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+  
+  // Флаг, чтобы предотвратить множественные загрузки
+  let isFetched = false
 
   // Загружаем все заказы из API
-  const fetchOrders = async () => {
+  const fetchOrders = async (force = false) => {
+    // Предотвращаем повторную загрузку, если уже загружено
+    if (isFetched && !force) {
+      console.log('🚫 Заказы уже загружены, пропускаю повторный запрос')
+      return
+    }
+    
     loading.value = true
     error.value = null
     
     try {
+      console.log('🚀 Загрузка заказов из API...')
       const response = await $fetch<{ success: boolean; orders: Order[] }>('/api/orders')
       
       if (response.success) {
         orders.value = response.orders
-        console.log('📦 Заказы загружены из API:', orders.value)
+        isFetched = true
+        console.log(`✅ Заказы загружены из API: ${orders.value.length} шт.`)
       }
     } catch (err) {
-      console.error('Failed to fetch orders:', err)
+      console.error('❌ Ошибка загрузки заказов:', err)
       error.value = 'Не удалось загрузить заказы'
       orders.value = []
     } finally {
@@ -78,13 +89,13 @@ export const useOrders = () => {
       if (response.success && response.order) {
         console.log('✅ Новый заказ создан:', response.order)
         
-        // Добавляем заказ в начало списка
-        orders.value.unshift(response.order)
+        // НЕ добавляем заказ локально - пусть API будет единственным источником истины
+        // orders.value.unshift(response.order) <- Убрали, чтобы избежать дубликатов
         
         return response.order
       }
     } catch (err) {
-      console.error('Failed to create order:', err)
+      console.error('❌ Ошибка создания заказа:', err)
       error.value = 'Не удалось создать заказ'
       throw err
     } finally {
@@ -128,7 +139,7 @@ export const useOrders = () => {
         console.log('✅ Статус заказа обновлен:', orderId, status)
       }
     } catch (err) {
-      console.error('Failed to update order status:', err)
+      console.error('❌ Ошибка обновления статуса:', err)
       error.value = 'Не удалось обновить статус заказа'
       throw err
     } finally {
@@ -156,7 +167,7 @@ export const useOrders = () => {
         console.log('✅ Статус раздела обновлен:', orderId, sectionId, completed)
       }
     } catch (err) {
-      console.error('Failed to update section status:', err)
+      console.error('❌ Ошибка обновления статуса раздела:', err)
       error.value = 'Не удалось обновить статус раздела'
       throw err
     } finally {
@@ -185,7 +196,7 @@ export const useOrders = () => {
       }
       return false
     } catch (err) {
-      console.error('Failed to delete order:', err)
+      console.error('❌ Ошибка удаления заказа:', err)
       error.value = 'Не удалось удалить заказ'
       throw err
     } finally {
@@ -209,6 +220,7 @@ export const useOrders = () => {
 
   // Инициализация: загружаем заказы при монтировании
   onMounted(() => {
+    console.log('🎭 onMounted: Запуск загрузки заказов')
     fetchOrders()
   })
 
