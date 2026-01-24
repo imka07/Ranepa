@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   
   // Конфигурация для Nitro (серверная часть)
   nitro: {
-    preset: 'netlify'
+    preset: 'vercel'
   },
   
   // Конфигурация runtime для переменных окружения
@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     // Публичные ключи, которые также будут доступны на клиенте
     public: {
       // Здесь можно добавить публичные переменные, если нужны
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://your-site.netlify.app'
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://your-site.vercel.app'
     }
   },
   
