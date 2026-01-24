@@ -61,11 +61,12 @@ export default defineEventHandler(async (event) => {
       ]
     }
 
-    const { data: order, error } = await supabase
+    // Type assertion to fix TypeScript error - Supabase doesn't have schema types configured
+    const { data: order, error } = await (supabase
       .from('orders')
       .insert(orderData)
       .select()
-      .single()
+      .single() as any)
 
     if (error) {
       console.error('Supabase error:', error)
