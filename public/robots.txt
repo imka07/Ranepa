@@ -1,2 +1,13 @@
-User-Agent: *
-Disallow:
+# robots.txt
+User-agent: *
+Allow: /
+
+# Запрещаем индексацию админской панели
+Disallow: /admin/
+Disallow: /admin-login
+
+# Запрещаем API эндпоинты
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://reshala.netlify.app/sitemap.xml
