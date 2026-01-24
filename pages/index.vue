@@ -98,8 +98,8 @@
           <!-- Предмет и Тема в одной строке -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">
-                Предмет<span class="text-red-500">*</span>
+              <label class="block text-sm font-medium text-slate-700 mb-2 whitespace-nowrap">
+                Направление подготовки (Предмет)<span class="text-red-500">*</span>
               </label>
               <input
                 v-model="form.subject"
