@@ -181,7 +181,8 @@
             placeholder="Опишите дополнительные требования, особенности работы, стиль цитирования и т.д."
             rows="4"
             class="form-input w-full px-4 py-2.5 rounded-lg bg-white text-slate-800 border border-slate-300 focus:border-blue-500 focus:shadow-md focus:outline-none transition placeholder-slate-400 text-sm resize-none shadow-sm"
-          />
+          ></textarea>
+
         </div>
 
         <!-- Контактные данные клиента -->
@@ -317,7 +318,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+     innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'LocalBusiness',
         name: 'Reshala',

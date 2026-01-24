@@ -75,7 +75,6 @@
             Мои отзывы
           </h2>
           <div class="text-center py-12 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50 text-slate-600 shadow-sm">
-            <p class="mb-4">У вас еще нет отзывов</p>
             <NuxtLink
               to="/reviews"
               class="inline-block px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105"
@@ -147,7 +146,7 @@ const expandedFaq = ref<number | null>(null)
 
 const tabs = [
   { id: 'orders', label: 'Заказы' },
-  { id: 'reviews', label: 'Отзывы' },
+  // { id: 'reviews', label: 'Отзывы' },
   { id: 'faq', label: 'FAQ' }
 ]
 
