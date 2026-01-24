@@ -17,21 +17,54 @@ export default defineNuxtConfig({
     
     // Публичные ключи, которые также будут доступны на клиенте
     public: {
-      // Здесь можно добавить публичные переменные, если нужны
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://your-site.vercel.app'
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://reshala.netlify.app'
     }
   },
   
   app: {
     head: {
-      title: 'Reshala',
-      titleTemplate: '',
       htmlAttrs: {
+        lang: 'ru',
         style: 'scroll-behavior: smooth;'
       },
+      title: 'Помощь студентам: заказать диплом, курсовую, реферат | Reshala',
+      titleTemplate: '%s',
       meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { 
+          name: 'description', 
+          content: 'Профессиональная помощь студентам РАНХиГС: написание дипломов, курсовых, рефератов. Консультации по учебным вопросам. Гарантия качества и сроков. ⭐ Заказать от 1000₽' 
+        },
+        { 
+          name: 'keywords', 
+          content: 'помощь студентам, написать диплом, заказать курсовую, реферат на заказ, консультации по учебе, РАНХиГС, решение задач, презентации' 
+        },
+        { name: 'author', content: 'Reshala' },
         { name: 'application-name', content: 'Reshala' },
-        { property: 'og:site_name', content: 'Reshala' }
+        
+        // Open Graph
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'Reshala' },
+        { property: 'og:title', content: 'Помощь студентам РАНХиГС | Дипломы, Курсовые, Рефераты' },
+        { 
+          property: 'og:description', 
+          content: 'Качественная помощь с учебными работами. Опыт работы 5+ лет. Гарантия результата. Сопровождение на всех этапах.' 
+        },
+        { property: 'og:locale', content: 'ru_RU' },
+        
+        // Twitter Card
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Reshala - Помощь студентам РАНХиГС' },
+        { name: 'twitter:description', content: 'Дипломы, курсовые, рефераты под ключ. Гарантия качества.' },
+        
+        // Additional SEO
+        { name: 'robots', content: 'index, follow' },
+        { name: 'googlebot', content: 'index, follow' },
+        { name: 'theme-color', content: '#3b82f6' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
       ]
     }
   }
