@@ -107,6 +107,9 @@ function formatTelegramMessage(data: any): string {
     abstract: 'Абстракт',
     presentation: 'Презентация',
     solution: 'Решение задач',
+    report: 'Реферат',
+    scientific_article: 'Научная статья',
+    exam_help: 'Помощь на экзамене',
     other: 'Другое'
   }
 
