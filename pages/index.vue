@@ -18,7 +18,7 @@
         <button
           type="button"
           @click="openOrderModal"
-          class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-105"
+          class="order-btn inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg transition-all duration-300"
         >
           Заказать
         </button>
@@ -409,6 +409,36 @@ const {
 </script>
 
 <style scoped>
+/* Анимация для кнопки "Заказать" */
+.order-btn {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.order-btn:hover {
+  color: white;
+}
+
+.order-btn::after {
+  content: "";
+  background: #0046FF;
+  position: absolute;
+  z-index: -1;
+  left: -20%;
+  right: -20%;
+  top: 0;
+  bottom: 0;
+  transform: skewX(-45deg) scale(0, 1);
+  transition: all 0.5s;
+}
+
+.order-btn:hover::after {
+  transform: skewX(-45deg) scale(1, 1);
+  transition: all 0.5s;
+}
+
 /* Единые стили для всех форм */
 .form-input,
 .form-select {
