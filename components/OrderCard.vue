@@ -65,7 +65,7 @@
       </div>
       <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-2 sm:p-3 rounded-lg border border-purple-100/50">
         <p class="text-xs text-slate-500 mb-1 font-medium">Сообщений</p>
-        <p class="text-slate-800 font-semibold text-xs sm:text-sm">{{ order.messages?.length || 0 }}</p>
+        <p class="text-slate-800 font-semibold text-xs sm:text-sm">{{ order.comment ? 1 : 0 }}</p>
       </div>
     </div>
 
@@ -229,6 +229,9 @@ const getWorkTypeLabel = (type: string) => {
     abstract: 'Абстракт',
     presentation: 'Презентация',
     solution: 'Решение задач',
+    report: 'Реферат',
+    scientific_article: 'Научная статья',
+    exam_help: 'Помощь на экзамене',
     other: 'Другое'
   }
   return labels[type] || type
