@@ -66,78 +66,6 @@
 
     <LayoutFooterMain />
 
-    <!-- Schema.org Review разметка -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "Reshala",
-      "description": "Профессиональная помощь студентам: написание дипломов, курсовых, рефератов",
-      "url": "https://ranepa-beta.vercel.app",
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "5",
-        "reviewCount": "4",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "review": [
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Анна"
-          },
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Спасибо за оперативную помощь с отчётом! Всё чётко и по делу."
-        },
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Илья"
-          },
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Подсказали, как оформить работу и сдать вовремя. Рекомендую."
-        },
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Мария"
-          },
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Очень понятные объяснения, перестал бояться методичек :)"
-        },
-        {
-          "@type": "Review",
-          "author": {
-            "@type": "Person",
-            "name": "Дмитрий"
-          },
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": "5",
-            "bestRating": "5"
-          },
-          "reviewBody": "Помогли структурировать диплом — экономия времени колоссальная."
-        }
-      ]
-    }
-    </script>
-
     <!-- Order Modal -->
     <UiBaseModal v-model="isOrderOpen" title="Оформление заявки" size="2xl" theme="light">
       <div class="space-y-6 mt-4">
@@ -384,7 +312,82 @@ import UiBaseModal from '~/components/ui/BaseModal.vue'
 import UiFileUploader from '~/components/ui/FileUploader.vue'
 import UiBaseAlert from '~/components/ui/BaseAlert.vue'
 
-// Удалено переопределение title - используется из nuxt.config.ts
+// Schema.org разметка через useHead
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        name: 'Reshala',
+        description: 'Профессиональная помощь студентам: написание дипломов, курсовых, рефератов',
+        url: 'https://reshala.netlify.app',
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '5',
+          reviewCount: '4',
+          bestRating: '5',
+          worstRating: '1'
+        },
+        review: [
+          {
+            '@type': 'Review',
+            author: {
+              '@type': 'Person',
+              name: 'Анна'
+            },
+            reviewRating: {
+              '@type': 'Rating',
+              ratingValue: '5',
+              bestRating: '5'
+            },
+            reviewBody: 'Спасибо за оперативную помощь с отчётом! Всё чётко и по делу.'
+          },
+          {
+            '@type': 'Review',
+            author: {
+              '@type': 'Person',
+              name: 'Илья'
+            },
+            reviewRating: {
+              '@type': 'Rating',
+              ratingValue: '5',
+              bestRating: '5'
+            },
+            reviewBody: 'Подсказали, как оформить работу и сдать вовремя. Рекомендую.'
+          },
+          {
+            '@type': 'Review',
+            author: {
+              '@type': 'Person',
+              name: 'Мария'
+            },
+            reviewRating: {
+              '@type': 'Rating',
+              ratingValue: '5',
+              bestRating: '5'
+            },
+            reviewBody: 'Очень понятные объяснения, перестал бояться методичек :)'
+          },
+          {
+            '@type': 'Review',
+            author: {
+              '@type': 'Person',
+              name: 'Дмитрий'
+            },
+            reviewRating: {
+              '@type': 'Rating',
+              ratingValue: '5',
+              bestRating: '5'
+            },
+            reviewBody: 'Помогли структурировать диплом — экономия времени колоссальная.'
+          }
+        ]
+      })
+    }
+  ]
+})
 
 const {
   form,
