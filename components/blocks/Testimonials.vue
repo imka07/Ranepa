@@ -57,7 +57,7 @@
         </div> -->
         <NuxtLink
           to="/reviews"
-          class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+          class="review-btn inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-md transition-all duration-300"
         >
           Оставить отзыв
         </NuxtLink>
@@ -159,3 +159,35 @@ watch(() => props.speed, () => {
   }
 })
 </script>
+
+<style scoped>
+/* Skew-анимация для кнопки "Оставить отзыв" */
+.review-btn {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.review-btn:hover {
+  color: white;
+}
+
+.review-btn::after {
+  content: "";
+  background: #0046FF;
+  position: absolute;
+  z-index: -1;
+  left: -20%;
+  right: -20%;
+  top: 0;
+  bottom: 0;
+  transform: skewX(-45deg) scale(0, 1);
+  transition: all 0.5s;
+}
+
+.review-btn:hover::after {
+  transform: skewX(-45deg) scale(1, 1);
+  transition: all 0.5s;
+}
+</style>
