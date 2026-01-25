@@ -18,8 +18,8 @@ export default defineNuxtConfig({
     // Публичные ключи, которые также будут доступны на клиенте
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://reshala.netlify.app',
-      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL || '',
-      supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      supabaseUrl: process.env.SUPABASE_URL || '',
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY || ''
     }
   },
   
