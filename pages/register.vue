@@ -9,19 +9,34 @@
           </h1>
         </NuxtLink>
         <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-          Вход в аккаунт
+          Регистрация
         </h2>
         <p class="mt-2 text-sm text-gray-600">
-          Или
-          <NuxtLink to="/register" class="font-medium text-blue-600 hover:text-blue-500">
-            создайте новый аккаунт
+          Уже есть аккаунт?
+          <NuxtLink to="/login" class="font-medium text-blue-600 hover:text-blue-500">
+            Войти
           </NuxtLink>
         </p>
       </div>
 
-      <!-- Форма входа -->
+      <!-- Форма регистрации -->
       <div class="bg-white py-8 px-6 shadow-xl rounded-2xl border border-gray-100">
-        <form @submit.prevent="handleLogin" class="space-y-6">
+        <form @submit.prevent="handleRegister" class="space-y-6">
+          <!-- Имя -->
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+              Имя
+            </label>
+            <input
+              id="name"
+              v-model="name"
+              type="text"
+              required
+              class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="Иван Иванов"
+            />
+          </div>
+
           <!-- Email -->
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
@@ -37,6 +52,21 @@
             />
           </div>
 
+          <!-- Телефон -->
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+              Телефон
+            </label>
+            <input
+              id="phone"
+              v-model="phone"
+              type="tel"
+              required
+              class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="+7 (999) 123-45-67"
+            />
+          </div>
+
           <!-- Пароль -->
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
@@ -47,19 +77,10 @@
               v-model="password"
               type="password"
               required
+              minlength="6"
               class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              placeholder="••••••••"
+              placeholder="Минимум 6 символов"
             />
-          </div>
-
-          <!-- Ссылка "Забыли пароль?" -->
-          <div class="flex items-center justify-end">
-            <NuxtLink
-              to="/forgot-password"
-              class="text-sm font-medium text-blue-600 hover:text-blue-500"
-            >
-              Забыли пароль?
-            </NuxtLink>
           </div>
 
           <!-- Ошибка -->
@@ -72,7 +93,7 @@
             </div>
           </div>
 
-          <!-- Кнопка входа -->
+          <!-- Кнопка регистрации -->
           <div>
             <button
               type="submit"
@@ -84,10 +105,10 @@
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Вход...
+                Регистрация...
               </span>
               <span v-else>
-                Войти
+                Зарегистрироваться
               </span>
             </button>
           </div>
@@ -102,14 +123,16 @@ definePageMeta({
   layout: false
 })
 
-const { login, error: authError, loading: authLoading } = useAuth()
+const { register, error: authError, loading: authLoading } = useAuth()
 const router = useRouter()
 
+const name = ref('')
 const email = ref('')
+const phone = ref('')
 const password = ref('')
 
-const handleLogin = async () => {
-  const success = await login(email.value, password.value)
+const handleRegister = async () => {
+  const success = await register(name.value, email.value, phone.value, password.value)
   
   if (success) {
     router.push('/dashboard')
