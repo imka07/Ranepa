@@ -1,246 +1,258 @@
 <template>
-  <div v-if="order" class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
     <!-- Header -->
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 shadow-sm mb-8">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <NuxtLink to="/dashboard" class="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition font-medium">
-          <Icon name="mdi:arrow-left" class="w-5 h-5" />
-          На читате заказов
-        </NuxtLink>
-        <h1 class="text-2xl font-bold text-slate-800">Заказ #{{ order.id }}</h1>
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-10 border-b border-gray-200">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+          <button
+            @click="router.back()"
+            class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              {{ order ? getWorkTypeLabel(order.work_type) : 'Загрузка...' }}
+            </h1>
+            <p class="text-sm text-gray-600">{{ order?.subject }}</p>
+          </div>
+        </div>
+        <span
+          v-if="order"
+          :class="[
+            'px-4 py-2 rounded-lg text-sm font-semibold uppercase tracking-wide',
+            order.status === 'в работе' ? 'bg-blue-100 text-blue-700 border-2 border-blue-300' : '',
+            order.status === 'решен' ? 'bg-green-100 text-green-700 border-2 border-green-300' : '',
+            order.status === 'отменен' ? 'bg-red-100 text-red-700 border-2 border-red-300' : ''
+          ]"
+        >
+          {{ order.status }}
+        </span>
       </div>
-    </nav>
+    </header>
 
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Order Info -->
-          <div class="bg-white border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
-              Основная информация
-            </h2>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <p class="text-xs text-slate-500 font-medium mb-1">Предмет</p>
-                <p class="text-slate-800 font-semibold">{{ order.subject }}</p>
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Загрузка -->
+      <div v-if="loading" class="text-center py-20">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
+        <p class="mt-4 text-gray-600 font-medium">Загрузка...</p>
+      </div>
+
+      <!-- Ошибка -->
+      <div v-else-if="error" class="rounded-xl bg-red-50 border border-red-200 p-6">
+        <p class="text-red-800 font-medium">{{ error }}</p>
+      </div>
+
+      <!-- Детали заказа -->
+      <div v-else-if="order" class="space-y-6">
+        <!-- Основная информация -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Информация о работе</h2>
+          
+          <div class="space-y-4">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+              <p class="text-sm font-semibold text-blue-600 mb-1">Тип</p>
+              <p class="text-lg font-bold text-gray-900">{{ getWorkTypeLabel(order.work_type) }}</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                <p class="text-sm font-semibold text-blue-600 mb-1">Объём</p>
+                <p class="text-xl font-bold text-gray-900">{{ order.volume }} стр.</p>
               </div>
-              <div>
-                <p class="text-xs text-slate-500 font-medium mb-1">Тема</p>
-                <p class="text-slate-800 font-semibold">{{ order.theme }}</p>
+              
+              <div class="bg-green-50 rounded-lg p-4 border border-green-100">
+                <p class="text-sm font-semibold text-green-600 mb-1">Дедлайн</p>
+                <p class="text-base font-bold text-gray-900">{{ formatDate(order.deadline) }}</p>
               </div>
-              <div>
-                <p class="text-xs text-slate-500 font-medium mb-1">Тип работы</p>
-                <p class="text-slate-800 font-semibold">{{ getWorkTypeLabel(order.workType) }}</p>
-              </div>
-              <div>
-                <p class="text-xs text-slate-500 font-medium mb-1">Объём</p>
-                <p class="text-slate-800 font-semibold">{{ order.volume }} страниц</p>
-              </div>
-              <div>
-                <p class="text-xs text-slate-500 font-medium mb-1">Дедлайн</p>
-                <p class="text-slate-800 font-semibold">{{ formatDate(order.deadline) }}</p>
-              </div>
-              <div>
-                <p class="text-xs text-slate-500 font-medium mb-1">Статус</p>
-                <span :class="['inline-block px-2 py-1 rounded-full text-xs font-semibold', statusColor(order.status)]">
-                  {{ statusLabel(order.status) }}
-                </span>
+
+              <div class="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                <p class="text-sm font-semibold text-purple-600 mb-1">Сообщений</p>
+                <p class="text-xl font-bold text-gray-900">{{ order.comment ? '1' : '0' }}</p>
               </div>
             </div>
-            <div v-if="order.comment" class="mt-4 pt-4 border-t border-slate-200">
-              <p class="text-xs text-slate-500 font-medium mb-2">Комментарий</p>
-              <p class="text-slate-700 text-sm leading-relaxed">{{ order.comment }}</p>
+
+            <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-100">
+              <p class="text-sm font-semibold text-yellow-700 mb-2">Сообщение от клиента:</p>
+              <p class="text-gray-800">{{ order.comment || 'Нет комментариев' }}</p>
             </div>
           </div>
-
-          <!-- Progress & Sections -->
-          <div class="bg-white border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <span class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
-              Прогресс выполнения
-            </h2>
-            <div class="mb-4">
-              <div class="flex items-center justify-between mb-2">
-                <p class="text-sm font-semibold text-slate-700">{{ progress }}%</p>
-              </div>
-              <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
-                <div
-                  class="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
-                  :style="{ width: progress + '%' }"
-                ></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div
-                v-for="section in order.sections"
-                :key="section.id"
-                class="p-3 rounded-lg border transition-all duration-200 text-center"
-                :class="section.completed
-                  ? 'bg-green-50 border-green-300 text-green-700'
-                  : 'bg-slate-50 border-slate-300 text-slate-700'
-                "
-              >
-                <div class="font-semibold text-sm">{{ section.name }}</div>
-                <div class="text-xs mt-1" :class="section.completed ? 'text-green-600' : 'text-slate-500'">
-                  {{ section.completed ? '✓ Готово' : 'В процессе' }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Chat Section -->
-          <OrderChat
-            :order-id="order.id"
-            :messages="order.messages || []"
-            @send-message="handleSendMessage"
-          />
         </div>
 
-        <!-- Sidebar -->
-        <div class="space-y-6">
-          <!-- User Info -->
-          <div class="bg-white border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <span class="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
-              Данные заказчика
-            </h3>
-            <div class="space-y-3">
-              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-200/50">
-                <p class="text-xs text-slate-500 font-medium mb-1">Имя</p>
-                <p class="text-slate-800 font-semibold">{{ order.userName }}</p>
-              </div>
-              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-200/50">
-                <p class="text-xs text-slate-500 font-medium mb-1">Email</p>
-                <p class="text-blue-600 font-semibold text-sm">{{ order.userEmail }}</p>
-              </div>
-              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-200/50">
-                <p class="text-xs text-slate-500 font-medium mb-1">Контакт</p>
-                <p class="text-slate-800 font-semibold">{{ order.contactType === 'phone' ? order.phone : order.telegram }}</p>
-              </div>
-            </div>
+        <!-- Прогресс выполнения -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+          <h2 class="text-lg font-bold text-gray-900 mb-4">Прогресс выполнения</h2>
+          
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-gray-600 font-medium">Завершено</span>
+            <span class="text-2xl font-bold text-blue-600">{{ getProgress(order) }}%</span>
+          </div>
+          
+          <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden mb-6">
+            <div
+              class="bg-gradient-to-r from-blue-500 to-indigo-500 h-4 rounded-full transition-all duration-500 shadow-lg"
+              :style="{ width: getProgress(order) + '%' }"
+            ></div>
           </div>
 
-          <!-- File Info -->
-          <div v-if="order.file" class="bg-white border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <span class="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
-              Файл
-            </h3>
-            <a
-              :href="order.file.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-3 p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50 hover:border-blue-300 transition group"
+          <div class="space-y-3">
+            <div
+              v-for="section in order.sections"
+              :key="section.id"
+              :class="[
+                'flex items-center justify-between p-4 rounded-lg border-2 transition-all',
+                section.completed 
+                  ? 'bg-green-50 border-green-300' 
+                  : 'bg-gray-50 border-gray-300'
+              ]"
             >
-              <Icon name="mdi:file-document" class="w-6 h-6 text-blue-500 group-hover:text-blue-600 transition" />
-              <div>
-                <p class="font-semibold text-slate-800 group-hover:text-blue-600 transition text-sm">{{ order.file.name }}</p>
-                <p class="text-xs text-slate-500">Скачать файл</p>
-              </div>
-            </a>
-          </div>
-
-          <!-- Timeline -->
-          <div class="bg-white border border-slate-200/50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <span class="w-1 h-5 bg-gradient-to-b from-blue-500 to-indigo-600 rounded"></span>
-              Временная Шкала
-            </h3>
-            <div class="space-y-3 text-sm">
-              <div class="flex justify-between text-slate-600">
-                <span>Составлен:</span>
-                <span class="font-semibold text-slate-800">{{ formatDate(order.createdAt) }}</span>
-              </div>
-              <div class="flex justify-between text-slate-600">
-                <span>Обновлён:</span>
-                <span class="font-semibold text-slate-800">{{ formatDate(order.updatedAt) }}</span>
-              </div>
-              <div class="flex justify-between text-slate-600">
-                <span>Осталось дней:</span>
-                <span class="font-semibold" :class="daysLeft <= 0 ? 'text-red-600' : daysLeft <= 3 ? 'text-orange-600' : 'text-green-600'">
-                  {{ Math.max(0, daysLeft) }}
+              <div class="flex items-center gap-3">
+                <div
+                  :class="[
+                    'w-8 h-8 rounded-full flex items-center justify-center',
+                    section.completed ? 'bg-green-500' : 'bg-gray-300'
+                  ]"
+                >
+                  <svg
+                    v-if="section.completed"
+                    class="h-5 w-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <span
+                  :class="[
+                    'font-medium',
+                    section.completed ? 'text-green-900' : 'text-gray-600'
+                  ]"
+                >
+                  {{ section.name }}
                 </span>
               </div>
+              <span
+                v-if="section.completed"
+                class="text-xs font-semibold text-green-600 uppercase"
+              >
+                Готово
+              </span>
             </div>
           </div>
         </div>
+
+        <!-- Кнопка удаления -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-red-200">
+          <h2 class="text-lg font-bold text-gray-900 mb-2">Опасная зона</h2>
+          <p class="text-sm text-gray-600 mb-4">Удаление заказа необратимо. Пожалуйста, будьте внимательны.</p>
+          <button
+            @click="handleDelete"
+            :disabled="isDeleting"
+            class="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span v-if="isDeleting">Удаление...</span>
+            <span v-else>Удалить заказ</span>
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
-  <div v-else class="min-h-screen flex items-center justify-center">
-    <p class="text-slate-600 text-lg">Заказ не найден</p>
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import OrderChat from '~/components/OrderChat.vue'
+definePageMeta({
+  middleware: 'user-auth',
+  layout: false
+})
 
 const route = useRoute()
-const { getOrder, addMessage } = useOrders()
-
+const router = useRouter()
 const orderId = route.params.id as string
-const order = computed(() => getOrder(orderId))
-const progress = computed(() => {
-  if (!order.value) return 0
-  const completed = order.value.sections.filter(s => s.completed).length
-  return Math.round((completed / order.value.sections.length) * 100)
-})
 
-const daysLeft = computed(() => {
-  if (!order.value) return 0
-  const deadline = new Date(order.value.deadline)
-  const today = new Date()
-  const diff = deadline.getTime() - today.getTime()
-  return Math.ceil(diff / (1000 * 60 * 60 * 24))
-})
+const order = ref<any>(null)
+const loading = ref(true)
+const error = ref<string | null>(null)
+const isDeleting = ref(false)
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('ru-RU', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-const statusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    'в работе': 'В работе',
-    'решен': 'Решен',
-    'отменен': 'Отменен'
+// Загрузка заказа
+const fetchOrder = async () => {
+  loading.value = true
+  error.value = null
+  
+  try {
+    const response = await $fetch(`/api/orders/${orderId}`)
+    order.value = response
+  } catch (err: any) {
+    console.error('Ошибка загрузки заказа:', err)
+    error.value = 'Не удалось загрузить заказ'
+  } finally {
+    loading.value = false
   }
-  return labels[status] || status
 }
 
-const statusColor = (status: string) => {
-  const colors: Record<string, string> = {
-    'в работе': 'bg-blue-50 text-blue-700 border border-blue-300',
-    'решен': 'bg-green-50 text-green-700 border border-green-300',
-    'отменен': 'bg-red-50 text-red-700 border border-red-300'
+// Удаление заказа
+const handleDelete = async () => {
+  if (!confirm('Вы уверены, что хотите удалить этот заказ?')) return
+  
+  isDeleting.value = true
+  
+  try {
+    await $fetch(`/api/orders/${orderId}`, {
+      method: 'DELETE'
+    })
+    
+    alert('Заказ успешно удалён')
+    router.push('/dashboard')
+  } catch (err: any) {
+    console.error('Ошибка удаления:', err)
+    alert('Не удалось удалить заказ')
+  } finally {
+    isDeleting.value = false
   }
-  return colors[status] || 'bg-slate-50 text-slate-700 border border-slate-300'
 }
 
-const getWorkTypeLabel = (type: string) => {
+// Вычисление прогресса
+const getProgress = (order: any) => {
+  if (!order.sections || order.sections.length === 0) return 0
+  const completed = order.sections.filter((s: any) => s.completed).length
+  return Math.round((completed / order.sections.length) * 100)
+}
+
+// Название типа работы
+const getWorkTypeLabel = (workType: string) => {
   const labels: Record<string, string> = {
     essay: 'Реферат',
-    coursework: 'Курсовая',
-    diploma: 'Диплом',
+    coursework: 'Курсовая работа',
+    diploma: 'Дипломная работа',
     abstract: 'Абстракт',
     presentation: 'Презентация',
     solution: 'Решение задач',
+    report: 'Отчет',
+    scientific_article: 'Научная статья',
+    exam_help: 'Помощь на экзамене',
     other: 'Другое'
   }
-  return labels[type] || type
+  return labels[workType] || workType
 }
 
-const handleSendMessage = (text: string) => {
-  if (order.value) {
-    addMessage(order.value.id, 'user', text)
-  }
+// Форматирование даты
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('ru-RU', { 
+    day: '2-digit', 
+    month: '2-digit',
+    year: 'numeric'
+  })
 }
+
+onMounted(() => {
+  fetchOrder()
+})
 </script>
