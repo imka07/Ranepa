@@ -1,33 +1,29 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Ref } from 'vue'
 
-// Глобальное состояние пользователя
-const globalUser = useState<{ id: string; name: string; email: string; phone?: string } | null>('auth-user', () => null)
-const globalIsAuthenticated = useState<boolean>('auth-is-authenticated', () => false)
-
-// Глобальный Supabase клиент
-let globalSupabase: ReturnType<typeof createClient> | null = null
+// Singleton Supabase client
+let supabaseClient: ReturnType<typeof createClient> | null = null
 
 function getSupabaseClient() {
   if (!process.client) return null
   
-  if (!globalSupabase) {
+  if (!supabaseClient) {
     const config = useRuntimeConfig()
-    globalSupabase = createClient(
+    supabaseClient = createClient(
       config.public.supabaseUrl,
       config.public.supabaseAnonKey
     )
   }
   
-  return globalSupabase
+  return supabaseClient
 }
 
 export const useAuth = () => {
-  const user = globalUser
-  const isAuthenticated = globalIsAuthenticated
+  const user = ref<{ id: string; name: string; email: string; phone?: string } | null>(null)
+  const isAuthenticated = ref(false)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  // Получаем Supabase клиент
   const supabase = getSupabaseClient()
 
   // Загружаем пользователя из Supabase при инициализации
@@ -218,13 +214,21 @@ export const useAuth = () => {
 
 // Вспомогательная функция для проверки сессии (для middleware)
 export const checkAuthSession = async () => {
-  const supabase = getSupabaseClient()
-  if (!supabase) return false
+  if (!process.client) return false
+  
+  const config = useRuntimeConfig()
+  const supabase = createClient(
+    config.public.supabaseUrl,
+    config.public.supabaseAnonKey
+  )
   
   try {
     const { data: { session } } = await supabase.auth.getSession()
-    return !!session
-  } catch {
+    const hasSession = !!session
+    console.log('🔍 checkAuthSession: session =', hasSession ? 'exists' : 'null')
+    return hasSession
+  } catch (err) {
+    console.error('❌ Ошибка проверки сессии:', err)
     return false
   }
 }
