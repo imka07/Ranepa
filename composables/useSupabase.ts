@@ -8,11 +8,24 @@ export const useSupabase = () => {
   
   if (!supabaseInstance) {
     const config = useRuntimeConfig()
+    
     supabaseInstance = createClient(
       config.public.supabaseUrl,
-      config.public.supabaseAnonKey
+      config.public.supabaseAnonKey,
+      {
+        auth: {
+          // Явно настраиваем хранение сессии
+          storage: window.localStorage,
+          storageKey: 'sb-oftajdtaeqaylohgefba-auth-token',
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true,
+          flowType: 'pkce'
+        }
+      }
     )
-    console.log('✅ Supabase client initialized')
+    
+    console.log('✅ Supabase client initialized with persistent storage')
   }
   
   return supabaseInstance
