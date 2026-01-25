@@ -36,10 +36,14 @@ export default defineEventHandler(async (event) => {
     // Сохраняем заказ в Supabase
     const supabase = getSupabaseClient()
     
+    // Проверяем, передан ли валидный userId
+    // Если пользователь не авторизован, userId будет null
+    const userId = body.userId && body.userId !== 'guest' ? body.userId : null
+    
     const orderData = {
-      user_id: body.userId || 'guest',
+      user_id: userId, // NULL для гостей, UUID для авторизованных
       user_name: body.userName || body.name,
-      user_email: body.userEmail || 'guest@mail.com',
+      user_email: body.userEmail || body.contactType === 'phone' ? body.phone : body.telegram,
       work_type: body.workType,
       subject: body.subject,
       theme: body.theme,
@@ -61,6 +65,8 @@ export default defineEventHandler(async (event) => {
       ]
     }
 
+    console.log('📝 Создание заказа:', { userId, userName: orderData.user_name, userEmail: orderData.user_email })
+
     // Type assertion to fix TypeScript error - Supabase doesn't have schema types configured
     const { data: order, error } = await (supabase
       .from('orders')
@@ -69,12 +75,14 @@ export default defineEventHandler(async (event) => {
       .single() as any)
 
     if (error) {
-      console.error('Supabase error:', error)
+      console.error('❌ Supabase error:', error)
       throw createError({
         statusCode: 500,
-        statusMessage: 'Failed to save order to database'
+        statusMessage: `Failed to save order to database: ${error.message}`
       })
     }
+
+    console.log('✅ Заказ создан:', order.id)
 
     // Подготавливаем сообщение для Telegram
     const telegramMessage = formatTelegramMessage(body)
@@ -88,11 +96,11 @@ export default defineEventHandler(async (event) => {
       message: 'Order submitted successfully',
       order
     }
-  } catch (error) {
-    console.error('Error processing order:', error)
+  } catch (error: any) {
+    console.error('❌ Error processing order:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to process order'
+      statusMessage: `Failed to process order: ${error.message || 'Unknown error'}`
     })
   }
 })
@@ -156,7 +164,7 @@ async function sendToTelegram(message: string, file: any): Promise<void> {
 
   // Если креды не настроены — не валим обработку заявки (гостевой флоу должен работать)
   if (!botToken || !chatId) {
-    console.warn('Telegram credentials not configured (TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID). Skipping Telegram notification.')
+    console.warn('⚠️ Telegram credentials not configured (TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID). Skipping Telegram notification.')
     return
   }
 
