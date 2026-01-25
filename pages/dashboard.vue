@@ -189,25 +189,15 @@ definePageMeta({
 })
 
 const { user, logout } = useAuth()
-const { orders, loading, error: ordersError, fetchOrders } = useOrders()
+const { orders, loading, error: ordersError } = useOrders()
 const router = useRouter()
 
 const isLoading = computed(() => loading.value)
 
-// Получаем только заказы текущего пользователя
+// Получаем только заказы текущего пользователя (из кэша)
 const userOrders = computed(() => {
   if (!user.value) return []
-  console.log('🔍 Dashboard: user.id =', user.value.id)
-  console.log('🔍 Dashboard: all orders =', orders.value)
-  
-  // Фильтруем по userId (camelCase - как возвращает API)
-  const filtered = orders.value.filter(order => {
-    console.log('🔍 Checking order:', order.id, 'userId:', order.userId, 'matches:', order.userId === user.value!.id)
-    return order.userId === user.value!.id
-  })
-  
-  console.log('🔍 Dashboard: filtered orders =', filtered)
-  return filtered
+  return orders.value.filter(order => order.userId === user.value!.id)
 })
 
 // Вычисляем прогресс заказа
@@ -249,9 +239,4 @@ const handleLogout = async () => {
   await logout()
   router.push('/login')
 }
-
-// Загружаем заказы при монтировании
-onMounted(() => {
-  fetchOrders()
-})
 </script>

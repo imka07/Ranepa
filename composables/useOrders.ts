@@ -26,20 +26,32 @@ export interface Order {
   updatedAt: string
 }
 
+// Глобальное состояние для кэширования
+const globalOrders = useState<Order[]>('global-orders', () => [])
+const globalLoading = useState<boolean>('global-orders-loading', () => false)
+const globalError = useState<string | null>('global-orders-error', () => null)
+let lastFetchTime = 0
+const CACHE_DURATION = 30000 // 30 секунд кэш
+
 export const useOrders = () => {
   const { user } = useAuth()
-  const orders = ref<Order[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-  
-  // Флаг, чтобы предотвратить множественные загрузки
-  let isFetched = false
+  const orders = globalOrders
+  const loading = globalLoading
+  const error = globalError
 
-  // Загружаем все заказы из API
+  // Загружаем все заказы из API с кэшированием
   const fetchOrders = async (force = false) => {
-    // Предотвращаем повторную загрузку, если уже загружено
-    if (isFetched && !force) {
-      console.log('🚫 Заказы уже загружены, пропускаю повторный запрос')
+    const now = Date.now()
+    
+    // Если данные свежие и не форсируем обновление - используем кэш
+    if (!force && orders.value.length > 0 && (now - lastFetchTime) < CACHE_DURATION) {
+      console.log('✨ Используем кэшированные заказы')
+      return
+    }
+    
+    // Если уже грузим - не делаем повторный запрос
+    if (loading.value) {
+      console.log('⏳ Уже идет загрузка, ждем...')
       return
     }
     
@@ -52,13 +64,12 @@ export const useOrders = () => {
       
       if (response.success) {
         orders.value = response.orders
-        isFetched = true
-        console.log(`✅ Заказы загружены из API: ${orders.value.length} шт.`)
+        lastFetchTime = now
+        console.log(`✅ Заказы загружены: ${orders.value.length} шт.`)
       }
     } catch (err) {
       console.error('❌ Ошибка загрузки заказов:', err)
       error.value = 'Не удалось загрузить заказы'
-      orders.value = []
     } finally {
       loading.value = false
     }
@@ -70,9 +81,9 @@ export const useOrders = () => {
     error.value = null
     
     try {
-      const userId = user.value?.id || 'guest'
+      const userId = user.value?.id || null
       const userName = user.value?.name || orderData.name
-      const userEmail = user.value?.email || 'guest@mail.com'
+      const userEmail = user.value?.email || orderData.contactType === 'phone' ? orderData.phone : orderData.telegram
       
       console.log('👤 Создание заказа для пользователя:', { userId, userName, userEmail })
       
@@ -89,8 +100,9 @@ export const useOrders = () => {
       if (response.success && response.order) {
         console.log('✅ Новый заказ создан:', response.order)
         
-        // НЕ добавляем заказ локально - пусть API будет единственным источником истины
-        // orders.value.unshift(response.order) <- Убрали, чтобы избежать дубликатов
+        // Оптимистичное обновление - добавляем заказ сразу в кэш
+        orders.value.unshift(response.order)
+        lastFetchTime = Date.now()
         
         return response.order
       }
@@ -103,15 +115,9 @@ export const useOrders = () => {
     }
   }
 
-  // Получаем заказы пользователя
+  // Получаем заказы пользователя (фильтруем из кэша)
   const getUserOrders = (userId: string) => {
-    console.log('🔍 Ищу заказы для userId:', userId)
-    const userOrders = orders.value.filter(o => {
-      console.log(`  Проверяю заказ ${o.id}: userId=${o.userId} (ищу ${userId})`)
-      return o.userId === userId
-    })
-    console.log('📋 Найдено заказов:', userOrders.length)
-    return userOrders
+    return orders.value.filter(o => o.userId === userId)
   }
 
   // Получаем все заказы (для админа)
@@ -121,8 +127,13 @@ export const useOrders = () => {
 
   // Обновляем статус заказа
   const updateOrderStatus = async (orderId: string, status: Order['status']) => {
-    loading.value = true
-    error.value = null
+    // Оптимистичное обновление
+    const index = orders.value.findIndex(o => o.id === orderId)
+    const oldStatus = index !== -1 ? orders.value[index].status : null
+    
+    if (index !== -1) {
+      orders.value[index].status = status
+    }
     
     try {
       const response = await $fetch<{ success: boolean; order: Order }>(`/api/orders/${orderId}`, {
@@ -131,8 +142,7 @@ export const useOrders = () => {
       })
       
       if (response.success && response.order) {
-        // Обновляем заказ в локальном состоянии
-        const index = orders.value.findIndex(o => o.id === orderId)
+        // Обновляем с данными с сервера
         if (index !== -1) {
           orders.value[index] = response.order
         }
@@ -140,17 +150,28 @@ export const useOrders = () => {
       }
     } catch (err) {
       console.error('❌ Ошибка обновления статуса:', err)
+      // Откатываем изменения
+      if (index !== -1 && oldStatus) {
+        orders.value[index].status = oldStatus
+      }
       error.value = 'Не удалось обновить статус заказа'
       throw err
-    } finally {
-      loading.value = false
     }
   }
 
   // Обновляем статус раздела
   const updateSectionStatus = async (orderId: string, sectionId: string, completed: boolean) => {
-    loading.value = true
-    error.value = null
+    // Оптимистичное обновление
+    const orderIndex = orders.value.findIndex(o => o.id === orderId)
+    let oldSectionStatus: boolean | null = null
+    
+    if (orderIndex !== -1) {
+      const sectionIndex = orders.value[orderIndex].sections.findIndex(s => s.id === sectionId)
+      if (sectionIndex !== -1) {
+        oldSectionStatus = orders.value[orderIndex].sections[sectionIndex].completed
+        orders.value[orderIndex].sections[sectionIndex].completed = completed
+      }
+    }
     
     try {
       const response = await $fetch<{ success: boolean; order: Order }>(`/api/orders/${orderId}`, {
@@ -159,26 +180,35 @@ export const useOrders = () => {
       })
       
       if (response.success && response.order) {
-        // Обновляем заказ в локальном состоянии
-        const index = orders.value.findIndex(o => o.id === orderId)
-        if (index !== -1) {
-          orders.value[index] = response.order
+        // Обновляем с данными с сервера
+        if (orderIndex !== -1) {
+          orders.value[orderIndex] = response.order
         }
         console.log('✅ Статус раздела обновлен:', orderId, sectionId, completed)
       }
     } catch (err) {
       console.error('❌ Ошибка обновления статуса раздела:', err)
+      // Откатываем изменения
+      if (orderIndex !== -1 && oldSectionStatus !== null) {
+        const sectionIndex = orders.value[orderIndex].sections.findIndex(s => s.id === sectionId)
+        if (sectionIndex !== -1) {
+          orders.value[orderIndex].sections[sectionIndex].completed = oldSectionStatus
+        }
+      }
       error.value = 'Не удалось обновить статус раздела'
       throw err
-    } finally {
-      loading.value = false
     }
   }
 
   // Удаляем заказ (только для админа)
   const deleteOrder = async (orderId: string) => {
-    loading.value = true
-    error.value = null
+    // Оптимистичное удаление
+    const index = orders.value.findIndex(o => o.id === orderId)
+    const deletedOrder = index !== -1 ? orders.value[index] : null
+    
+    if (index !== -1) {
+      orders.value.splice(index, 1)
+    }
     
     try {
       const response = await $fetch<{ success: boolean }>(`/api/orders/${orderId}`, {
@@ -186,25 +216,22 @@ export const useOrders = () => {
       })
       
       if (response.success) {
-        // Удаляем заказ из локального состояния
-        const index = orders.value.findIndex(o => o.id === orderId)
-        if (index !== -1) {
-          orders.value.splice(index, 1)
-        }
         console.log('🗑️ Заказ удален:', orderId)
         return true
       }
       return false
     } catch (err) {
       console.error('❌ Ошибка удаления заказа:', err)
+      // Восстанавливаем удаленный заказ
+      if (deletedOrder && index !== -1) {
+        orders.value.splice(index, 0, deletedOrder)
+      }
       error.value = 'Не удалось удалить заказ'
       throw err
-    } finally {
-      loading.value = false
     }
   }
 
-  // Получаем один заказ по ID
+  // Получаем один заказ по ID (из кэша)
   const getOrder = (orderId: string) => {
     return orders.value.find(o => o.id === orderId)
   }
@@ -212,16 +239,20 @@ export const useOrders = () => {
   // Вычисляем прогресс выполнения заказа
   const getOrderProgress = (orderId: string): number => {
     const order = orders.value.find(o => o.id === orderId)
-    if (!order) return 0
+    if (!order || !order.sections) return 0
     
     const completedSections = order.sections.filter(s => s.completed).length
     return Math.round((completedSections / order.sections.length) * 100)
   }
 
-  // Инициализация: загружаем заказы при монтировании
+  // Инициализация: загружаем заказы при монтировании только если кэш пустой
   onMounted(() => {
-    console.log('🎭 onMounted: Запуск загрузки заказов')
-    fetchOrders()
+    if (orders.value.length === 0) {
+      console.log('🎭 onMounted: Первая загрузка заказов')
+      fetchOrders()
+    } else {
+      console.log('✨ onMounted: Используем кэшированные данные')
+    }
   })
 
   return {
