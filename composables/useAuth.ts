@@ -18,6 +18,35 @@ function getSupabaseClient() {
   return supabaseClient
 }
 
+// Перевод ошибок на русский
+function translateError(errorMessage: string): string {
+  const translations: Record<string, string> = {
+    'Invalid login credentials': 'Неверный email или пароль',
+    'Email not confirmed': 'Email не подтвержден. Проверьте почту',
+    'User already registered': 'Пользователь с таким email уже существует',
+    'Password should be at least 6 characters': 'Пароль должен быть не менее 6 символов',
+    'Unable to validate email address: invalid format': 'Неверный формат email',
+    'Signup requires a valid password': 'Необходимо указать пароль',
+    'Email rate limit exceeded': 'Превышен лимит попыток. Попробуйте позже',
+    'Network request failed': 'Ошибка сети. Проверьте интернет-соединение'
+  }
+
+  // Проверяем точное совпадение
+  if (translations[errorMessage]) {
+    return translations[errorMessage]
+  }
+
+  // Проверяем частичное совпадение
+  for (const [key, value] of Object.entries(translations)) {
+    if (errorMessage.toLowerCase().includes(key.toLowerCase())) {
+      return value
+    }
+  }
+
+  // Если перевод не найден, возвращаем оригинальное сообщение
+  return errorMessage
+}
+
 export const useAuth = () => {
   const user = ref<{ id: string; name: string; email: string; phone?: string } | null>(null)
   const isAuthenticated = ref(false)
@@ -84,7 +113,10 @@ export const useAuth = () => {
         }
       })
 
-      if (authError) throw authError
+      if (authError) {
+        error.value = translateError(authError.message)
+        throw new Error(error.value)
+      }
 
       if (authData.user) {
         // Создаем запись в таблице profiles
@@ -136,7 +168,10 @@ export const useAuth = () => {
         password
       })
 
-      if (authError) throw authError
+      if (authError) {
+        error.value = translateError(authError.message)
+        throw new Error(error.value)
+      }
 
       if (data.user) {
         // Загружаем данные профиля
