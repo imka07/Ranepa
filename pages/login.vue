@@ -12,11 +12,11 @@
       </div>
 
       <!-- Ошибка -->
-      <div v-if="authError" class="rounded-md bg-red-50 p-4">
+      <div v-if="errorMessage" class="rounded-md bg-red-50 p-4">
         <div class="flex">
           <div class="ml-3">
             <h3 class="text-sm font-medium text-red-800">
-              {{ authError }}
+              {{ errorMessage }}
             </h3>
           </div>
         </div>
@@ -129,10 +129,10 @@ definePageMeta({
 })
 
 const { login, register, loading, error: authError } = useAuth()
-const router = useRouter()
 
 const isLoginMode = ref(true)
 const isLoading = computed(() => loading.value)
+const errorMessage = ref<string | null>(null)
 
 const formData = ref({
   name: '',
@@ -143,7 +143,7 @@ const formData = ref({
 
 const toggleMode = () => {
   isLoginMode.value = !isLoginMode.value
-  authError.value = null
+  errorMessage.value = null
   // Очищаем форму при переключении
   if (isLoginMode.value) {
     formData.value.name = ''
@@ -152,31 +152,52 @@ const toggleMode = () => {
 }
 
 const handleSubmit = async () => {
-  authError.value = null
+  errorMessage.value = null
+  console.log('🔵 handleSubmit вызван, режим:', isLoginMode.value ? 'вход' : 'регистрация')
 
-  if (isLoginMode.value) {
-    // Вход
-    const success = await login(formData.value.email, formData.value.password)
-    if (success) {
-      router.push('/dashboard')
-    }
-  } else {
-    // Регистрация
-    if (formData.value.password.length < 6) {
-      authError.value = 'Пароль должен быть не менее 6 символов'
-      return
-    }
+  try {
+    if (isLoginMode.value) {
+      // Вход
+      console.log('🔑 Попытка входа с email:', formData.value.email)
+      const success = await login(formData.value.email, formData.value.password)
+      
+      console.log('🔍 Результат login():', success)
+      
+      if (success) {
+        console.log('✅ Вход успешен, перенаправление на /dashboard')
+        await navigateTo('/dashboard')
+      } else {
+        console.log('❌ Вход не удался')
+        errorMessage.value = authError.value || 'Не удалось войти. Проверьте email и пароль.'
+      }
+    } else {
+      // Регистрация
+      if (formData.value.password.length < 6) {
+        errorMessage.value = 'Пароль должен быть не менее 6 символов'
+        return
+      }
 
-    const success = await register(
-      formData.value.name,
-      formData.value.email,
-      formData.value.phone,
-      formData.value.password
-    )
+      console.log('📝 Попытка регистрации с email:', formData.value.email)
+      const success = await register(
+        formData.value.name,
+        formData.value.email,
+        formData.value.phone,
+        formData.value.password
+      )
 
-    if (success) {
-      router.push('/dashboard')
+      console.log('🔍 Результат register():', success)
+
+      if (success) {
+        console.log('✅ Регистрация успешна, перенаправление на /dashboard')
+        await navigateTo('/dashboard')
+      } else {
+        console.log('❌ Регистрация не удалась')
+        errorMessage.value = authError.value || 'Не удалось зарегистрироваться. Попробуйте другой email.'
+      }
     }
+  } catch (err: any) {
+    console.error('💥 Ошибка в handleSubmit:', err)
+    errorMessage.value = err.message || 'Произошла ошибка. Попробуйте ещё раз.'
   }
 }
 </script>
