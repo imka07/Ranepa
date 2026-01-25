@@ -76,18 +76,17 @@
           </div>
 
           <div class="grid grid-cols-1 gap-6">
-            <NuxtLink
+            <div
               v-for="order in userOrders"
               :key="order.id"
-              :to="`/order/${order.id}`"
-              class="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-300"
+              class="bg-white rounded-xl shadow-md transition-shadow duration-300 overflow-hidden border border-gray-100"
             >
               <!-- Заголовок -->
               <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
                 <div class="flex justify-between items-start">
                   <div class="flex-1">
                     <div class="flex items-center gap-3">
-                      <h3 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      <h3 class="text-lg font-bold text-gray-900">
                         {{ getWorkTypeLabel(order.workType) }}
                       </h3>
                       <span
@@ -103,9 +102,6 @@
                     </div>
                     <p class="text-sm text-gray-600 mt-1 font-medium">{{ order.subject }}</p>
                   </div>
-                  <svg class="h-6 w-6 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
                 </div>
               </div>
 
@@ -178,7 +174,7 @@
                   </div>
                 </div>
               </div>
-            </NuxtLink>
+            </div>
           </div>
         </div>
       </div>
