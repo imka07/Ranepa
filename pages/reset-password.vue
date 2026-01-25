@@ -1,14 +1,9 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full">
-      <!-- Логотип и заголовок -->
+      <!-- Заголовок -->
       <div class="text-center mb-8">
-        <NuxtLink to="/" class="inline-block">
-          <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Ranepa
-          </h1>
-        </NuxtLink>
-        <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+        <h2 class="text-3xl font-extrabold text-gray-900">
           Новый пароль
         </h2>
         <p class="mt-2 text-sm text-gray-600">
