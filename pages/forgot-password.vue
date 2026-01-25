@@ -118,26 +118,25 @@
 </template>
 
 <script setup lang="ts">
-import { createClient } from '@supabase/supabase-js'
-
 definePageMeta({
   layout: false
 })
 
-const config = useRuntimeConfig()
 const email = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
 const emailSent = ref(false)
 
-const supabase = createClient(
-  config.public.supabaseUrl,
-  config.public.supabaseAnonKey
-)
+const supabase = useSupabase()
 
 const handleResetRequest = async () => {
   if (!email.value) {
     error.value = 'Введите email'
+    return
+  }
+
+  if (!supabase) {
+    error.value = 'Ошибка инициализации. Перезагрузите страницу'
     return
   }
 

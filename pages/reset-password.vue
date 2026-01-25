@@ -114,13 +114,10 @@
 </template>
 
 <script setup lang="ts">
-import { createClient } from '@supabase/supabase-js'
-
 definePageMeta({
   layout: false
 })
 
-const config = useRuntimeConfig()
 const router = useRouter()
 const password = ref('')
 const confirmPassword = ref('')
@@ -128,10 +125,7 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const passwordUpdated = ref(false)
 
-const supabase = createClient(
-  config.public.supabaseUrl,
-  config.public.supabaseAnonKey
-)
+const supabase = useSupabase()
 
 const handlePasswordReset = async () => {
   // Валидация
@@ -142,6 +136,11 @@ const handlePasswordReset = async () => {
 
   if (password.value !== confirmPassword.value) {
     error.value = 'Пароли не совпадают'
+    return
+  }
+
+  if (!supabase) {
+    error.value = 'Ошибка инициализации. Перезагрузите страницу'
     return
   }
 
