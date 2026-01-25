@@ -1,213 +1,119 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
-      <!-- Логотип -->
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          {{ isLoginMode ? 'Вход в личный кабинет' : 'Регистрация' }}
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full">
+      <!-- Логотип и заголовок -->
+      <div class="text-center mb-8">
+        <NuxtLink to="/" class="inline-block">
+          <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Ranepa
+          </h1>
+        </NuxtLink>
+        <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+          Вход в аккаунт
         </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
-          {{ isLoginMode ? 'Войдите, чтобы отслеживать свои заказы' : 'Создайте аккаунт для управления заказами' }}
+        <p class="mt-2 text-sm text-gray-600">
+          Или
+          <NuxtLink to="/register" class="font-medium text-blue-600 hover:text-blue-500">
+            создайте новый аккаунт
+          </NuxtLink>
         </p>
       </div>
 
-      <!-- Ошибка -->
-      <div v-if="errorMessage" class="rounded-md bg-red-50 p-4">
-        <div class="flex">
-          <div class="ml-3">
-            <h3 class="text-sm font-medium text-red-800">
-              {{ errorMessage }}
-            </h3>
-          </div>
-        </div>
-      </div>
-
-      <!-- Форма -->
-      <form class="mt-8 space-y-6" @submit.prevent="handleSubmit">
-        <div class="rounded-md shadow-sm -space-y-px">
-          <!-- Имя (только для регистрации) -->
-          <div v-if="!isLoginMode">
-            <label for="name" class="sr-only">Имя</label>
-            <input
-              id="name"
-              v-model="formData.name"
-              name="name"
-              type="text"
-              required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Ваше имя"
-            />
-          </div>
-
+      <!-- Форма входа -->
+      <div class="bg-white py-8 px-6 shadow-xl rounded-2xl border border-gray-100">
+        <form @submit.prevent="handleLogin" class="space-y-6">
           <!-- Email -->
           <div>
-            <label for="email-address" class="sr-only">Email</label>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+              Email
+            </label>
             <input
-              id="email-address"
-              v-model="formData.email"
-              name="email"
+              id="email"
+              v-model="email"
               type="email"
-              autocomplete="email"
               required
-              :class="[
-                'appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm',
-                isLoginMode ? 'rounded-t-md' : ''
-              ]"
-              placeholder="Email адрес"
-            />
-          </div>
-
-          <!-- Телефон (только для регистрации) -->
-          <div v-if="!isLoginMode">
-            <label for="phone" class="sr-only">Телефон</label>
-            <input
-              id="phone"
-              v-model="formData.phone"
-              name="phone"
-              type="tel"
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Телефон (опционально)"
+              class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="your@email.com"
             />
           </div>
 
           <!-- Пароль -->
           <div>
-            <label for="password" class="sr-only">Пароль</label>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+              Пароль
+            </label>
             <input
               id="password"
-              v-model="formData.password"
-              name="password"
+              v-model="password"
               type="password"
-              autocomplete="current-password"
               required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Пароль"
+              class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="••••••••"
             />
           </div>
-        </div>
 
-        <!-- Кнопка отправки -->
-        <div>
-          <button
-            type="submit"
-            :disabled="isLoading"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            <span v-if="isLoading">Загрузка...</span>
-            <span v-else>{{ isLoginMode ? 'Войти' : 'Зарегистрироваться' }}</span>
-          </button>
-        </div>
+          <!-- Ссылка "Забыли пароль?" -->
+          <div class="flex items-center justify-end">
+            <NuxtLink
+              to="/forgot-password"
+              class="text-sm font-medium text-blue-600 hover:text-blue-500"
+            >
+              Забыли пароль?
+            </NuxtLink>
+          </div>
 
-        <!-- Переключение режима -->
-        <div class="text-center">
-          <button
-            type="button"
-            @click="toggleMode"
-            class="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
-          >
-            {{ isLoginMode ? 'Нет аккаунта? Зарегистрируйтесь' : 'Уже есть аккаунт? Войдите' }}
-          </button>
-        </div>
+          <!-- Ошибка -->
+          <div v-if="authError" class="rounded-xl bg-red-50 border border-red-200 p-4">
+            <div class="flex">
+              <svg class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p class="ml-3 text-sm text-red-800">{{ authError }}</p>
+            </div>
+          </div>
 
-        <!-- Ссылка на главную -->
-        <div class="text-center">
-          <NuxtLink
-            to="/"
-            class="text-sm font-medium text-gray-600 hover:text-gray-500 transition-colors"
-          >
-            ← Вернуться на главную
-          </NuxtLink>
-        </div>
-      </form>
+          <!-- Кнопка входа -->
+          <div>
+            <button
+              type="submit"
+              :disabled="authLoading"
+              class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="authLoading" class="inline-flex items-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Вход...
+              </span>
+              <span v-else>
+                Войти
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
+  middleware: 'guest',
   layout: false
 })
 
-const { login, register, loading, error: authError, isAuthenticated } = useAuth()
+const { login, error: authError, loading: authLoading } = useAuth()
+const router = useRouter()
 
-const isLoginMode = ref(true)
-const isLoading = computed(() => loading.value)
-const errorMessage = ref<string | null>(null)
+const email = ref('')
+const password = ref('')
 
-const formData = ref({
-  name: '',
-  email: '',
-  phone: '',
-  password: ''
-})
-
-const toggleMode = () => {
-  isLoginMode.value = !isLoginMode.value
-  errorMessage.value = null
-  // Очищаем форму при переключении
-  if (isLoginMode.value) {
-    formData.value.name = ''
-    formData.value.phone = ''
-  }
-}
-
-const handleSubmit = async () => {
-  errorMessage.value = null
-  console.log('🔵 handleSubmit вызван, режим:', isLoginMode.value ? 'вход' : 'регистрация')
-
-  try {
-    if (isLoginMode.value) {
-      // Вход
-      console.log('🔑 Попытка входа с email:', formData.value.email)
-      const success = await login(formData.value.email, formData.value.password)
-      
-      console.log('🔍 Результат login():', success)
-      console.log('🔍 isAuthenticated после login():', isAuthenticated.value)
-      
-      if (success) {
-        console.log('✅ Вход успешен, ждем 200ms и перенаправляем на /dashboard')
-        
-        // Даем время на обновление состояния
-        await new Promise(resolve => setTimeout(resolve, 200))
-        
-        console.log('🔍 isAuthenticated перед navigateTo:', isAuthenticated.value)
-        await navigateTo('/dashboard', { replace: true })
-      } else {
-        console.log('❌ Вход не удался')
-        errorMessage.value = authError.value || 'Не удалось войти. Проверьте email и пароль.'
-      }
-    } else {
-      // Регистрация
-      if (formData.value.password.length < 6) {
-        errorMessage.value = 'Пароль должен быть не менее 6 символов'
-        return
-      }
-
-      console.log('📝 Попытка регистрации с email:', formData.value.email)
-      const success = await register(
-        formData.value.name,
-        formData.value.email,
-        formData.value.phone,
-        formData.value.password
-      )
-
-      console.log('🔍 Результат register():', success)
-
-      if (success) {
-        console.log('✅ Регистрация успешна, ждем 200ms и перенаправляем на /dashboard')
-        
-        // Даем время на обновление состояния
-        await new Promise(resolve => setTimeout(resolve, 200))
-        
-        await navigateTo('/dashboard', { replace: true })
-      } else {
-        console.log('❌ Регистрация не удалась')
-        errorMessage.value = authError.value || 'Не удалось зарегистрироваться. Попробуйте другой email.'
-      }
-    }
-  } catch (err: any) {
-    console.error('💥 Ошибка в handleSubmit:', err)
-    errorMessage.value = err.message || 'Произошла ошибка. Попробуйте ещё раз.'
+const handleLogin = async () => {
+  const success = await login(email.value, password.value)
+  
+  if (success) {
+    router.push('/dashboard')
   }
 }
 </script>
