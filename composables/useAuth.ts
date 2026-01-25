@@ -39,19 +39,30 @@ export const useAuth = () => {
 
   // Загружаем пользователя из Supabase при инициализации
   const initUser = async () => {
-    if (!supabase) return
+    if (!supabase) {
+      console.log('⚠️ Supabase не инициализирован в initUser')
+      return
+    }
     
     loading.value = true
     try {
+      console.log('🔍 initUser: Получение сессии...')
       const { data: { session } } = await supabase.auth.getSession()
+      console.log('🔍 initUser: Сессия =', session ? 'существует' : 'null')
       
       if (session?.user) {
+        console.log('✅ initUser: Пользователь найден:', session.user.email)
+        
         // Загружаем данные профиля из таблицы profiles
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single()
+
+        if (profileError) {
+          console.warn('⚠️ Ошибка загрузки профиля:', profileError)
+        }
 
         user.value = {
           id: session.user.id,
@@ -83,6 +94,8 @@ export const useAuth = () => {
     error.value = null
     
     try {
+      console.log('📝 Регистрация пользователя:', email)
+      
       // Регистрируем пользователя через Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
@@ -94,6 +107,8 @@ export const useAuth = () => {
           }
         }
       })
+
+      console.log('📝 Результат регистрации:', { authData, authError })
 
       if (authError) {
         error.value = translateError(authError.message)
@@ -113,7 +128,6 @@ export const useAuth = () => {
 
         if (profileError) {
           console.error('Ошибка создания профиля:', profileError)
-          // Не бросаем ошибку, т.к. пользователь уже создан в auth
         }
 
         user.value = {
@@ -139,23 +153,42 @@ export const useAuth = () => {
 
   // Вход
   const login = async (email: string, password: string) => {
-    if (!supabase) throw new Error('Supabase не инициализирован')
+    if (!supabase) {
+      console.error('❌ Supabase не инициализирован в login')
+      throw new Error('Supabase не инициализирован')
+    }
     
     loading.value = true
     error.value = null
     
     try {
+      console.log('🔐 Попытка входа:', email)
+      
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password
       })
 
+      console.log('🔐 Результат входа:', { 
+        hasSession: !!data.session, 
+        hasUser: !!data.user,
+        error: authError 
+      })
+
       if (authError) {
+        console.error('❌ Ошибка авторизации:', authError)
         error.value = translateError(authError.message)
         throw new Error(error.value)
       }
 
-      if (data.user) {
+      if (data.session && data.user) {
+        console.log('✅ Сессия создана для:', data.user.email)
+        
+        // Проверяем что сессия сохранена в localStorage
+        const storageKey = 'sb-oftajdtaeqaylohgefba-auth-token'
+        const storedSession = localStorage.getItem(storageKey)
+        console.log('💾 Сессия в localStorage:', storedSession ? 'есть' : 'НЕТ')
+        
         // Загружаем данные профиля
         const { data: profile } = await supabase
           .from('profiles')
@@ -171,9 +204,14 @@ export const useAuth = () => {
         }
         isAuthenticated.value = true
         console.log('✅ Вход успешен:', user.value)
+        
+        // Ждем немного чтобы сессия точно сохранилась
+        await new Promise(resolve => setTimeout(resolve, 100))
+        
         return true
       }
       
+      console.error('❌ Нет сессии или пользователя после входа')
       return false
     } catch (err: any) {
       console.error('❌ Ошибка входа:', err)
@@ -190,6 +228,7 @@ export const useAuth = () => {
     
     loading.value = true
     try {
+      console.log('🚪 Выход из аккаунта')
       await supabase.auth.signOut()
       user.value = null
       isAuthenticated.value = false
@@ -204,10 +243,12 @@ export const useAuth = () => {
   // Отслеживаем изменения состояния авторизации
   if (process.client && supabase) {
     supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔄 Auth state changed:', event)
+      console.log('🔄 Auth state changed:', event, session ? 'session exists' : 'no session')
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        console.log('✅ Событие SIGNED_IN/TOKEN_REFRESHED - обновляем пользователя')
         initUser()
       } else if (event === 'SIGNED_OUT') {
+        console.log('🚪 Событие SIGNED_OUT - очищаем данные')
         user.value = null
         isAuthenticated.value = false
       }
@@ -215,6 +256,7 @@ export const useAuth = () => {
   }
 
   onMounted(() => {
+    console.log('🎬 useAuth mounted - инициализация пользователя')
     initUser()
   })
 
@@ -234,12 +276,20 @@ export const checkAuthSession = async () => {
   if (!process.client) return false
   
   const supabase = useSupabase()
-  if (!supabase) return false
+  if (!supabase) {
+    console.log('⚠️ checkAuthSession: Supabase не инициализирован')
+    return false
+  }
   
   try {
     const { data: { session } } = await supabase.auth.getSession()
     const hasSession = !!session
     console.log('🔍 checkAuthSession: session =', hasSession ? 'exists' : 'null')
+    
+    if (session) {
+      console.log('✅ checkAuthSession: Пользователь:', session.user.email)
+    }
+    
     return hasSession
   } catch (err) {
     console.error('❌ Ошибка проверки сессии:', err)
