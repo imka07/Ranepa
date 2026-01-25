@@ -1,16 +1,34 @@
 import { createClient } from '@supabase/supabase-js'
 
+// Глобальное состояние пользователя
+const globalUser = useState<{ id: string; name: string; email: string; phone?: string } | null>('auth-user', () => null)
+const globalIsAuthenticated = useState<boolean>('auth-is-authenticated', () => false)
+
+// Глобальный Supabase клиент
+let globalSupabase: ReturnType<typeof createClient> | null = null
+
+function getSupabaseClient() {
+  if (!process.client) return null
+  
+  if (!globalSupabase) {
+    const config = useRuntimeConfig()
+    globalSupabase = createClient(
+      config.public.supabaseUrl,
+      config.public.supabaseAnonKey
+    )
+  }
+  
+  return globalSupabase
+}
+
 export const useAuth = () => {
-  const user = ref<{ id: string; name: string; email: string; phone?: string } | null>(null)
-  const isAuthenticated = ref(false)
+  const user = globalUser
+  const isAuthenticated = globalIsAuthenticated
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  // Инициализация Supabase клиента
-  const supabase = process.client ? createClient(
-    useRuntimeConfig().public.supabaseUrl,
-    useRuntimeConfig().public.supabaseAnonKey
-  ) : null
+  // Получаем Supabase клиент
+  const supabase = getSupabaseClient()
 
   // Загружаем пользователя из Supabase при инициализации
   const initUser = async () => {
@@ -195,5 +213,18 @@ export const useAuth = () => {
     register,
     login,
     logout
+  }
+}
+
+// Вспомогательная функция для проверки сессии (для middleware)
+export const checkAuthSession = async () => {
+  const supabase = getSupabaseClient()
+  if (!supabase) return false
+  
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    return !!session
+  } catch {
+    return false
   }
 }

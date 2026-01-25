@@ -4,20 +4,19 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     return
   }
 
-  const { isAuthenticated, user } = useAuth()
+  console.log('🔐 Middleware user-auth: проверка доступа к', to.path)
 
-  console.log('🔐 Middleware user-auth: isAuthenticated =', isAuthenticated.value, 'user =', user.value)
+  // Проверяем сессию напрямую через Supabase
+  const { checkAuthSession } = await import('~/composables/useAuth')
+  const hasSession = await checkAuthSession()
 
-  // Даем время на инициализацию auth (небольшая задержка)
-  await new Promise(resolve => setTimeout(resolve, 100))
-
-  console.log('🔐 Middleware user-auth после задержки: isAuthenticated =', isAuthenticated.value)
+  console.log('🔍 Middleware: hasSession =', hasSession)
 
   // Если пользователь не авторизован, перенаправляем на страницу входа
-  if (!isAuthenticated.value) {
-    console.log('❌ Middleware: пользователь не авторизован, редирект на /login')
+  if (!hasSession) {
+    console.log('❌ Middleware: нет активной сессии, редирект на /login')
     return navigateTo('/login')
   }
 
-  console.log('✅ Middleware: пользователь авторизован, разрешаем доступ')
+  console.log('✅ Middleware: сессия активна, разрешаем доступ')
 })
