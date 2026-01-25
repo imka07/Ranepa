@@ -128,7 +128,7 @@ definePageMeta({
   layout: false
 })
 
-const { login, register, loading, error: authError } = useAuth()
+const { login, register, loading, error: authError, isAuthenticated } = useAuth()
 
 const isLoginMode = ref(true)
 const isLoading = computed(() => loading.value)
@@ -162,10 +162,16 @@ const handleSubmit = async () => {
       const success = await login(formData.value.email, formData.value.password)
       
       console.log('🔍 Результат login():', success)
+      console.log('🔍 isAuthenticated после login():', isAuthenticated.value)
       
       if (success) {
-        console.log('✅ Вход успешен, перенаправление на /dashboard')
-        await navigateTo('/dashboard')
+        console.log('✅ Вход успешен, ждем 200ms и перенаправляем на /dashboard')
+        
+        // Даем время на обновление состояния
+        await new Promise(resolve => setTimeout(resolve, 200))
+        
+        console.log('🔍 isAuthenticated перед navigateTo:', isAuthenticated.value)
+        await navigateTo('/dashboard', { replace: true })
       } else {
         console.log('❌ Вход не удался')
         errorMessage.value = authError.value || 'Не удалось войти. Проверьте email и пароль.'
@@ -188,8 +194,12 @@ const handleSubmit = async () => {
       console.log('🔍 Результат register():', success)
 
       if (success) {
-        console.log('✅ Регистрация успешна, перенаправление на /dashboard')
-        await navigateTo('/dashboard')
+        console.log('✅ Регистрация успешна, ждем 200ms и перенаправляем на /dashboard')
+        
+        // Даем время на обновление состояния
+        await new Promise(resolve => setTimeout(resolve, 200))
+        
+        await navigateTo('/dashboard', { replace: true })
       } else {
         console.log('❌ Регистрация не удалась')
         errorMessage.value = authError.value || 'Не удалось зарегистрироваться. Попробуйте другой email.'
