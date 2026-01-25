@@ -1,86 +1,186 @@
+import { createClient } from '@supabase/supabase-js'
+
 export const useAuth = () => {
-  const user = ref<{ id: string; name: string; email: string; phone: string } | null>(null)
+  const user = ref<{ id: string; name: string; email: string; phone?: string } | null>(null)
   const isAuthenticated = ref(false)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-  // Test user credentials
-  const testUser = {
-    id: '1',
-    name: 'Test User',
-    email: 'test@mail.com',
-    phone: '+7 900 000-00-00'
-  }
-  const testPassword = 'password123'
+  // Инициализация Supabase клиента
+  const supabase = process.client ? createClient(
+    useRuntimeConfig().public.supabaseUrl,
+    useRuntimeConfig().public.supabaseAnonKey
+  ) : null
 
-  // Загружаем пользователя из localStorage при инициализации
-  const initUser = () => {
-    if (process.client) {
-      const stored = localStorage.getItem('user')
-      if (stored) {
-        user.value = JSON.parse(stored)
+  // Загружаем пользователя из Supabase при инициализации
+  const initUser = async () => {
+    if (!supabase) return
+    
+    loading.value = true
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (session?.user) {
+        // Загружаем данные профиля из таблицы profiles
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+
+        user.value = {
+          id: session.user.id,
+          email: session.user.email!,
+          name: profile?.name || session.user.email!.split('@')[0],
+          phone: profile?.phone
+        }
         isAuthenticated.value = true
+        console.log('✅ Пользователь авторизован:', user.value)
       } else {
-        // Автоматический вход тестового пользователя
-        user.value = testUser
-        isAuthenticated.value = true
-        localStorage.setItem('user', JSON.stringify(testUser))
-        localStorage.setItem('password', testPassword)
+        user.value = null
+        isAuthenticated.value = false
+        console.log('❌ Пользователь не авторизован')
       }
-    } else {
-      // На сервере также устанавливаем тестового пользователя
-      user.value = testUser
-      isAuthenticated.value = true
+    } catch (err) {
+      console.error('❌ Ошибка инициализации пользователя:', err)
+      user.value = null
+      isAuthenticated.value = false
+    } finally {
+      loading.value = false
     }
   }
 
   // Регистрация
-  const register = (name: string, email: string, phone: string, password: string) => {
-    const newUser = {
-      id: Math.random().toString(36).substr(2, 9),
-      name,
-      email,
-      phone
-    }
-    user.value = newUser
-    isAuthenticated.value = true
-    if (process.client) {
-      localStorage.setItem('user', JSON.stringify(newUser))
-      localStorage.setItem('password', password)
+  const register = async (name: string, email: string, phone: string, password: string) => {
+    if (!supabase) throw new Error('Supabase не инициализирован')
+    
+    loading.value = true
+    error.value = null
+    
+    try {
+      // Регистрируем пользователя через Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+            phone
+          }
+        }
+      })
+
+      if (authError) throw authError
+
+      if (authData.user) {
+        // Создаем запись в таблице profiles
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: authData.user.id,
+            name,
+            email,
+            phone
+          })
+
+        if (profileError) {
+          console.error('Ошибка создания профиля:', profileError)
+          // Не бросаем ошибку, т.к. пользователь уже создан в auth
+        }
+
+        user.value = {
+          id: authData.user.id,
+          name,
+          email,
+          phone
+        }
+        isAuthenticated.value = true
+        console.log('✅ Регистрация успешна:', user.value)
+        return true
+      }
+      
+      return false
+    } catch (err: any) {
+      console.error('❌ Ошибка регистрации:', err)
+      error.value = err.message || 'Ошибка регистрации'
+      return false
+    } finally {
+      loading.value = false
     }
   }
 
   // Вход
-  const login = (email: string, password: string) => {
-    // Проверка тестовых учетных данных
-    if (email === testUser.email && password === testPassword) {
-      user.value = testUser
-      isAuthenticated.value = true
-      if (process.client) {
-        localStorage.setItem('user', JSON.stringify(testUser))
-        localStorage.setItem('password', testPassword)
-      }
-      return true
-    }
+  const login = async (email: string, password: string) => {
+    if (!supabase) throw new Error('Supabase не инициализирован')
+    
+    loading.value = true
+    error.value = null
+    
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
 
-    // Проверка сохраненных пользователей
-    if (process.client) {
-      const stored = localStorage.getItem('user')
-      const storedPassword = localStorage.getItem('password')
-      if (stored && storedPassword === password) {
-        const storedUser = JSON.parse(stored)
-        if (storedUser.email === email) {
-          user.value = storedUser
-          isAuthenticated.value = true
-          return true
+      if (authError) throw authError
+
+      if (data.user) {
+        // Загружаем данные профиля
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single()
+
+        user.value = {
+          id: data.user.id,
+          email: data.user.email!,
+          name: profile?.name || data.user.email!.split('@')[0],
+          phone: profile?.phone
         }
+        isAuthenticated.value = true
+        console.log('✅ Вход успешен:', user.value)
+        return true
       }
+      
+      return false
+    } catch (err: any) {
+      console.error('❌ Ошибка входа:', err)
+      error.value = err.message || 'Неверный email или пароль'
+      return false
+    } finally {
+      loading.value = false
     }
-
-    return false
   }
 
-  // Выход (отключена функциональность)
-  const logout = () => {
-    // Функция отключена, пользователь всегда остается авторизованным
+  // Выход
+  const logout = async () => {
+    if (!supabase) return
+    
+    loading.value = true
+    try {
+      await supabase.auth.signOut()
+      user.value = null
+      isAuthenticated.value = false
+      console.log('✅ Выход выполнен')
+    } catch (err) {
+      console.error('❌ Ошибка выхода:', err)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Отслеживаем изменения состояния авторизации
+  if (process.client && supabase) {
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔄 Auth state changed:', event)
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        initUser()
+      } else if (event === 'SIGNED_OUT') {
+        user.value = null
+        isAuthenticated.value = false
+      }
+    })
   }
 
   onMounted(() => {
@@ -90,6 +190,8 @@ export const useAuth = () => {
   return {
     user,
     isAuthenticated,
+    loading,
+    error,
     register,
     login,
     logout
