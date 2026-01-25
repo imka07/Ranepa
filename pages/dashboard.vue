@@ -201,7 +201,17 @@ const isLoading = computed(() => loading.value)
 // Получаем только заказы текущего пользователя
 const userOrders = computed(() => {
   if (!user.value) return []
-  return orders.value.filter(order => order.user_id === user.value!.id)
+  console.log('🔍 Dashboard: user.id =', user.value.id)
+  console.log('🔍 Dashboard: all orders =', orders.value)
+  
+  // Фильтруем по user_id (как в базе данных)
+  const filtered = orders.value.filter(order => {
+    console.log('🔍 Checking order:', order.id, 'user_id:', order.user_id, 'matches:', order.user_id === user.value!.id)
+    return order.user_id === user.value!.id
+  })
+  
+  console.log('🔍 Dashboard: filtered orders =', filtered)
+  return filtered
 })
 
 // Вычисляем прогресс заказа
