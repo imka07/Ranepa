@@ -88,7 +88,7 @@
                   <div class="flex-1">
                     <div class="flex items-center gap-3">
                       <h3 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                        {{ getWorkTypeLabel(order.work_type) }}
+                        {{ getWorkTypeLabel(order.workType) }}
                       </h3>
                       <span
                         :class="[
@@ -129,7 +129,7 @@
                   </div>
                   <div class="bg-green-50 rounded-lg p-3 border border-green-100">
                     <p class="text-xs text-green-600 font-semibold mb-1">Дата создания</p>
-                    <p class="text-sm font-bold text-gray-900">{{ formatDate(order.created_at) }}</p>
+                    <p class="text-sm font-bold text-gray-900">{{ formatDate(order.createdAt) }}</p>
                   </div>
                   <div class="bg-purple-50 rounded-lg p-3 border border-purple-100">
                     <p class="text-xs text-purple-600 font-semibold mb-1">Сообщений</p>
@@ -204,10 +204,10 @@ const userOrders = computed(() => {
   console.log('🔍 Dashboard: user.id =', user.value.id)
   console.log('🔍 Dashboard: all orders =', orders.value)
   
-  // Фильтруем по user_id (как в базе данных)
+  // Фильтруем по userId (camelCase - как возвращает API)
   const filtered = orders.value.filter(order => {
-    console.log('🔍 Checking order:', order.id, 'user_id:', order.user_id, 'matches:', order.user_id === user.value!.id)
-    return order.user_id === user.value!.id
+    console.log('🔍 Checking order:', order.id, 'userId:', order.userId, 'matches:', order.userId === user.value!.id)
+    return order.userId === user.value!.id
   })
   
   console.log('🔍 Dashboard: filtered orders =', filtered)
