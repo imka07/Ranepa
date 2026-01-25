@@ -26,18 +26,17 @@ export interface Order {
   updatedAt: string
 }
 
-// Глобальное состояние для кэширования
-const globalOrders = useState<Order[]>('global-orders', () => [])
-const globalLoading = useState<boolean>('global-orders-loading', () => false)
-const globalError = useState<string | null>('global-orders-error', () => null)
+// Кэш для хранения времени последней загрузки
 let lastFetchTime = 0
 const CACHE_DURATION = 30000 // 30 секунд кэш
 
 export const useOrders = () => {
   const { user } = useAuth()
-  const orders = globalOrders
-  const loading = globalLoading
-  const error = globalError
+  
+  // Глобальное состояние для кэширования - внутри функции!
+  const orders = useState<Order[]>('global-orders', () => [])
+  const loading = useState<boolean>('global-orders-loading', () => false)
+  const error = useState<string | null>('global-orders-error', () => null)
 
   // Загружаем все заказы из API с кэшированием
   const fetchOrders = async (force = false) => {
