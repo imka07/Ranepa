@@ -71,7 +71,7 @@ const props = withDefaults(defineProps<{
   backgroundClass: 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50',
   borderClass: 'border-t border-slate-200/50',
   copyrightText: 'Reshala',
-  telegramUrl: 'https://t.me/reshala_support'
+  telegramUrl: 'https://t.me/reshalloo'
 })
 
 const currentYear = new Date().getFullYear()

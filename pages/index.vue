@@ -106,7 +106,7 @@
               <input
                 v-model="form.subject"
                 type="text"
-                placeholder="Например: История"
+                placeholder="Например: Экономика"
                 class="form-input w-full px-4 py-2.5 rounded-lg bg-white text-slate-800 border border-slate-300 focus:border-blue-500 focus:shadow-md focus:outline-none transition placeholder-slate-400 text-sm shadow-sm"
                 required
               />
@@ -118,7 +118,7 @@
               <input
                 v-model="form.theme"
                 type="text"
-                placeholder="Например: Черкессы"
+                placeholder="Например: Микроэкономика"
                 class="form-input w-full px-4 py-2.5 rounded-lg bg-white text-slate-800 border border-slate-300 focus:border-blue-500 focus:shadow-md focus:outline-none transition placeholder-slate-400 text-sm shadow-sm"
                 required
               />
