@@ -64,6 +64,8 @@
       :show-controls="true"
     />
 
+    <FAQ />
+
     <LayoutFooterMain />
 
     <!-- Order Modal -->
@@ -309,6 +311,7 @@ import HeaderMain from '~/components/layout/HeaderMain.vue'
 import Hero from '~/components/blocks/Hero.vue'
 import Features from '~/components/blocks/Features.vue'
 import Testimonials from '~/components/blocks/Testimonials.vue'
+import FAQ from '~/components/blocks/FAQ.vue'
 import UiBaseModal from '~/components/ui/BaseModal.vue'
 import UiFileUploader from '~/components/ui/FileUploader.vue'
 import UiBaseAlert from '~/components/ui/BaseAlert.vue'
