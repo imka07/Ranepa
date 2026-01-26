@@ -25,6 +25,8 @@
       </template>
     </Hero>
 
+    <HowItWorks />
+
     <Features
       id="about"
       heading="Почему выбирают нас"
@@ -309,6 +311,7 @@
 <script setup lang="ts">
 import HeaderMain from '~/components/layout/HeaderMain.vue'
 import Hero from '~/components/blocks/Hero.vue'
+import HowItWorks from '~/components/blocks/HowItWorks.vue'
 import Features from '~/components/blocks/Features.vue'
 import Testimonials from '~/components/blocks/Testimonials.vue'
 import FAQ from '~/components/blocks/FAQ.vue'
