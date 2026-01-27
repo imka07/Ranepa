@@ -66,7 +66,10 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#3b82f6' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/r_favicon.svg' }
+        // Favicon для Яндекс и браузеров
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/r_favicon.svg' },
+        { rel: 'shortcut icon', href: '/favicon.ico' }
       ]
     }
   }
