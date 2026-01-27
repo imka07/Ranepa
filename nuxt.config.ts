@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
   
   // Конфигурация для Nitro (серверная часть)
   nitro: {
@@ -20,6 +20,56 @@ export default defineNuxtConfig({
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://ranepa-beta.vercel.app',
       supabaseUrl: process.env.SUPABASE_URL || '',
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY || ''
+    }
+  },
+  
+  // Конфигурация Sitemap
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://ranepa-beta.vercel.app',
+    name: 'Reshala - Помощь студентам'
+  },
+  
+  sitemap: {
+    strictNuxtContentPaths: true,
+    urls: async () => {
+      return [
+        {
+          loc: '/',
+          lastmod: new Date(),
+          changefreq: 'weekly',
+          priority: 1.0
+        },
+        {
+          loc: '/#services',
+          lastmod: new Date(),
+          changefreq: 'monthly',
+          priority: 0.8
+        },
+        {
+          loc: '/#about',
+          lastmod: new Date(),
+          changefreq: 'monthly',
+          priority: 0.7
+        },
+        {
+          loc: '/#reviews',
+          lastmod: new Date(),
+          changefreq: 'weekly',
+          priority: 0.6
+        },
+        {
+          loc: '/#faq',
+          lastmod: new Date(),
+          changefreq: 'monthly',
+          priority: 0.6
+        },
+        {
+          loc: '/#contact',
+          lastmod: new Date(),
+          changefreq: 'monthly',
+          priority: 0.5
+        }
+      ]
     }
   },
   
