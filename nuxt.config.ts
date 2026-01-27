@@ -6,11 +6,7 @@ export default defineNuxtConfig({
   
   // Конфигурация для Nitro (серверная часть)
   nitro: {
-    preset: 'vercel',
-    prerender: {
-      crawlLinks: true,
-      routes: ['/sitemap.xml']
-    }
+    preset: 'vercel'
   },
   
   // Конфигурация runtime для переменных окружения
