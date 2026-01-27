@@ -6,7 +6,11 @@ export default defineNuxtConfig({
   
   // Конфигурация для Nitro (серверная часть)
   nitro: {
-    preset: 'vercel'
+    preset: 'vercel',
+    prerender: {
+      crawlLinks: true,
+      routes: ['/sitemap.xml']
+    }
   },
   
   // Конфигурация runtime для переменных окружения
@@ -31,46 +35,40 @@ export default defineNuxtConfig({
   
   sitemap: {
     strictNuxtContentPaths: true,
-    urls: async () => {
-      return [
-        {
-          loc: '/',
-          lastmod: new Date(),
-          changefreq: 'weekly',
-          priority: 1.0
-        },
-        {
-          loc: '/#services',
-          lastmod: new Date(),
-          changefreq: 'monthly',
-          priority: 0.8
-        },
-        {
-          loc: '/#about',
-          lastmod: new Date(),
-          changefreq: 'monthly',
-          priority: 0.7
-        },
-        {
-          loc: '/#reviews',
-          lastmod: new Date(),
-          changefreq: 'weekly',
-          priority: 0.6
-        },
-        {
-          loc: '/#faq',
-          lastmod: new Date(),
-          changefreq: 'monthly',
-          priority: 0.6
-        },
-        {
-          loc: '/#contact',
-          lastmod: new Date(),
-          changefreq: 'monthly',
-          priority: 0.5
-        }
-      ]
-    }
+    exclude: ['/api/**', '/admin/**'],
+    urls: () => [
+      {
+        loc: '/',
+        lastmod: new Date().toISOString(),
+        changefreq: 'weekly',
+        priority: 1.0
+      },
+      {
+        loc: '/#services',
+        changefreq: 'monthly',
+        priority: 0.8
+      },
+      {
+        loc: '/#about',
+        changefreq: 'monthly',
+        priority: 0.7
+      },
+      {
+        loc: '/#reviews',
+        changefreq: 'weekly',
+        priority: 0.6
+      },
+      {
+        loc: '/#faq',
+        changefreq: 'monthly',
+        priority: 0.6
+      },
+      {
+        loc: '/#contact',
+        changefreq: 'monthly',
+        priority: 0.5
+      }
+    ]
   },
   
   app: {
